@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Demo Data | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);">
+    <div style="max-width:420px;background:white;padding:32px;border-radius:12px;box-shadow:var(--shadow);text-align:center;">
+        <h1 style="font-size:1.25rem;margin-bottom:12px;">Reset Demo Data</h1>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:20px;">
+            Clears cart, orders, users, wishlist, and admin session so you can test all features from a clean state.
+        </p>
+        <button class="btn btn-primary btn-block" id="resetBtn">Reset &amp; Go to Home</button>
+        <a href="/index.html" style="display:block;margin-top:14px;font-size:0.85rem;color:var(--text-muted);">Cancel</a>
+    </div>
+    <script>
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            [
+                'ph_products',
+                'ph_orders',
+                'ph_customers',
+                'ph_cart',
+                'ph_current_user',
+                'ph_users',
+                'ph_wishlist'
+            ].forEach(k => localStorage.removeItem(k));
+            sessionStorage.removeItem('ph_admin_logged_in');
+            sessionStorage.removeItem('ph_admin_email');
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i>
+                    info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/admin/" style="color:var(--gold-light);font-weight:600;"><i class="fa-solid fa-lock"></i>
+                    Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat
+                        </div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</a>
+                <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"></i> Lamb</a>
+                <a href="/shop?cat=beef"><i class="fa-solid fa-cow"></i> Beef</a>
+                <a href="/shop?cat=goat"><i class="fa-solid fa-paw"></i> Goat</a>
+                <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"></i> Marinated</a>
+                <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"></i> Offal &amp; Extras</a>
+                <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"></i> Grocery</a>
+                <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"></i> Frozen Foods</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
+            </p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- PAGE HERO -->
+    <div class="page-hero">
+        <div class="container">
+            <h1 id="pageTitle">All Products</h1>
+            <p>Fresh, premium halal meat £ all hand-slaughtered and certified halal</p>
+            <div class="breadcrumb">
+                <a href="/index.html">Home</a>
+                <span class="breadcrumb-sep">/</span>
+                <span id="breadcrumbCat">Shop</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOP CONTENT -->
+    <div style="background:var(--white);border-bottom:1px solid var(--border);">
+        <div class="container">
+            <!-- Category Filter Tabs -->
+            <div class="shop-filters" id="categoryFilters">
+                <button class="filter-btn active" data-cat="all" onclick="filterProducts('all', this)">All
+                    Products</button>
+                <button class="filter-btn" data-cat="chicken" onclick="filterProducts('chicken', this)"><i
+                        class="fa-solid fa-drumstick-bite"></i> Chicken</button>
+                <button class="filter-btn" data-cat="lamb" onclick="filterProducts('lamb', this)"><i
+                        class="fa-solid fa-bone"></i> Lamb</button>
+                <button class="filter-btn" data-cat="beef" onclick="filterProducts('beef', this)"><i
+                        class="fa-solid fa-cow"></i> Beef</button>
+                <button class="filter-btn" data-cat="goat" onclick="filterProducts('goat', this)"><i
+                        class="fa-solid fa-paw"></i> Goat</button>
+                <button class="filter-btn" data-cat="marinated" onclick="filterProducts('marinated', this)"><i
+                        class="fa-solid fa-fire"></i> Marinated</button>
+                <button class="filter-btn" data-cat="offal" onclick="filterProducts('offal', this)">Offal &
+                    Extras</button>
+                <select class="shop-sort" id="sortSelect" onchange="applySort()">
+                    <option value="default">Sort: Default</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="name-asc">Name: A to Z</option>
+                    <option value="rating">Top Rated</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <section style="padding:40px 0 70px;">
+        <div class="container">
+            <div
+                style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+                <p id="resultsCount" style="color:var(--text-muted);font-size:0.9rem;"></p>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="search-input-wrap" style="max-width:280px;">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="shopSearch" placeholder="Search products..."
+                            oninput="handleSearch(this.value)">
+                    </div>
+                </div>
+            </div>
+            <div class="products-grid" id="shopProducts">
+                <!-- Rendered by JS -->
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>£ 2026 Pakeeza Hilal Meat. All rights reserved. | <a href="/index.html"
+                        style="color:rgba(255,255,255,0.6);">Back to Home</a></p>
+                <div class="halal-cert"><i class="fa-solid fa-certificate"></i> 100% Halal Certified</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        let currentProducts = [];
+        let activeCat = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Intercept navigation links to filter dynamically when already on shop page
+            document.querySelectorAll('.nav-link, .nav-dropdown-menu a, .mobile-nav-links a').forEach(link => {
+                const href = link.getAttribute('href') || '';
+                const isShopLink = href === '/shop' || href.includes('/shop?cat=');
+                if (isShopLink) {
+                    link.addEventListener('click', (e) => {
+                        const urlParts = href.split('?');
+                        const params = new URLSearchParams(urlParts[1] || '');
+                        const cat = params.get('cat') || 'all';
+
+                        e.preventDefault();
+                        const btn = document.querySelector(`.filter-btn[data-cat="${cat}"]`) || document.querySelector('.filter-btn[data-cat="all"]');
+                        if (btn) {
+                            filterProducts(cat, btn);
+                        }
+                        window.history.pushState({ cat }, '', href);
+
+                        // Highlight active state in navbar
+                        if (typeof window.highlightActiveNav === 'function') {
+                            window.highlightActiveNav();
+                        }
+                        // Close mobile nav if open
+                        if (typeof window.closeMobileNav === 'function') {
+                            window.closeMobileNav();
+                        }
+
+                        // Close dropdown menu automatically on select
+                        const dropdownMenu = link.closest('.nav-dropdown-menu');
+                        if (dropdownMenu) {
+                            dropdownMenu.style.display = 'none';
+                            const dropdownContainer = dropdownMenu.closest('.nav-dropdown');
+                            if (dropdownContainer) {
+                                const restoreDisplay = () => {
+                                    dropdownMenu.style.display = '';
+                                    dropdownContainer.removeEventListener('mouseleave', restoreDisplay);
+                                };
+                                dropdownContainer.addEventListener('mouseleave', restoreDisplay);
+                            }
+                        }
+                    });
+                }
+            });
+
+            const catParam = getUrlParam('cat');
+            if (catParam) {
+                activeCat = catParam;
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.cat === catParam);
+                });
+                const catName = CATEGORIES.find(c => c.id === catParam)?.name || catParam;
+                document.getElementById('pageTitle').textContent = `${catName}`;
+                document.getElementById('breadcrumbCat').textContent = catName;
+            }
+            loadProducts(activeCat);
+        });
+
+        window.addEventListener('popstate', () => {
+            const catParam = getUrlParam('cat') || 'all';
+            activeCat = catParam;
+            const btn = document.querySelector(`.filter-btn[data-cat="${catParam}"]`) || document.querySelector('.filter-btn[data-cat="all"]');
+            if (btn) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const catName = catParam === 'all' ? 'All Products' : (CATEGORIES.find(c => c.id === catParam)?.name || catParam);
+                document.getElementById('pageTitle').textContent = catName;
+                document.getElementById('breadcrumbCat').textContent = catName;
+            }
+            loadProducts(activeCat);
+            if (typeof window.highlightActiveNav === 'function') {
+                window.highlightActiveNav();
+            }
+        });
+
+        function loadProducts(cat) {
+            let products = getProducts();
+            currentProducts = cat === 'all' ? products : products.filter(p => p.category === cat);
+            applySort();
+        }
+
+        function filterProducts(cat, btn) {
+            activeCat = cat;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadProducts(cat);
+            const catName = cat === 'all' ? 'All Products' : (CATEGORIES.find(c => c.id === cat)?.name || cat);
+            document.getElementById('pageTitle').textContent = catName;
+            document.getElementById('breadcrumbCat').textContent = catName;
+        }
+
+        function applySort() {
+            const sort = document.getElementById('sortSelect').value;
+            let sorted = [...currentProducts];
+            if (sort === 'price-asc') sorted.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
+            else if (sort === 'price-desc') sorted.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+            else if (sort === 'name-asc') sorted.sort((a, b) => a.name.localeCompare(b.name));
+            else if (sort === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+            document.getElementById('resultsCount').textContent = `Showing ${sorted.length} product${sorted.length !== 1 ? 's' : ''}`;
+            renderProductCards(sorted, 'shopProducts');
+        }
+
+        function handleSearch(query) {
+            const q = query.toLowerCase();
+            let products = getProducts();
+            if (activeCat !== 'all') products = products.filter(p => p.category === activeCat);
+            currentProducts = q ? products.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)) : products;
+            applySort();
+        }
+    </script>
+</body>
+
+</html>

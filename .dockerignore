@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Git
+.git/
+
+# Build output (we'll rebuild in Docker)
+public/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test
+coverage/
+
+# Misc
+*.env*

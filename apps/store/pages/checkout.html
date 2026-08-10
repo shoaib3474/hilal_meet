@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i>
+                    info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/admin/" style="color:var(--gold-light);font-weight:600;"><i class="fa-solid fa-lock"></i>
+                    Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat
+                        </div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</a>
+                <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"></i> Lamb</a>
+                <a href="/shop?cat=beef"><i class="fa-solid fa-cow"></i> Beef</a>
+                <a href="/shop?cat=goat"><i class="fa-solid fa-paw"></i> Goat</a>
+                <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"></i> Marinated</a>
+                <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"></i> Offal &amp; Extras</a>
+                <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"></i> Grocery</a>
+                <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"></i> Frozen Foods</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
+            </p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fa-solid fa-lock" style="margin-right:12px;"></i>Secure Checkout</h1>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><a
+                    href="/cart.html">Cart</a><span class="breadcrumb-sep">/</span><span>Checkout</span></div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal" style="max-width:480px;">
+            <div class="modal-body" style="text-align:center;padding:40px;">
+                <div
+                    style="width:72px;height:72px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:var(--primary);">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:10px;">Order Placed!</h2>
+                <p style="color:var(--text-muted);margin-bottom:6px;">Thank you for your order. We've received your
+                    request and will confirm shortly.</p>
+                <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:24px;">Order confirmation will be sent
+                    to your email.</p>
+                <div style="background:var(--primary-bg);border-radius:var(--radius);padding:14px;margin-bottom:24px;">
+                    <div style="font-size:0.85rem;color:var(--text-muted);">Your Order ID</div>
+                    <div style="font-size:1.3rem;font-weight:800;color:var(--primary);" id="confirmOrderId">PH-XXXX
+                    </div>
+                </div>
+                <a href="/index.html" class="btn btn-primary btn-block btn-lg">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+
+    <section class="checkout-page">
+        <div class="container">
+            <div class="checkout-layout">
+                <!-- LEFT: Forms -->
+                <div>
+                    <!-- Contact Details -->
+                    <div class="checkout-section">
+                        <h3><span class="step-num">1</span> Contact Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>First Name *</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="Ahmed" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name *</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Khan" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" class="form-control" id="email" placeholder="ahmed@example.com"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" placeholder="+44 7700 900123"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Method -->
+                    <div class="checkout-section">
+                        <h3><span class="step-num">2</span> Delivery Method</h3>
+                        <div class="delivery-options">
+                            <label class="delivery-option selected" id="optDelivery"
+                                onclick="selectDelivery('delivery')">
+                                <input type="radio" name="deliveryMethod" value="delivery" checked>
+                                <div class="option-info">
+                                    <strong><i class="fa-solid fa-truck"
+                                            style="color:var(--primary);margin-right:6px;"></i> Home Delivery</strong>
+                                    <span style="font-size:0.78rem;color:var(--text-muted);">Delivered to your
+                                        door</span>
+                                    <div class="price" id="deliveryPrice">£3.99 (Free over £30)</div>
+                                    <div class="price" id="deliveryPrice">£3.99 (Free over £30)</div>
+                                </div>
+                            </label>
+                            <label class="delivery-option" id="optCollection" onclick="selectDelivery('collection')">
+                                <input type="radio" name="deliveryMethod" value="collection">
+                                <div class="option-info">
+                                    <strong><i class="fa-solid fa-store"
+                                            style="color:var(--gold);margin-right:6px;"></i> Click & Collect</strong>
+                                    <span style="font-size:0.78rem;color:var(--text-muted);">East Ham store
+                                        pickup</span>
+                                    <div class="price" style="color:var(--primary);">FREE</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Address fields (shown for delivery) -->
+                        <div id="addressFields">
+                            <div class="form-grid">
+                                <div class="form-group full">
+                                    <label>Address Line 1 *</label>
+                                    <input type="text" class="form-control" id="address1"
+                                        placeholder="123 Green Street">
+                                </div>
+                                <div class="form-group full">
+                                    <label>Address Line 2</label>
+                                    <input type="text" class="form-control" id="address2"
+                                        placeholder="Flat/Apartment (optional)">
+                                </div>
+                                <div class="form-group">
+                                    <label>City *</label>
+                                    <input type="text" class="form-control" id="city" value="London">
+                                </div>
+                                <div class="form-group">
+                                    <label>Postcode *</label>
+                                    <input type="text" class="form-control" id="postcode" placeholder="E12 6SB">
+                                    <input type="text" class="form-control" id="postcode" placeholder="E12 6SB">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collection info (hidden by default) -->
+                        <div id="collectionInfo"
+                            style="display:none;background:var(--primary-bg);border-radius:var(--radius);padding:16px;">
+                            <p style="font-size:0.88rem;color:var(--primary);"><i class="fa-solid fa-location-dot"></i>
+                                <strong>Pakeeza Hilal Meat</strong>
+                            </p>
+                            <p style="font-size:0.85rem;color:var(--text-muted);">High Street North, London E12 6SB</p>
+                            <p style="font-size:0.85rem;color:var(--text-muted);">High Street North, London E12 6SB</p>
+                            <p style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;"><i
+                                    class="fa-solid fa-clock"></i> Ready for collection: Same day (orders before 5pm)
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Notes -->
+                    <div class="checkout-section">
+                        <h3><span class="step-num">3</span> Additional Notes</h3>
+                        <div class="form-group">
+                            <label>Order Notes (optional)</label>
+                            <textarea class="form-control" id="orderNotes" rows="3"
+                                placeholder="Any special requests, butchering preferences or dietary requirements..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div class="checkout-section">
+                        <h3><span class="step-num">4</span> Payment Method</h3>
+                        <div class="payment-methods">
+                            <label class="payment-method selected" onclick="selectPayment('card', this)">
+                                <input type="radio" name="payment" value="card" checked>
+                                <i class="fa-solid fa-credit-card" style="font-size:1.2rem;color:var(--primary);"></i>
+                                <div><strong>Credit / Debit Card</strong><br><span
+                                        style="font-size:0.78rem;color:var(--text-muted);">Visa, Mastercard, Amex</span>
+                                </div>
+                            </label>
+                            <label class="payment-method" onclick="selectPayment('cash', this)">
+                                <input type="radio" name="payment" value="cash">
+                                <i class="fa-solid fa-money-bill-wave" style="font-size:1.2rem;color:var(--gold);"></i>
+                                <div><strong>Cash on Delivery</strong><br><span
+                                        style="font-size:0.78rem;color:var(--text-muted);">Pay when your order
+                                        arrives</span></div>
+                            </label>
+                        </div>
+
+                        <!-- Card Details (shown when card selected) -->
+                        <div id="cardDetails" class="card-form" style="margin-top:16px;">
+                            <div class="form-group">
+                                <label>Card Number</label>
+                                <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19"
+                                    id="cardNum" oninput="formatCard(this)">
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Expiry Date</label>
+                                    <input type="text" class="form-control" placeholder="MM / YY" maxlength="7"
+                                        id="cardExpiry" oninput="formatExpiry(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label>CVV</label>
+                                    <input type="text" class="form-control" placeholder="123" maxlength="4" id="cardCvv"
+                                        oninput="this.value=this.value.replace(/\D/g,'')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Name on Card</label>
+                                <input type="text" class="form-control" placeholder="Ahmed Khan" id="cardName">
+                            </div>
+                            <div
+                                style="background:var(--primary-bg);border-radius:var(--radius);padding:10px;font-size:0.78rem;color:var(--primary);">
+                                <i class="fa-solid fa-lock"></i> Your payment details are secure. This is an MVP demo £
+                                no real payments processed.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Order Summary -->
+                <div>
+                    <div class="order-summary">
+                        <h3>Your Order</h3>
+                        <div id="checkoutItems"></div>
+                        <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
+                        <div class="summary-row"><span class="label">Subtotal</span><span class="value"
+                                id="checkoutSubtotal">£0.00</span></div>
+                        <div class="summary-row"><span class="label">Delivery</span><span class="value"
+                                id="checkoutDelivery">£3.99</span></div>
+                        <div class="summary-row total"><span>Total</span><strong id="checkoutTotal">£0.00</strong></div>
+                        <button class="btn btn-primary btn-block btn-lg" style="margin-top:20px;"
+                            onclick="placeOrder()">
+                            <i class="fa-solid fa-lock"></i> Place Order
+                        </button>
+                        <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
+                            <i class="fa-solid fa-shield-halved"></i> Secure & encrypted checkout
+                        </p>
+                        <div style="text-align:center;margin-top:12px;display:flex;justify-content:center;gap:8px;">
+                            <span
+                                style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">VISA</span>
+                            <span
+                                style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">MC</span>
+                            <span
+                                style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">AMEX</span>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--primary-bg);border-radius:var(--radius);padding:16px;margin-top:16px;">
+                        <h4 style="font-size:0.88rem;font-weight:700;margin-bottom:10px;color:var(--primary);">
+                            <i class="fa-solid fa-shield-halved"></i> Why shop with us?
+                        </h4>
+                        <ul
+                            style="font-size:0.8rem;color:var(--text-muted);display:flex;flex-direction:column;gap:6px;">
+                            <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>100%
+                                Halal Certified</li>
+                            <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>Farm
+                                fresh, never frozen</li>
+                            <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>Same-day
+                                delivery in East Ham</li>
+                            <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>Free
+                                delivery over £30</li>
+                            <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>Free
+                                delivery over £30</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>£ 2026 Pakeeza Hilal Meat. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        let deliveryMethod = 'delivery';
+        let paymentMethod = 'card';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCheckoutSummary();
+        });
+
+        function renderCheckoutSummary() {
+            const cart = getCart();
+            const itemsEl = document.getElementById('checkoutItems');
+            const subtotalEl = document.getElementById('checkoutSubtotal');
+            const deliveryEl = document.getElementById('checkoutDelivery');
+            const totalEl = document.getElementById('checkoutTotal');
+
+            if (!cart.length) {
+                itemsEl.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;">No items in cart</p>';
+                return;
+            }
+
+            itemsEl.innerHTML = cart.map(item => `
+        <div style="display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <img src="${item.image}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;"
+                onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
+            <div style="flex:1;font-size:0.85rem;">
+                <div style="font-weight:600;">${item.name}</div>
+                <div style="color:var(--text-muted);">£${item.qty} £ ${item.weight}</div>
+            </div>
+            <span style="font-weight:700;font-size:0.9rem;">£${(item.price * item.qty).toFixed(2)}</span>
+        </div>`).join('');
+
+            const subtotal = getCartTotal();
+            const delivery = deliveryMethod === 'collection' ? 0 : (subtotal >= 30 ? 0 : 3.99);
+            const total = subtotal + delivery;
+
+            subtotalEl.textContent = `£${subtotal.toFixed(2)}`;
+            deliveryEl.textContent = delivery === 0 ? 'FREE' : `£${delivery.toFixed(2)}`;
+            deliveryEl.style.color = delivery === 0 ? 'var(--primary)' : '';
+            totalEl.textContent = `£${total.toFixed(2)}`;
+        }
+
+        function selectDelivery(method) {
+            deliveryMethod = method;
+            document.getElementById('optDelivery').classList.toggle('selected', method === 'delivery');
+            document.getElementById('optCollection').classList.toggle('selected', method === 'collection');
+            document.getElementById('addressFields').style.display = method === 'delivery' ? '' : 'none';
+            document.getElementById('collectionInfo').style.display = method === 'collection' ? '' : 'none';
+            renderCheckoutSummary();
+        }
+
+        function selectPayment(method, el) {
+            paymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('cardDetails').style.display = method === 'card' ? '' : 'none';
+        }
+
+        function formatCard(input) {
+            input.value = input.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim().slice(0, 19);
+        }
+        function formatExpiry(input) {
+            input.value = input.value.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1 / $2').slice(0, 7);
+        }
+
+        function placeOrder() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!firstName || !lastName || !email || !phone) {
+                showToast('Please fill in all required contact details', 'error'); return;
+            }
+            if (!email.includes('@')) {
+                showToast('Please enter a valid email address', 'error'); return;
+            }
+            if (deliveryMethod === 'delivery' && !document.getElementById('address1').value.trim()) {
+                showToast('Please enter your delivery address', 'error'); return;
+            }
+            const cart = getCart();
+            if (!cart.length) {
+                showToast('Your cart is empty', 'error'); return;
+            }
+
+            // Create order
+            const subtotal = getCartTotal();
+            const delivery = deliveryMethod === 'collection' ? 0 : (subtotal >= 30 ? 0 : 3.99);
+            const orderId = 'PH-' + (1000 + Math.floor(Math.random() * 9000));
+
+            const newOrder = {
+                id: orderId,
+                date: new Date().toISOString().split('T')[0],
+                status: 'pending',
+                customer: { name: `${firstName} ${lastName}`, email, phone },
+                items: cart.map(i => ({ productId: i.id, name: i.name, qty: i.qty, price: i.price })),
+                subtotal, delivery, total: subtotal + delivery,
+                address: deliveryMethod === 'delivery'
+                    ? `${document.getElementById('address1').value}, ${document.getElementById('city').value}, ${document.getElementById('postcode').value}`
+                    : 'High Street North, London E12 6SB (Collection)',
+                paymentMethod: paymentMethod,
+                notes: document.getElementById('orderNotes').value
+            };
+
+            const orders = getOrders();
+            orders.push(newOrder);
+            saveOrders(orders);
+            fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newOrder)
+            }).catch(() => { });
+
+            // Clear cart
+            saveCart([]);
+            updateCartCount();
+
+            // Show success
+            document.getElementById('confirmOrderId').textContent = orderId;
+            document.getElementById('successModal').classList.add('open');
+        }
+    </script>
+</body>
+
+</html>

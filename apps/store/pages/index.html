@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakeeza Hilal Meat | Fresh Halal Butcher - East Ham, London</title>
+    <meta name="description"
+        content="Pakeeza Hilal Meat - East Ham's premier halal butcher. Fresh chicken, lamb, beef, goat and marinated meats. Order online or visit us in East Ham, London.">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i> info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/admin/" style="color:var(--gold-light);font-weight:600;"><i class="fa-solid fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat</div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</a>
+                <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"></i> Lamb</a>
+                <a href="/shop?cat=beef"><i class="fa-solid fa-cow"></i> Beef</a>
+                <a href="/shop?cat=goat"><i class="fa-solid fa-paw"></i> Goat</a>
+                <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"></i> Marinated</a>
+                <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"></i> Offal &amp; Extras</a>
+                <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"></i> Grocery</a>
+                <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"></i> Frozen Foods</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30</p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- ============================================================
+     HERO SLIDER
+     ============================================================ -->
+    <section class="hero">
+        <div class="hero-slider">
+            <!-- Slide 1 -->
+            <div class="hero-slide active">
+                <div class="hero-slide-bg"
+                    style="background-image:url('https://images.unsplash.com/photo-1602543090842-f06d6a1095ba?w=1400&q=80');">
+                </div>
+                <div class="container" style="position:relative;z-index:2;width:100%;">
+                    <div class="hero-slide-content">
+                        <span class="hero-badge">100% Halal Certified</span>
+                        <h1>East Ham's <span>Finest</span><br>Halal Butcher</h1>
+                        <p>Fresh halal meat, poultry, grocery & frozen foods - all under one roof. Serving E12 &
+                            surrounding areas. Free local delivery on orders over -30.</p>
+                        <div class="hero-btns">
+                            <a href="/shop" class="btn btn-gold btn-lg"><i class="fa-solid fa-shop"></i> Shop
+                                Now</a>
+                            <a href="/about.html" class="btn btn-outline btn-lg"
+                                style="color:white;border-color:rgba(255,255,255,0.5);">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="hero-slide">
+                <div class="hero-slide-bg"
+                    style="background-image:url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=1400&q=80');">
+                </div>
+                <div class="container" style="position:relative;z-index:2;width:100%;">
+                    <div class="hero-slide-content">
+                        <span class="hero-badge">BBQ Season</span>
+                        <h1>Premium <span>Lamb</span><br>& Beef Cuts</h1>
+                        <p>Expertly cut lamb chops, leg joints, beef steaks and ribs. Fresh butcher cuts prepared to
+                            your required size.</p>
+                        <div class="hero-btns">
+                            <a href="/shop?cat=lamb" class="btn btn-gold btn-lg"><i class="fa-solid fa-bone"></i>
+                                Shop Lamb</a>
+                            <a href="/shop?cat=beef" class="btn btn-outline btn-lg"
+                                style="color:white;border-color:rgba(255,255,255,0.5);">Shop Beef</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="hero-slide">
+                <div class="hero-slide-bg"
+                    style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1400&q=80');">
+                </div>
+                <div class="container" style="position:relative;z-index:2;width:100%;">
+                    <div class="hero-slide-content">
+                        <span class="hero-badge">Freshly Marinated</span>
+                        <h1>Fresh <span>Marinated</span><br>Butcher Cuts</h1>
+                        <p>Our signature spice blends are prepared fresh by our butchers. All products are sold raw, not
+                            cooked meals.</p>
+                        <div class="hero-btns">
+                            <a href="/shop?cat=marinated" class="btn btn-gold btn-lg"><i
+                                    class="fa-solid fa-fire"></i> Shop Marinated</a>
+                            <a href="/contact.html" class="btn btn-outline btn-lg"
+                                style="color:white;border-color:rgba(255,255,255,0.5);">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="hero-prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="hero-next"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="hero-controls">
+                <button class="hero-dot active"></button>
+                <button class="hero-dot"></button>
+                <button class="hero-dot"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUST BAR -->
+    <div class="hero-trust">
+        <div class="container">
+            <div class="trust-item"><i class="fa-solid fa-certificate"></i>
+                <div><strong>100% Halal Certified</strong><span>Hand-slaughtered</span></div>
+            </div>
+            <div class="trust-item"><i class="fa-solid fa-leaf"></i>
+                <div><strong>Fresh Meat & Poultry</strong><span>Daily fresh stock</span></div>
+            </div>
+            <div class="trust-item"><i class="fa-solid fa-basket-shopping"></i>
+                <div><strong>Grocery & Frozen Foods</strong><span>All in one shop</span></div>
+            </div>
+            <div class="trust-item"><i class="fa-solid fa-truck-fast"></i>
+                <div><strong>Free Local Delivery</strong><span>Min. order -30</span></div>
+            </div>
+            <div class="trust-item"><i class="fa-solid fa-location-dot"></i>
+                <div><strong>High Street North, E12</strong><span>E12 6SB</span></div>
+            </div>
+            <div class="trust-item"><i class="fa-solid fa-phone"></i>
+                <div><strong>020 8503 5721</strong><span>Call to order</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+     CATEGORIES
+     ============================================================ -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="subtitle">Browse By Category</span>
+                <h2>Shop Our <span>Halal</span> Selection</h2>
+                <p>Fresh halal meat, poultry, grocery essentials and frozen foods - all halal certified, all under one
+                    roof.</p>
+                <p>From fresh whole chicken and lamb to grocery essentials and frozen foods - all halal certified.</p>
+                <div class="section-divider"></div>
+            </div>
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     FEATURED PRODUCTS
+     ============================================================ -->
+    <section class="products-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="subtitle">Customer Favourites</span>
+                <h2>Best <span>Selling</span> Products</h2>
+                <p>Our most popular halal meats - loved by thousands of customers across East London.</p>
+                <p>Our most popular halal meats, poultry and groceries - loved by the E12 community.</p>
+                <div class="section-divider"></div>
+            </div>
+            <div class="products-grid" id="featuredProducts">
+                <!-- Rendered by JS -->
+            </div>
+            <div style="text-align:center;margin-top:40px;">
+                <a href="/shop" class="btn btn-outline btn-lg">View All Products <i
+                        class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     WHY CHOOSE US
+     ============================================================ -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-title" style="margin-bottom:40px;">
+                <span class="subtitle" style="color:var(--gold-light);">Why Pakeeza Hilal Meat</span>
+                <h2 style="color:white;">Your Trusted <span style="color:var(--gold-light);">Halal</span> Butcher</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-certificate"></i></div>
+                    <h3>100% Halal Certified</h3>
+                    <p>Every product is hand-slaughtered following strict Islamic guidelines and certified by a
+                        recognised UK Halal authority.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-seedling"></i></div>
+                    <h3>Farm Fresh Daily</h3>
+                    <p>We receive fresh deliveries daily from trusted UK farms. No frozen stock - everything is fresh
+                        and prepared the same day.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                    <h3>Fast Local Delivery</h3>
+                    <p>Free local delivery on all orders over -30. Covering E12 and surrounding postcodes. Call us on
+                        020 8503 5721.</p>
+                    ?? Free delivery on orders over -30</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-star"></i></div>
+                    <h3>15+ Years Experience</h3>
+                    <p>Trusted by the East Ham community for over 15 years. Expert butchers who know exactly how to
+                        prepare every cut.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     SPECIAL OFFER BANNER
+     ============================================================ -->
+    <section class="offer-banner">
+        <div class="container">
+            <div class="offer-content">
+                <span class="offer-tag">? Limited Time Offer</span>
+                <h2>Weekend BBQ Special!</h2>
+                <p>Get 15% off all marinated meats this weekend. Use code <strong>BBQ15</strong> at checkout.</p>
+                <div class="offer-countdown" id="countdown">
+                    <div class="countdown-unit"><span class="num" data-unit="hours">48</span>
+                        <div class="lbl">Hours</div>
+                    </div>
+                    <div class="countdown-unit"><span class="num" data-unit="mins">00</span>
+                        <div class="lbl">Mins</div>
+                    </div>
+                    <div class="countdown-unit"><span class="num" data-unit="secs">00</span>
+                        <div class="lbl">Secs</div>
+                    </div>
+                </div>
+                <a href="/shop?cat=marinated" class="btn btn-gold btn-lg"><i class="fa-solid fa-fire"></i> Shop
+                    Marinated Meats</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     MARINATED MEATS FEATURE
+     ============================================================ -->
+    <section class="products-section" style="padding-top:50px;">
+        <div class="container">
+            <div class="section-title">
+                <span class="subtitle">Fresh Marinated Cuts</span>
+                <h2>Marinated & <span>BBQ</span> Favourites</h2>
+                <p>Our signature marinades packed with authentic spices. Prepared fresh in-store and sold as raw butcher
+                    cuts.</p>
+                <div class="section-divider"></div>
+            </div>
+            <div class="products-grid" id="marinatedProducts">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     TESTIMONIALS
+     ============================================================ -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="subtitle">What Our Customers Say</span>
+                <h2>Loved By <span>East London</span></h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-stars">?????</div>
+                    <p class="testimonial-text">Absolutely the best halal meat shop in East Ham. The lamb chops are
+                        incredible and the service is always friendly. Been shopping here for 5 years and wouldn't go
+                        anywhere else!</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">AK</div>
+                        <div>
+                            <div class="name">Ahmed Khan</div>
+                            <div class="date">East Ham, London</div>
+                            <div class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Customer</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-stars">?????</div>
+                    <p class="testimonial-text">The marinated chicken tikka is out of this world! My family loves it
+                        every time. Online ordering is easy and delivery was super fast. Highly recommend to everyone!
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">FA</div>
+                        <div>
+                            <div class="name">Fatima Ali</div>
+                            <div class="date">Barking, London</div>
+                            <div class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Customer</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-stars">?????</div>
+                    <p class="testimonial-text">Fresh meat every time, never disappointed. The goat for our Eid
+                        celebration was perfect. The butchers are very knowledgeable and helpful. Best in the area!</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">MH</div>
+                        <div>
+                            <div class="name">Mohammed Hussain</div>
+                            <div class="date">Forest Gate, London</div>
+                            <div class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Customer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     BLOG
+     ============================================================ -->
+    <section class="blog-section">
+        <div class="container">
+            <div class="section-title">
+                <span class="subtitle">Tips & Recipes</span>
+                <h2>From Our <span>Butchers</span></h2>
+                <div class="section-divider"></div>
+            </div>
+            <div class="blog-grid">
+                <div class="blog-card">
+                    <div class="blog-card-img"><img
+                            src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80"
+                            alt="Lamb BBQ"></div>
+                    <div class="blog-card-body">
+                        <span class="blog-tag">BBQ Tips</span>
+                        <h3><a href="#">The Perfect Halal BBQ: Marinades & Grilling Tips</a></h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);">Learn how to get the most flavour from
+                            your halal meats with our expert marinades and grilling techniques.</p>
+                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 5 Jun 2026</span><span><i
+                                    class="fa-regular fa-clock"></i> 4 min read</span></div>
+                        <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <div class="blog-card-img"><img
+                            src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=600&q=80" alt="Lamb Cuts">
+                    </div>
+                    <div class="blog-card-body">
+                        <span class="blog-tag">Guides</span>
+                        <h3><a href="#">Understanding Halal Lamb Cuts: A Beginner's Guide</a></h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);">From shoulder to leg, chops to shank -
+                            understand which lamb cut is best for your dish.</p>
+                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 28 May 2026</span><span><i
+                                    class="fa-regular fa-clock"></i> 5 min read</span></div>
+                        <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <div class="blog-card-img"><img
+                            src="https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=600&q=80"
+                            alt="Whole Chicken"></div>
+                    <div class="blog-card-body">
+                        <span class="blog-tag">Recipes</span>
+                        <h3><a href="#">5 Easy Halal Chicken Recipes for the Whole Family</a></h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);">Quick, easy and delicious halal chicken
+                            recipes that the whole family will love - ready in under 30 minutes.</p>
+                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 20 May 2026</span><span><i
+                                    class="fa-regular fa-clock"></i> 3 min read</span></div>
+                        <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     NEWSLETTER
+     ============================================================ -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-inner">
+                <i class="fa-solid fa-envelope-open-text"
+                    style="font-size:2rem;color:var(--primary);margin-bottom:12px;display:block;"></i>
+                <h2>Stay in the Loop</h2>
+                <p>Subscribe for exclusive deals, new products and special Eid offers.</p>
+                <div class="newsletter-form" id="newsletterForm">
+                    <input type="email" placeholder="Enter your email address..." id="newsletterEmail">
+                    <button class="btn btn-primary" onclick="subscribeNewsletter()">Subscribe</button>
+                </div>
+                <p style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">No spam, unsubscribe anytime. We
+                    respect your privacy.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+     FOOTER
+     ============================================================ -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+
+                <!-- Brand Section -->
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="footer-logo-icon">
+                        <div>
+                            <div class="name">Pakeeza Hilal Meat</div>
+                            <div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:2px;">
+                                East Ham, London
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>
+                        East Ham's premier halal butcher. Serving the community with fresh,
+                        premium quality halal meat since 2010. All our products are
+                        hand-slaughtered and halal certified.
+                    </p>
+
+                    <div class="footer-contact">
+                        <a href="tel:02085035721">
+                            <i class="fa-solid fa-phone"></i>
+                            020 8503 5721
+                        </a>
+
+                        <a href="mailto:info@pakeezahilalmeat.co.uk">
+                            <i class="fa-solid fa-envelope"></i>
+                            info@pakeezahilalmeat.co.uk
+                        </a>
+
+                        <a href="https://wa.me/442085035721" target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            WhatsApp Us
+                        </a>
+
+                        <span>
+                            <i class="fa-solid fa-location-dot"></i>
+                            High Street North, London E12 6SB
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-clock"></i>
+                            Mon-Sat: 8am-8pm | Sun: 9am-6pm
+                        </span>
+                    </div>
+
+                    <div class="footer-social">
+                        <a href="#" class="social-btn" title="Facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+
+                        <a href="#" class="social-btn" title="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+
+                        <a href="#" class="social-btn" title="TikTok">
+                            <i class="fa-brands fa-tiktok"></i>
+                        </a>
+
+                        <a href="https://wa.me/442085035721" class="social-btn" title="WhatsApp" target="_blank">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <div class="footer-links">
+                        <a href="/index.html">Home</a>
+                        <a href="/shop">Shop All</a>
+                        <a href="/about.html">About Us</a>
+                        <a href="/contact.html">Contact Us</a>
+                        <a href="/account.html">My Account</a>
+                        <a href="/cart.html">My Cart</a>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <div class="footer-links">
+                        <a href="/shop?cat=chicken">Chicken</a>
+                        <a href="/shop?cat=lamb">Lamb</a>
+                        <a href="/shop?cat=beef">Beef</a>
+                        <a href="/shop?cat=goat">Goat</a>
+                        <a href="/shop?cat=marinated">Marinated</a>
+                        <a href="/shop?cat=offal">Offal & Extras</a>
+                    </div>
+                </div>
+
+                <!-- Information -->
+                <div class="footer-col">
+                    <h4>Information</h4>
+                    <div class="footer-links">
+                        <a href="#">Delivery Information</a>
+                        <a href="#">Returns Policy</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms & Conditions</a>
+                        <a href="#">Allergen Information</a>
+                        <a href="#">Halal Certificate</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>
+                    © 2026 Pakeeza Hilal Meat. All rights reserved. |
+                    High Street North, London E12 6SB
+                </p>
+
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                    <div class="halal-cert">
+                        <i class="fa-solid fa-certificate"></i>
+                        Halal Certified
+                    </div>
+
+                    <div class="payment-icons">
+                        <span class="payment-icon">VISA</span>
+                        <span class="payment-icon">MC</span>
+                        <span class="payment-icon">AMEX</span>
+                        <span class="payment-icon">CASH</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        // Render homepage sections
+        document.addEventListener('DOMContentLoaded', () => {
+            // Categories
+            renderCategories('categoriesGrid');
+
+            // Featured products (show first 8 featured)
+            const featured = getProducts().filter(p => p.featured).slice(0, 8);
+            renderProductCards(featured, 'featuredProducts');
+
+            // Marinated products
+            const marinated = getProducts().filter(p => p.category === 'marinated');
+            renderProductCards(marinated, 'marinatedProducts');
+
+            updateUserNav();
+        });
+
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            if (!email || !email.includes('@')) { showToast('Please enter a valid email address', 'error'); return; }
+            showToast('Thank you for subscribing! ??', 'success');
+            document.getElementById('newsletterEmail').value = '';
+        }
+    </script>
+</body>
+
+</html>

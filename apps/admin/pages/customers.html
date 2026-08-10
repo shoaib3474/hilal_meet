@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers | Pakeeza Admin</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand"><img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat"
+                    class="sidebar-logo-icon">
+                <div class="sidebar-brand-text">
+                    <div class="name">Pakeeza Hilal</div>
+                    <div class="label">Admin Panel</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-label">Main</div>
+                <a href="/admin/dashboard.html" class="sidebar-link"><i class="fa-solid fa-chart-line"></i>
+                    Dashboard</a>
+                <a href="/admin/orders.html" class="sidebar-link"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+                <a href="/admin/products.html" class="sidebar-link"><i class="fa-solid fa-boxes-stacked"></i>
+                    Products</a>
+                <a href="/admin/customers.html" class="sidebar-link active"><i class="fa-solid fa-users"></i>
+                    Customers</a>
+                <div class="sidebar-section-label">Store</div>
+                <a href="/" class="sidebar-link" target="_blank"><i class="fa-solid fa-store"></i> View Website</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user-info" onclick="adminLogout()">
+                    <div class="admin-avatar">A</div>
+                    <div class="info">
+                        <div class="name">Admin</div>
+                        <div class="role">Sign Out</div>
+                    </div><i class="fa-solid fa-right-from-bracket"
+                        style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+                </div>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <button id="sidebarToggle" class="header-icon-btn"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <div class="admin-header-title">Customers</div>
+                    <div class="admin-header-subtitle">View and manage customer accounts</div>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Customer Management</h1>
+                        <p>Browse all registered customers and their order history</p>
+                    </div>
+                    <div style="display:flex;gap:12px;">
+                        <div
+                            style="background:var(--primary-bg);border-radius:var(--radius);padding:10px 16px;font-size:0.85rem;font-weight:700;color:var(--primary);">
+                            <i class="fa-solid fa-users" style="margin-right:6px;"></i>Total: <span
+                                id="customerCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER STATS -->
+                <div class="stats-grid" style="margin-bottom:24px;">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Total Customers</div>
+                            <div class="value" id="sc1">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon gold"><i class="fa-solid fa-star"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Repeat Customers</div>
+                            <div class="value" id="sc2">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fa-solid fa-sterling-sign"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Avg. Spend</div>
+                            <div class="value" id="sc3">�0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="stat-info">
+                            <div class="label">New This Month</div>
+                            <div class="value" id="sc4">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>All Customers (<span id="custTableCount">0</span>)</h3>
+                    </div>
+                    <div class="card-body" style="padding:16px 20px;">
+                        <div class="table-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-search"></i>
+                                <input type="text" id="customerSearch" placeholder="Search by name, email or phone..."
+                                    oninput="renderCustomersTable(this.value)">
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Member Since</th>
+                                        <th>Orders</th>
+                                        <th>Total Spent</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/admin/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const customers = await getCustomers();
+            await renderCustomersTable('');
+            document.getElementById('customerCount').textContent = customers.length;
+            document.getElementById('custTableCount').textContent = customers.length;
+
+            document.getElementById('sc1').textContent = customers.length;
+            document.getElementById('sc2').textContent = customers.filter(c => c.orders > 1).length;
+            const avgSpend = customers.length ? customers.reduce((s, c) => s + c.spent, 0) / customers.length : 0;
+            document.getElementById('sc3').textContent = `£${avgSpend.toFixed(0)}`;
+
+            const thisMonth = new Date().toISOString().slice(0, 7);
+            document.getElementById('sc4').textContent = customers.filter(c => c.joined.startsWith(thisMonth)).length;
+        });
+    </script>
+</body>
+
+</html>

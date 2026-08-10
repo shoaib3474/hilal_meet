@@ -1,0 +1,71 @@
+
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hilal_meet_db
+    environment:
+      POSTGRES_DB: hilal_meet
+      POSTGRES_USER: hilal
+      POSTGRES_PASSWORD: hilal123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: hilal_meet
+      POSTGRES_USER: hilal
+      POSTGRES_PASSWORD: hilal123
+      WHATSAPP_API_BASE_URL: http://web:3000
+      WHATSAPP_SHOP_NAME: Pakeeza Hilal Meat
+      WHATSAPP_OWNER_NAME: Owner
+      WHATSAPP_PHONE: +44 208 503 5721
+      WHATSAPP_LOCATION: High Street North, London E12 6SB
+      WHATSAPP_HOURS: "Mon–Sat: 8:00am – 8:00pm | Sun: 9:00am – 6:00pm"
+      WHATSAPP_OWNER_WHATSAPP: 442085035721
+      WHATSAPP_PAYMENT: Cash on Delivery
+      WHATSAPP_DELIVERY: Delivery available in the local area
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+
+  whatsapp_bot:
+    build:
+      context: .
+      dockerfile: whatsapp_bot/Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      WHATSAPP_API_BASE_URL: http://web:3000
+      WHATSAPP_SHOP_NAME: Pakeeza Hilal Meat
+      WHATSAPP_OWNER_NAME: Owner
+      WHATSAPP_PHONE: +44 208 503 5721
+      WHATSAPP_LOCATION: High Street North, London E12 6SB
+      WHATSAPP_HOURS: "Mon–Sat: 8:00am – 8:00pm | Sun: 9:00am – 6:00pm"
+      WHATSAPP_OWNER_WHATSAPP: 442085035721
+      WHATSAPP_PAYMENT: Cash on Delivery
+      WHATSAPP_DELIVERY: Delivery available in the local area
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:

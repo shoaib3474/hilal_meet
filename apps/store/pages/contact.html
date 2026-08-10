@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i> info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/admin/" style="color:var(--gold-light);font-weight:600;"><i class="fa-solid fa-lock"></i> Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat</div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</a>
+                <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"></i> Lamb</a>
+                <a href="/shop?cat=beef"><i class="fa-solid fa-cow"></i> Beef</a>
+                <a href="/shop?cat=goat"><i class="fa-solid fa-paw"></i> Goat</a>
+                <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"></i> Marinated</a>
+                <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"></i> Offal &amp; Extras</a>
+                <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"></i> Grocery</a>
+                <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"></i> Frozen Foods</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30</p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1>Contact Us</h1>
+            <p>We'd love to hear from you - get in touch with our team</p>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span
+                    class="breadcrumb-sep">/</span><span>Contact</span></div>
+        </div>
+    </div>
+
+    <section class="contact-page">
+        <div class="container">
+            <div class="contact-layout">
+                <div class="contact-info">
+                    <h2>Get In Touch</h2>
+                    <p>Whether you have a question about our products, want to place a large order, or just want to say
+                        hello we're here to help!</p>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="contact-detail-info">
+                            <strong>Our Store</strong>
+                            <span>High Street North</span>
+                            <span>London E12 6SB</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon"><i class="fa-solid fa-phone"></i></div>
+                        <div class="contact-detail-info">
+                            <strong>Phone</strong>
+                            <a href="tel:02085035721">020 8503 5721</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon" style="background:#E8F5E9;"><i class="fa-brands fa-whatsapp"
+                                style="color:#25D366;"></i></div>
+                        <div class="contact-detail-info">
+                            <strong>WhatsApp</strong>
+                            <a href="https://wa.me/442085035721" target="_blank">020 8503 5721</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="contact-detail-info">
+                            <strong>Email</strong>
+                            <a href="mailto:info@pakeezahilalmeat.co.uk">info@pakeezahilalmeat.co.uk</a>
+                        </div>
+                    </div>
+
+                    <!-- Opening Hours -->
+                    <div class="contact-detail">
+                        <div class="contact-detail-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                        <div class="contact-detail-info">
+                            <strong>Free Local Delivery</strong>
+                            <span>Minimum order -30</span>
+                            <span>Covering E12 & surrounding postcodes</span>
+                        </div>
+                    </div>
+
+                    <!-- Opening Hours -->
+                    <div style="background:var(--bg);border-radius:var(--radius-lg);padding:20px;margin-top:24px;">
+                        <h4 style="font-weight:700;margin-bottom:14px;"><i class="fa-solid fa-clock"
+                                style="color:var(--primary);margin-right:8px;"></i>Opening Hours</h4>
+                        <table class="hours-table">
+                            <tr>
+                                <td>Monday - Friday</td>
+                                <td>8:00am - 8:00pm</td>
+                            </tr>
+                            <tr>
+                                <td>Saturday</td>
+                                <td>8:00am - 8:00pm</td>
+                            </tr>
+                            <tr>
+                                <td>Sunday</td>
+                                <td>9:00am - 6:00pm</td>
+                            </tr>
+                            <tr style="color:var(--primary);font-weight:600;">
+                                <td>Bank Holidays</td>
+                                <td>9:00am - 5:00pm</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Map Placeholder -->
+                    <div class="map-embed"
+                        style="margin-top:20px;position:relative;overflow:hidden;border-radius:var(--radius-lg);">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d9936.282573440706!2d0.0352!3d51.5322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a7a3a7c1a2a3%3A0x0!2sEast%20Ham%2C%20London!5e0!3m2!1sen!2suk!4v1620000000000!5m2!1sen!2suk"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.0!2d0.055!3d51.548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47d8a7d4e3b9c9a1%3A0x0!2sHigh%20Street%20North%2C%20London%20E12!5e0!3m2!1sen!2suk!4v1620000000001!5m2!1sen!2suk"
+                            width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+
+                    <!-- Social -->
+                    <div style="margin-top:20px;">
+                        <h4 style="font-weight:700;margin-bottom:12px;">Follow Us</h4>
+                        <div style="display:flex;gap:10px;">
+                            <a href="#"
+                                style="width:40px;height:40px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;"
+                                title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#"
+                                style="width:40px;height:40px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;"
+                                title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"
+                                style="width:40px;height:40px;background:#000;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;"
+                                title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                            <a href="https://wa.me/442085035721" target="_blank"
+                                style="width:40px;height:40px;background:#25D366;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;"
+                                title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                            <!-- <a href="https://wa.me/442085035721" target="_blank"
+                                style="width:40px;height:40px;background:#25D366;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;"
+                                title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTACT FORM -->
+                <div class="contact-form-card">
+                    <h3><i class="fa-solid fa-paper-plane" style="color:var(--primary);margin-right:8px;"></i>Send Us a
+                        Message</h3>
+                    <div id="formSuccess"
+                        style="display:none;background:var(--primary-bg);border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center;">
+                        <i class="fa-solid fa-circle-check"
+                            style="font-size:1.5rem;color:var(--primary);margin-bottom:8px;display:block;"></i>
+                        <strong style="color:var(--primary);">Message sent!</strong>
+                        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:4px;">We'll get back to you
+                            within 24 hours.</p>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" class="form-control" id="cFirstName" placeholder="Ahmed">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" class="form-control" id="cLastName" placeholder="Khan">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" class="form-control" id="cEmail" placeholder="ahmed@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" class="form-control" id="cPhone" placeholder="+44 7700 900123">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select class="form-control" id="cSubject">
+                            <option value="">Select a subject...</option>
+                            <option value="order">Order Enquiry</option>
+                            <option value="product">Product Information</option>
+                            <option value="delivery">Delivery Question</option>
+                            <option value="wholesale">Wholesale / Bulk Order</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Message *</label>
+                        <textarea class="form-control" id="cMessage" rows="5"
+                            placeholder="Tell us how we can help you..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-group" style="font-size:0.82rem;color:var(--text-muted);">
+                            <input type="checkbox" id="cConsent"> I consent to Pakeeza Hilal Meat storing my data to
+                            respond to my enquiry
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-block btn-lg" onclick="submitContactForm()">
+                        <i class="fa-solid fa-paper-plane"></i> Send Message
+                    </button>
+
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;">
+
+                        <!-- Call -->
+                        <a href="tel:02085035721"
+                            style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--radius);display:block;transition:var(--transition);"
+                            onmouseover="this.style.background='var(--primary-bg)'"
+                            onmouseout="this.style.background='var(--bg)'">
+                            <i class="fa-solid fa-phone"
+                                style="color:var(--primary);font-size:1.2rem;display:block;margin-bottom:5px;"></i>
+                            <div style="font-size:0.78rem;font-weight:600;">Call Us</div>
+                        </a>
+
+                        <!-- WhatsApp -->
+                        <a href="https://wa.me/442085035721" target="_blank"
+                            style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--radius);display:block;transition:var(--transition);"
+                            onmouseover="this.style.background='#E8F5E9'"
+                            onmouseout="this.style.background='var(--bg)'">
+                            <i class="fa-brands fa-whatsapp"
+                                style="color:#25D366;font-size:1.2rem;display:block;margin-bottom:5px;"></i>
+                            <div style="font-size:0.78rem;font-weight:600;">WhatsApp</div>
+                        </a>
+
+                        <!-- Email -->
+                        <a href="mailto:info@pakeezahilalmeat.co.uk"
+                            style="text-align:center;padding:14px;background:var(--bg);border-radius:var(--radius);display:block;transition:var(--transition);"
+                            onmouseover="this.style.background='var(--primary-bg)'"
+                            onmouseout="this.style.background='var(--bg)'">
+                            <i class="fa-solid fa-envelope"
+                                style="color:var(--primary);font-size:1.2rem;display:block;margin-bottom:5px;"></i>
+                            <div style="font-size:0.78rem;font-weight:600;">Email Us</div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>- 2026 Pakeeza Hilal Meat. All rights reserved. | London E12 6SB</p>
+                <p>- 2026 Pakeeza Hilal Meat. All rights reserved. | High Street North, London E12 6SB</p>
+                <div class="halal-cert"><i class="fa-solid fa-certificate"></i> Halal Certified</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        function submitContactForm() {
+            const firstName = document.getElementById('cFirstName').value.trim();
+            const lastName = document.getElementById('cLastName').value.trim();
+            const email = document.getElementById('cEmail').value.trim();
+            const message = document.getElementById('cMessage').value.trim();
+            const consent = document.getElementById('cConsent').checked;
+
+            if (!firstName || !lastName || !email || !message) {
+                showToast('Please fill in all required fields', 'error'); return;
+            }
+            if (!email.includes('@')) {
+                showToast('Please enter a valid email address', 'error'); return;
+            }
+            if (!consent) {
+                showToast('Please consent to data storage to send your message', 'error'); return;
+            }
+
+            // Show success (MVP - no actual email sending)
+            document.getElementById('formSuccess').style.display = 'block';
+            document.getElementById('cFirstName').value = '';
+            document.getElementById('cLastName').value = '';
+            document.getElementById('cEmail').value = '';
+            document.getElementById('cPhone').value = '';
+            document.getElementById('cMessage').value = '';
+            document.getElementById('cSubject').value = '';
+            document.getElementById('cConsent').checked = false;
+            showToast('Message sent successfully! We\'ll be in touch.', 'success');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i>
+                    info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/admin/" style="color:var(--gold-light);font-weight:600;"><i class="fa-solid fa-lock"></i>
+                    Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat
+                        </div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</a>
+                <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"></i> Lamb</a>
+                <a href="/shop?cat=beef"><i class="fa-solid fa-cow"></i> Beef</a>
+                <a href="/shop?cat=goat"><i class="fa-solid fa-paw"></i> Goat</a>
+                <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"></i> Marinated</a>
+                <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"></i> Offal &amp; Extras</a>
+                <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"></i> Grocery</a>
+                <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"></i> Frozen Foods</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
+            </p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fa-solid fa-basket-shopping" style="margin-right:12px;"></i>My Cart</h1>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><span>Cart</span>
+            </div>
+        </div>
+    </div>
+
+    <section class="cart-page">
+        <div class="container">
+            <div class="cart-layout" id="cartLayout">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>£ 2026 Pakeeza Hilal Meat. All rights reserved.</p>
+                <div class="halal-cert"><i class="fa-solid fa-certificate"></i> 100% Halal Certified</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCartPage();
+        });
+
+        function renderCartPage() {
+            const layout = document.getElementById('cartLayout');
+            if (!layout) return;
+
+            const cart = getCart();
+
+            if (cart.length === 0) {
+                layout.innerHTML = `
+            <div style="grid-column:1/-1;">
+                <div class="cart-empty">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <h3>Your cart is empty</h3>
+                    <p style="color:var(--text-muted);margin-bottom:20px;">Looks like you haven't added any items yet.</p>
+                    <a href="/shop" class="btn btn-primary btn-lg"><i class="fa-solid fa-shop"></i> Continue Shopping</a>
+                </div>
+            </div>`;
+                return;
+            }
+
+            const subtotal = getCartTotal();
+            const delivery = subtotal >= 30 ? 0 : 3.99;
+            const total = subtotal + delivery;
+
+
+            layout.innerHTML = `
+        <div>
+            <div class="cart-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartTableBody"></tbody>
+                </table>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+                <a href="/shop" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Continue Shopping</a>
+                <button class="btn btn-ghost" onclick="clearCartConfirm()"><i class="fa-solid fa-trash"></i> Clear Cart</button>
+            </div>
+        </div>
+        <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div class="coupon-input">
+                <input type="text" id="couponCode" placeholder="Coupon code (e.g. BBQ15)">
+                <button class="btn btn-outline btn-sm" onclick="applyCoupon()">Apply</button>
+            </div>
+            <div class="summary-row"><span class="label">Subtotal</span><span class="value">£${subtotal.toFixed(2)}</span></div>
+            <div class="summary-row"><span class="label">Delivery</span><span class="value ${delivery === 0 ? 'free' : ''}">${delivery === 0 ? 'FREE' : '£' + delivery.toFixed(2)}</span></div>
+            ${delivery > 0 ? `<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-info-circle"></i> Add £${(30 - subtotal).toFixed(2)} more for free delivery!</p>` : '<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-check-circle"></i> You qualify for free delivery!</p>'}
+                        ${delivery > 0 ? `<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-info-circle"></i> Add £${(30 - subtotal).toFixed(2)} more for free delivery!</p>` : '<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-check-circle"></i> You qualify for free delivery!</p>'}
+            <div id="couponRow"></div>
+            <div class="summary-row total"><span class="label">Total</span><span class="value">£<span id="cartTotalDisplay">${total.toFixed(2)}</span></span></div>
+            <a href="/checkout.html" class="btn btn-primary btn-block btn-lg" style="margin-top:16px;">
+                <i class="fa-solid fa-lock"></i> Proceed to Checkout
+            </a>
+            <div style="display:flex;justify-content:center;gap:10px;margin-top:12px;">
+                <span class="payment-icon" style="background:var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:0.72rem;font-weight:700;">VISA</span>
+                <span class="payment-icon" style="background:var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:0.72rem;font-weight:700;">MC</span>
+                <span class="payment-icon" style="background:var(--border);color:var(--text);border-radius:4px;padding:4px 10px;font-size:0.72rem;font-weight:700;">AMEX</span>
+            </div>
+        </div>`;
+
+            renderCartTable();
+        }
+
+        function renderCartTable() {
+            const tbody = document.getElementById('cartTableBody');
+            if (!tbody) return;
+            const cart = getCart();
+            tbody.innerHTML = cart.map(item => `
+        <tr>
+            <td>
+                <div class="cart-product">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
+                    <div class="details">
+                        <div class="name"><a href="/product?id=${item.id}" style="color:var(--dark);">${item.name}</a></div>
+                        <div class="weight" style="font-size:0.78rem;color:var(--text-muted);">${item.weight}</div>
+                    </div>
+                </div>
+            </td>
+            <td><strong>£${item.price.toFixed(2)}</strong></td>
+            <td>
+                <div class="cart-qty">
+                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})">-</button>
+                    <input class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
+                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})">+</button>
+                </div>
+            </td>
+            <td><strong>£${(item.price * item.qty).toFixed(2)}</strong></td>
+            <td><button class="cart-remove" onclick="removeItem(${item.id})" title="Remove"><i class="fa-solid fa-times"></i></button></td>
+        </tr>`).join('');
+        }
+
+        function updateQty(id, qty) {
+            if (qty < 1) { removeItem(id); return; }
+            updateCartQty(id, qty);
+            renderCartPage();
+        }
+
+        function removeItem(id) {
+            removeFromCart(id);
+            renderCartPage();
+            renderCartSidebar();
+        }
+
+        function clearCartConfirm() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                saveCart([]);
+                renderCartPage();
+                renderCartSidebar();
+            }
+        }
+
+        let discountAmount = 0;
+        function applyCoupon() {
+            const code = document.getElementById('couponCode')?.value.trim().toUpperCase();
+            if (code === 'BBQ15') {
+                discountAmount = getCartTotal() * 0.15;
+                showToast('Coupon applied! 15% discount added.', 'success');
+                const row = document.getElementById('couponRow');
+                if (row) row.innerHTML = `<div class="summary-row"><span class="label" style="color:var(--primary);">Discount (BBQ15)</span><span class="value" style="color:var(--primary);">-£${discountAmount.toFixed(2)}</span></div>`;
+                const totalEl = document.getElementById('cartTotalDisplay');
+                if (totalEl) {
+                    const subtotal = getCartTotal();
+                    const delivery = subtotal >= 30 ? 0 : 3.99;
+                    totalEl.textContent = (subtotal + delivery - discountAmount).toFixed(2);
+
+                }
+            } else {
+                showToast('Invalid coupon code', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

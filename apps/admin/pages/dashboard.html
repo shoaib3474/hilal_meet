@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Pakeeza Admin</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand">
+                <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="sidebar-logo-icon">
+                <div class="sidebar-brand-text">
+                    <div class="name">Pakeeza Hilal</div>
+                    <div class="label">Admin Panel</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-label">Main</div>
+                <a href="/admin/dashboard.html" class="sidebar-link active"><i class="fa-solid fa-chart-line"></i>
+                    Dashboard</a>
+                <a href="/admin/orders.html" class="sidebar-link"><i class="fa-solid fa-bag-shopping"></i> Orders <span
+                        class="badge red" id="sidebarPendingCount">0</span></a>
+                <a href="/admin/products.html" class="sidebar-link"><i class="fa-solid fa-boxes-stacked"></i>
+                    Products</a>
+                <a href="/admin/customers.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Customers</a>
+                <div class="sidebar-section-label">Store</div>
+                <a href="/" class="sidebar-link" target="_blank"><i class="fa-solid fa-store"></i> View Website</a>
+                <a href="/shop.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-shop"></i> View Shop</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user-info" onclick="adminLogout()">
+                    <div class="admin-avatar">A</div>
+                    <div class="info">
+                        <div class="name">Admin</div>
+                        <div class="role">Sign Out</div>
+                    </div>
+                    <i class="fa-solid fa-right-from-bracket" style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="admin-main">
+            <!-- HEADER -->
+            <div class="admin-header">
+                <button id="sidebarToggle" class="header-icon-btn" style="display:none;"><i
+                        class="fa-solid fa-bars"></i></button>
+                <div>
+                    <div class="admin-header-title">Dashboard</div>
+                    <div class="admin-header-subtitle" id="headerDate">Loading...</div>
+                </div>
+                <div class="header-actions">
+                    <a href="/" target="_blank" class="btn btn-ghost btn-sm">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> View Site
+                    </a>
+                    <button class="header-icon-btn"><i class="fa-regular fa-bell"></i>
+                        <div class="dot"></div>
+                    </button>
+                    <div class="admin-avatar" style="width:36px;height:36px;font-size:0.85rem;cursor:pointer;"
+                        title="Admin">A</div>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <!-- PAGE HEADER -->
+                <div class="page-header">
+                    <div>
+                        <h1>Welcome back, Admin! ??</h1>
+                        <p>Here's what's happening at Pakeeza Hilal Meat today</p>
+                    </div>
+                    <a href="/admin/orders.html" class="btn btn-primary"><i class="fa-solid fa-bag-shopping"></i> View
+                        Orders</a>
+                </div>
+
+                <!-- STATS GRID -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fa-solid fa-sterling-sign"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Total Revenue</div>
+                            <div class="value" id="statRevenue">�0</div>
+                            <div class="trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12% this month</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon gold"><i class="fa-solid fa-bag-shopping"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Total Orders</div>
+                            <div class="value" id="statOrders">0</div>
+                            <div class="trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8% this month</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fa-solid fa-boxes-stacked"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Products</div>
+                            <div class="value" id="statProducts">0</div>
+                            <div class="trend"><i class="fa-solid fa-circle"></i> Active listings</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-info">
+                            <div class="label">Customers</div>
+                            <div class="value" id="statCustomers">0</div>
+                            <div class="trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +5 this week</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD GRID -->
+                <div class="dashboard-grid">
+                    <!-- Revenue Chart -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-line"
+                                    style="color:var(--primary);margin-right:8px;"></i>Weekly Revenue</h3>
+                            <span style="font-size:0.78rem;color:var(--text-muted);">Last 7 days</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="revenueChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- Top Products -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-fire" style="color:var(--gold);margin-right:8px;"></i>Top Products
+                            </h3>
+                            <a href="/admin/products.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
+                        </div>
+                        <div class="card-body" style="padding:16px 20px;">
+                            <div class="top-products-list" id="topProductsList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT ORDERS + ACTIVITY -->
+                <div class="recent-grid">
+                    <!-- Recent Orders -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-bag-shopping"
+                                    style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
+                            <a href="/admin/orders.html" style="font-size:0.78rem;color:var(--primary);">View All ?</a>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Activity Feed -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-bell" style="color:var(--gold);margin-right:8px;"></i>Recent
+                                Activity</h3>
+                            <span style="font-size:0.78rem;color:var(--text-muted);">Live updates</span>
+                        </div>
+                        <div class="card-body" style="padding:16px 20px;">
+                            <div class="activity-feed" id="activityFeed"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="card" style="margin-top:20px;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-bolt" style="color:var(--gold);margin-right:8px;"></i>Quick Actions
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                            <a href="/admin/products.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add
+                                Product</a>
+                            <a href="/admin/orders.html" class="btn btn-outline"><i
+                                    class="fa-solid fa-bag-shopping"></i> Manage Orders</a>
+                            <a href="/admin/customers.html" class="btn btn-ghost"><i class="fa-solid fa-users"></i> View
+                                Customers</a>
+                            <a href="/shop.html" target="_blank" class="btn btn-ghost"><i class="fa-solid fa-store"></i>
+                                View Shop</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PENDING ORDERS BANNER -->
+                <div id="pendingBanner"
+                    style="display:none;background:var(--orange-bg,#FFF3E0);border:1px solid var(--orange);border-radius:var(--radius-lg);padding:16px 20px;margin-top:20px;display:flex;align-items:center;gap:12px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:var(--orange);font-size:1.2rem;"></i>
+                    <div>
+                        <strong style="color:var(--orange);" id="pendingText">You have pending orders!</strong>
+                        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:2px;">Please review and process
+                            pending orders promptly.</p>
+                    </div>
+                    <a href="/admin/orders.html" class="btn btn-sm"
+                        style="margin-left:auto;background:var(--orange);color:white;">View Orders</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/admin/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+            await updateDashboardStats();
+            await renderRecentOrders();
+            await renderTopProducts();
+            await renderActivity();
+            drawRevenueChart();
+
+            const orders = await getOrders();
+            const pending = orders.filter(o => o.status === 'pending').length;
+            const badge = document.getElementById('sidebarPendingCount');
+            if (badge) badge.textContent = pending;
+            if (pending > 0) {
+                const banner = document.getElementById('pendingBanner');
+                if (banner) {
+                    banner.style.display = 'flex';
+                    document.getElementById('pendingText').textContent = `You have ${pending} pending order${pending > 1 ? 's' : ''}!`;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

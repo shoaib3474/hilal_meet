@@ -1,0 +1,114 @@
+services:
+  - type: web
+    name: pakeeza-hilal
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 3000
+
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: hilal-meet-db
+          property: host
+
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: hilal-meet-db
+          property: port
+
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: hilal-meet-db
+          property: database
+
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: hilal-meet-db
+          property: user
+
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: hilal-meet-db
+          property: password
+
+      - key: WHATSAPP_SHOP_NAME
+        value: Pakeeza Hilal Meat
+
+      - key: WHATSAPP_OWNER_NAME
+        value: Owner
+
+      - key: WHATSAPP_PHONE
+        value: "+44 208 503 5721"
+
+      - key: WHATSAPP_LOCATION
+        value: "High Street North, London E12 6SB"
+
+      - key: WHATSAPP_HOURS
+        value: "Mon-Sat: 8:00am - 8:00pm | Sun: 9:00am - 6:00pm"
+
+      - key: WHATSAPP_OWNER_WHATSAPP
+        value: "442085035721"
+
+      - key: WHATSAPP_PAYMENT
+        value: Cash on Delivery
+
+      - key: WHATSAPP_DELIVERY
+        value: Delivery available in the local area
+
+  - type: worker
+    name: pakeeza-whatsapp
+    runtime: docker
+    dockerfilePath: ./whatsapp_bot/Dockerfile
+    dockerContext: .
+    plan: starter
+    autoDeployTrigger: commit
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: WHATSAPP_API_BASE_URL
+        fromService:
+          name: pakeeza-hilal
+          type: web
+          property: hostport
+
+      - key: WHATSAPP_SHOP_NAME
+        value: Pakeeza Hilal Meat
+
+      - key: WHATSAPP_OWNER_NAME
+        value: Owner
+
+      - key: WHATSAPP_PHONE
+        value: "+44 208 503 5721"
+
+      - key: WHATSAPP_LOCATION
+        value: "High Street North, London E12 6SB"
+
+      - key: WHATSAPP_HOURS
+        value: "Mon-Sat: 8:00am - 8:00pm | Sun: 9:00am - 6:00pm"
+
+      - key: WHATSAPP_OWNER_WHATSAPP
+        value: "442085035721"
+
+      - key: WHATSAPP_PAYMENT
+        value: Cash on Delivery
+
+      - key: WHATSAPP_DELIVERY
+        value: Delivery available in the local area
+
+databases:
+  - name: hilal-meet-db
+    plan: basic-256mb
+    postgresMajorVersion: "16"
+    databaseName: hilal_meet
+    user: hilal

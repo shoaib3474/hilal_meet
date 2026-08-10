@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i>
+                    info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/admin/" style="color:var(--gold-light);font-weight:600;"><i class="fa-solid fa-lock"></i>
+                    Admin</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat
+                        </div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</a>
+                <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"></i> Lamb</a>
+                <a href="/shop?cat=beef"><i class="fa-solid fa-cow"></i> Beef</a>
+                <a href="/shop?cat=goat"><i class="fa-solid fa-paw"></i> Goat</a>
+                <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"></i> Marinated</a>
+                <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"></i> Offal &amp; Extras</a>
+                <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"></i> Grocery</a>
+                <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"></i> Frozen Foods</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
+            </p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1>About Pakeeza Hilal Meat</h1>
+            <p>East Ham's trusted halal butcher since 2010</p>
+            <p>Your local halal shop on High Street North, E12 - fresh meat, poultry, grocery &amp; frozen foods</p>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><span>About
+                    Us</span></div>
+        </div>
+    </div>
+
+    <!-- OUR STORY -->
+    <section class="about-intro">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-img">
+                    <img src="https://images.unsplash.com/photo-1602543090842-f06d6a1095ba?w=700&q=80"
+                        alt="Pakeeza Hilal Meat Store">
+                </div>
+                <div class="about-content">
+                    <span class="badge"><i class="fa-solid fa-certificate" style="margin-right:5px;"></i> Halal
+                        Certified Since 2010</span>
+                    <h2>Your Local Halal Shop in E12</h2>
+                    <p>Pakeeza Hilal Meat is a family-run shop on High Street North, E12 6SB, proudly serving the local
+                        community with fresh halal meat, poultry, grocery essentials and frozen foods - all in one
+                        convenient place.</p>
+                    <p>Every piece of meat we sell is hand-slaughtered by a trained Muslim slaughterman following strict
+                        Islamic guidelines and certified by a recognised UK Halal authority. We source directly from
+                        trusted UK farms, ensuring the highest standards of freshness and quality.</p>
+                    <p>Whether you need fresh chicken, lamb, beef, grocery items or frozen foods - we've got you
+                        covered. We also offer free local delivery on all orders over -30 to E12 and surrounding
+                        postcodes. Call us on <a href="tel:02085035721"
+                            style="color:var(--primary);font-weight:600;">020 8503 5721</a>.</p>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <span class="num">15+</span>
+                            <div class="lbl">Years Serving</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="num">5000+</span>
+                            <div class="lbl">Happy Customers</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="num">-30</span>
+                            <div class="lbl">Free Delivery Min.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- OUR VALUES -->
+    <section style="padding:70px 0;background:var(--primary-dark);color:white;">
+        <div class="container">
+            <div class="section-title" style="margin-bottom:40px;">
+                <span class="subtitle" style="color:var(--gold-light);">Our Commitment</span>
+                <h2 style="color:white;">What We Stand <span style="color:var(--gold-light);">For</span></h2>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;">
+                <div style="text-align:center;padding:28px 20px;">
+                    <div
+                        style="width:70px;height:70px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.8rem;border:2px solid rgba(255,255,255,0.2);">
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+                    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:10px;">Halal Integrity</h3>
+                    <p style="font-size:0.88rem;opacity:0.8;line-height:1.7;">We never compromise on halal standards.
+                        Every animal is hand-slaughtered by a trained Muslim slaughterman, blessed with Bismillah, and
+                        certified by a recognised Halal authority.</p>
+                </div>
+                <div style="text-align:center;padding:28px 20px;">
+                    <div
+                        style="width:70px;height:70px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.8rem;border:2px solid rgba(255,255,255,0.2);">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:10px;">Freshness First</h3>
+                    <p style="font-size:0.88rem;opacity:0.8;line-height:1.7;">We receive fresh deliveries daily from
+                        trusted UK farms. We never sell frozen meat as fresh - everything is prepared the same day for
+                        maximum quality and taste.</p>
+                </div>
+                <div style="text-align:center;padding:28px 20px;">
+                    <div
+                        style="width:70px;height:70px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.8rem;border:2px solid rgba(255,255,255,0.2);">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:10px;">Community First</h3>
+                    <p style="font-size:0.88rem;opacity:0.8;line-height:1.7;">We're proud members of the East Ham
+                        community. We support local events, provide special Eid packages and always go the extra mile
+                        for our loyal customers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HALAL CERTIFICATE -->
+    <section style="padding:70px 0;background:var(--white);">
+        <div class="container">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;">
+                <div>
+                    <span
+                        style="display:inline-block;background:var(--primary-bg);color:var(--primary);padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;margin-bottom:14px;"><i
+                            class="fa-solid fa-certificate"></i> Certified Halal</span>
+                    <h2 style="font-size:1.8rem;font-weight:800;color:var(--dark);margin-bottom:16px;line-height:1.3;">
+                        Our Halal Certification</h2>
+                    <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.8;margin-bottom:14px;">All of our
+                        meat products carry the official Halal certification from a recognised UK Halal authority. Our
+                        certification covers the entire supply chain - from farm to shop counter.</p>
+                    <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.8;margin-bottom:20px;">Our
+                        certifying body conducts regular audits to ensure our practices meet the highest halal
+                        standards. We are fully transparent about our processes and welcome any questions.</p>
+                    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                        <div
+                            style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--primary-bg);border-radius:8px;">
+                            <i class="fa-solid fa-check-circle" style="color:var(--primary);"></i>
+                            <span
+                                style="font-size:0.85rem;font-weight:600;color:var(--primary);">Hand-slaughtered</span>
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--primary-bg);border-radius:8px;">
+                            <i class="fa-solid fa-check-circle" style="color:var(--primary);"></i>
+                            <span style="font-size:0.85rem;font-weight:600;color:var(--primary);">No Pork /
+                                Alcohol</span>
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--primary-bg);border-radius:8px;">
+                            <i class="fa-solid fa-check-circle" style="color:var(--primary);"></i>
+                            <span style="font-size:0.85rem;font-weight:600;color:var(--primary);">UK Certified</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align:center;">
+                    <div
+                        style="width:200px;height:200px;border:4px solid var(--primary);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;background:var(--primary-bg);">
+                        <i class="fa-solid fa-certificate"
+                            style="font-size:3rem;color:var(--primary);margin-bottom:8px;"></i>
+                        <div style="font-size:0.9rem;font-weight:800;color:var(--primary);">HALAL CERTIFIED</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted);">Since 2010</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEAM -->
+    <section style="padding:70px 0;background:var(--bg);">
+        <div class="container">
+            <div class="section-title">
+                <span class="subtitle">Meet the Team</span>
+                <h2>Our Expert <span>Butchers</span></h2>
+                <div class="section-divider"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+                <div
+                    style="background:white;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);text-align:center;">
+                    <div
+                        style="height:180px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;">
+                        <div
+                            style="width:90px;height:90px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;border:3px solid rgba(255,255,255,0.4);">
+                            AR</div>
+                    </div>
+                    <div style="padding:20px;">
+                        <h3 style="font-weight:700;margin-bottom:4px;">Abdul Rashid</h3>
+                        <div style="font-size:0.82rem;color:var(--primary);font-weight:600;margin-bottom:10px;">Master
+                            Butcher & Founder</div>
+                        <p style="font-size:0.83rem;color:var(--text-muted);">Over 20 years of experience in halal
+                            butchery. Abdul founded Pakeeza Hilal Meat with a vision to bring premium quality halal meat
+                            to East Ham.</p>
+                    </div>
+                </div>
+                <div
+                    style="background:white;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);text-align:center;">
+                    <div
+                        style="height:180px;background:linear-gradient(135deg,var(--gold),#b08c1a);display:flex;align-items:center;justify-content:center;">
+                        <div
+                            style="width:90px;height:90px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;border:3px solid rgba(255,255,255,0.4);">
+                            MK</div>
+                    </div>
+                    <div style="padding:20px;">
+                        <h3 style="font-weight:700;margin-bottom:4px;">Mohammed Karim</h3>
+                        <div style="font-size:0.82rem;color:var(--gold);font-weight:600;margin-bottom:10px;">Senior
+                            Butcher</div>
+                        <p style="font-size:0.83rem;color:var(--text-muted);">Specialising in lamb and goat cuts,
+                            Mohammed brings 15 years of expertise and a deep understanding of traditional butchery
+                            techniques.</p>
+                    </div>
+                </div>
+                <div
+                    style="background:white;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);text-align:center;">
+                    <div
+                        style="height:180px;background:linear-gradient(135deg,#1565C0,#1976D2);display:flex;align-items:center;justify-content:center;">
+                        <div
+                            style="width:90px;height:90px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;border:3px solid rgba(255,255,255,0.4);">
+                            YA</div>
+                    </div>
+                    <div style="padding:20px;">
+                        <h3 style="font-weight:700;margin-bottom:4px;">Yusuf Ahmed</h3>
+                        <div style="font-size:0.82rem;color:#1565C0;font-weight:600;margin-bottom:10px;">Delivery &
+                            Operations Manager</div>
+                        <p style="font-size:0.83rem;color:var(--text-muted);">Yusuf ensures every order reaches our
+                            customers fresh and on time. He manages our delivery team and online operations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="padding:60px 0;background:linear-gradient(135deg,var(--primary-dark),var(--primary));">
+        <div class="container">
+            <div style="text-align:center;color:white;">
+                <h2 style="font-size:2rem;font-weight:800;margin-bottom:12px;">Ready to Order?</h2>
+                <p style="opacity:0.9;margin-bottom:24px;font-size:1rem;">Browse our full range of premium halal meats
+                    and enjoy fast delivery to your door.</p>
+                <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+                    <a href="/shop" class="btn btn-gold btn-lg"><i class="fa-solid fa-shop"></i> Shop Now</a>
+                    <a href="/contact.html" class="btn btn-outline btn-lg"
+                        style="color:white;border-color:rgba(255,255,255,0.5);">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>- 2026 Pakeeza Hilal Meat. All rights reserved. | London E12 6SB</p>
+                <p>- 2026 Pakeeza Hilal Meat. All rights reserved. | High Street North, London E12 6SB</p>
+                <div class="halal-cert"><i class="fa-solid fa-certificate"></i> Halal Certified</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+</body>
+
+</html>

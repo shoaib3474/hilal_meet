@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | Pakeeza Admin</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand"><img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat"
+                    class="sidebar-logo-icon">
+                <div class="sidebar-brand-text">
+                    <div class="name">Pakeeza Hilal</div>
+                    <div class="label">Admin Panel</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-label">Main</div>
+                <a href="/admin/dashboard.html" class="sidebar-link"><i class="fa-solid fa-chart-line"></i>
+                    Dashboard</a>
+                <a href="/admin/orders.html" class="sidebar-link"><i class="fa-solid fa-bag-shopping"></i> Orders</a>
+                <a href="/admin/products.html" class="sidebar-link active"><i class="fa-solid fa-boxes-stacked"></i>
+                    Products</a>
+                <a href="/admin/customers.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Customers</a>
+                <div class="sidebar-section-label">Store</div>
+                <a href="/" class="sidebar-link" target="_blank"><i class="fa-solid fa-store"></i> View Website</a>
+                <a href="/shop.html" class="sidebar-link" target="_blank"><i class="fa-solid fa-shop"></i> View Shop</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user-info" onclick="adminLogout()">
+                    <div class="admin-avatar">A</div>
+                    <div class="info">
+                        <div class="name">Admin</div>
+                        <div class="role">Sign Out</div>
+                    </div><i class="fa-solid fa-right-from-bracket"
+                        style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+                </div>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <button id="sidebarToggle" class="header-icon-btn"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <div class="admin-header-title">Products</div>
+                    <div class="admin-header-subtitle">Manage your product catalogue</div>
+                </div>
+                <div class="header-actions">
+                    <a href="/shop.html" target="_blank" class="btn btn-ghost btn-sm"><i
+                            class="fa-solid fa-arrow-up-right-from-square"></i> View Shop</a>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Product Management</h1>
+                        <p>Add, edit or remove products from your store</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddProductModal()"><i class="fa-solid fa-plus"></i> Add
+                        New Product</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>All Products (<span id="productCount">0</span>)</h3>
+                    </div>
+                    <div class="card-body" style="padding:16px 20px;">
+                        <div class="table-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-search"></i>
+                                <input type="text" id="productSearch" placeholder="Search products..."
+                                    oninput="renderProductsTable(this.value, document.getElementById('categoryFilter').value)">
+                            </div>
+                            <select class="filter-select" id="categoryFilter"
+                                onchange="renderProductsTable(document.getElementById('productSearch').value, this.value)">
+                                <option value="all">All Categories</option>
+                                <option value="chicken">Chicken</option>
+                                <option value="lamb">Lamb</option>
+                                <option value="beef">Beef</option>
+                                <option value="goat">Goat</option>
+                                <option value="marinated">Marinated</option>
+                                <option value="offal">Offal</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Weight</th>
+                                        <th>Stock Toggle</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD/EDIT PRODUCT MODAL -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Product</h3>
+                <button class="modal-close" onclick="closeModal('productModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" class="form-control" id="pName" placeholder="e.g. Whole Chicken"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select class="form-control" id="pCategory" required>
+                                <option value="">Select category...</option>
+                                <option value="chicken">Chicken</option>
+                                <option value="lamb">Lamb</option>
+                                <option value="beef">Beef</option>
+                                <option value="goat">Goat</option>
+                                <option value="marinated">Marinated</option>
+                                <option value="offal">Offal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Regular Price (�) *</label>
+                            <input type="number" class="form-control" id="pPrice" placeholder="0.00" step="0.01" min="0"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sale Price (�) <span
+                                    style="font-size:0.72rem;color:var(--text-muted);">(optional)</span></label>
+                            <input type="number" class="form-control" id="pSalePrice"
+                                placeholder="Leave blank for no sale" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Weight / Unit *</label>
+                            <input type="text" class="form-control" id="pWeight"
+                                placeholder="e.g. 1kg, 500g, per piece">
+                        </div>
+                        <div class="form-group">
+                            <label>Badge <span
+                                    style="font-size:0.72rem;color:var(--text-muted);">(optional)</span></label>
+                            <select class="form-control" id="pBadge">
+                                <option value="">None</option>
+                                <option value="Best Seller">Best Seller</option>
+                                <option value="Sale">Sale</option>
+                                <option value="New">New</option>
+                                <option value="Popular">Popular</option>
+                                <option value="Premium">Premium</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" id="pDescription" rows="3"
+                            placeholder="Product description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" class="form-control" id="pImage" placeholder="https://..."
+                            oninput="previewImage(this.value)">
+                        <div class="form-hint">Paste a direct image URL (Unsplash, etc.)</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Gallery URLs <span
+                                style="font-size:0.72rem;color:var(--text-muted);">(optional)</span></label>
+                        <textarea class="form-control" id="pGallery" rows="4"
+                            placeholder="Add one image URL per line"></textarea>
+                        <div class="form-hint">You can use either the main image URL or add gallery photos. Leave the
+                            main image blank and the first gallery image will be used.</div>
+                        <img id="imgPreview" class="img-preview" style="display:none;margin-top:8px;"
+                            onerror="this.style.display='none'">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="pInStock" checked>
+                            <label for="pInStock">In Stock</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('productModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveProduct()"><i
+                        class="fa-solid fa-floppy-disk"></i> Save
+                    Product</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/admin/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await renderProductsTable();
+            const allProducts = await getProducts();
+            document.getElementById('productCount').textContent = allProducts.length;
+        });
+
+        function previewImage(url) {
+            const img = document.getElementById('imgPreview');
+            if (url) { img.src = url; img.style.display = 'block'; }
+            else img.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

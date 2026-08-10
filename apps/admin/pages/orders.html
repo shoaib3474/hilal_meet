@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders | Pakeeza Admin</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand"><img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat"
+                    class="sidebar-logo-icon">
+                <div class="sidebar-brand-text">
+                    <div class="name">Pakeeza Hilal</div>
+                    <div class="label">Admin Panel</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-label">Main</div>
+                <a href="/admin/dashboard.html" class="sidebar-link"><i class="fa-solid fa-chart-line"></i>
+                    Dashboard</a>
+                <a href="/admin/orders.html" class="sidebar-link active"><i class="fa-solid fa-bag-shopping"></i> Orders
+                    <span class="badge red" id="pendingBadge">0</span></a>
+                <a href="/admin/products.html" class="sidebar-link"><i class="fa-solid fa-boxes-stacked"></i>
+                    Products</a>
+                <a href="/admin/customers.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Customers</a>
+                <div class="sidebar-section-label">Store</div>
+                <a href="/" class="sidebar-link" target="_blank"><i class="fa-solid fa-store"></i> View Website</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user-info" onclick="adminLogout()">
+                    <div class="admin-avatar">A</div>
+                    <div class="info">
+                        <div class="name">Admin</div>
+                        <div class="role">Sign Out</div>
+                    </div><i class="fa-solid fa-right-from-bracket"
+                        style="color:rgba(255,255,255,0.4);font-size:0.9rem;"></i>
+                </div>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <button id="sidebarToggle" class="header-icon-btn"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <div class="admin-header-title">Orders</div>
+                    <div class="admin-header-subtitle">Manage customer orders</div>
+                </div>
+                <div class="header-actions">
+                    <a href="/shop.html" target="_blank" class="btn btn-ghost btn-sm"><i
+                            class="fa-solid fa-arrow-up-right-from-square"></i> View Shop</a>
+                </div>
+            </div>
+
+            <div class="admin-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Order Management</h1>
+                        <p>Review, update and manage all customer orders</p>
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <div
+                            style="background:var(--orange-bg,#FFF3E0);border-radius:var(--radius);padding:10px 16px;font-size:0.85rem;font-weight:600;color:var(--orange);">
+                            <i class="fa-solid fa-clock" style="margin-right:6px;"></i>Pending: <span
+                                id="pendingCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATUS FILTER TABS -->
+                <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" data-status="all" onclick="filterOrders('all', this)">All
+                        Orders</button>
+                    <button class="btn btn-ghost btn-sm" data-status="pending"
+                        onclick="filterOrders('pending', this)">Pending</button>
+                    <button class="btn btn-ghost btn-sm" data-status="processing"
+                        onclick="filterOrders('processing', this)">Processing</button>
+                    <button class="btn btn-ghost btn-sm" data-status="delivered"
+                        onclick="filterOrders('delivered', this)">Delivered</button>
+                    <button class="btn btn-ghost btn-sm" data-status="cancelled"
+                        onclick="filterOrders('cancelled', this)">Cancelled</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Orders (<span id="orderCount">0</span>)</h3>
+                    </div>
+                    <div class="card-body" style="padding:16px 20px;">
+                        <div class="table-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-search"></i>
+                                <input type="text" id="orderSearch" placeholder="Search by order ID or customer..."
+                                    oninput="renderOrdersTable(this.value, currentStatusFilter)">
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ORDER DETAIL MODAL -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bag-shopping" style="color:var(--primary);margin-right:8px;"></i>Order Details
+                </h3>
+                <button class="modal-close" onclick="closeModal('orderModal')"><i
+                        class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="orderDetailBody">
+                <!-- Rendered by JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal('orderModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/admin/js/admin.js"></script>
+    <script>
+        let currentStatusFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await renderOrdersTable('', 'all');
+            const orders = await getOrders();
+            const pending = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('pendingBadge').textContent = pending;
+            document.getElementById('orderCount').textContent = orders.length;
+        });
+
+        async function filterOrders(status, btn) {
+            currentStatusFilter = status;
+            document.querySelectorAll('[data-status]').forEach(b => {
+                b.className = b.dataset.status === status ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+            });
+            await renderOrdersTable(document.getElementById('orderSearch').value, status);
+            const orders = await getOrders();
+            const filtered = status === 'all' ? orders : orders.filter(o => o.status === status);
+            document.getElementById('orderCount').textContent = filtered.length;
+        }
+    </script>
+</body>
+
+</html>
