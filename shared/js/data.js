@@ -571,19 +571,31 @@ let __ordersCache = null;
 let __customersCache = null;
 let __cartCache = null;
 
-function apiRequestSync(method, url, body = null) {
-    const request = new XMLHttpRequest();
-    request.open(method, url, false);
+async function apiRequest(method, url, body = null) {
+    const options = {
+        method,
+        headers: {}
+    };
+
     if (body !== null) {
-        request.setRequestHeader('Content-Type', 'application/json');
-    }
-    request.send(body === null ? null : JSON.stringify(body));
-
-    if (request.status >= 200 && request.status < 300) {
-        return request.responseText ? JSON.parse(request.responseText) : null;
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
     }
 
-    throw new Error(request.responseText || 'Request failed');
+    const response = await fetch(url, options);
+    const text = await response.text();
+
+    if (!response.ok) {
+        let parsed;
+        try {
+            parsed = JSON.parse(text);
+        } catch (error) {
+            parsed = { error: text || response.statusText };
+        }
+        throw new Error(parsed.error || response.statusText || `HTTP ${response.status}`);
+    }
+
+    return text ? JSON.parse(text) : null;
 }
 
 function getApiBase() {
@@ -592,63 +604,70 @@ function getApiBase() {
         : '';
 }
 
-function seedData() {
+async function seedData() {
+    const base = getApiBase();
+
     try {
-        __productsCache = apiRequestSync('GET', `${getApiBase()}/api/products`) || PRODUCTS;
+        __productsCache = await apiRequest('GET', `${base}/api/products`) || PRODUCTS;
     } catch (error) {
         __productsCache = PRODUCTS;
     }
 
     try {
-        __ordersCache = apiRequestSync('GET', `${getApiBase()}/api/orders`) || DEMO_ORDERS;
+        __ordersCache = await apiRequest('GET', `${base}/api/orders`) || DEMO_ORDERS;
     } catch (error) {
         __ordersCache = DEMO_ORDERS;
     }
 
     try {
-        __customersCache = apiRequestSync('GET', `${getApiBase()}/api/customers`) || DEMO_CUSTOMERS;
+        __customersCache = await apiRequest('GET', `${base}/api/customers`) || DEMO_CUSTOMERS;
     } catch (error) {
         __customersCache = DEMO_CUSTOMERS;
     }
-
 }
 
 function getProducts() {
     if (__productsCache === null) {
-        seedData();
+        void seedData();
     }
     return __productsCache || PRODUCTS;
 }
 
 function saveProducts(products) {
     __productsCache = Array.isArray(products) ? products : [];
-    apiRequestSync('PUT', `${getApiBase()}/api/products`, __productsCache);
+    apiRequest('PUT', `${getApiBase()}/api/products`, __productsCache).catch(error => {
+        console.warn('Failed to save products to DB:', error);
+    });
     return __productsCache;
 }
 
 function getOrders() {
     if (__ordersCache === null) {
-        seedData();
+        void seedData();
     }
     return __ordersCache || DEMO_ORDERS;
 }
 
 function saveOrders(orders) {
     __ordersCache = Array.isArray(orders) ? orders : [];
-    apiRequestSync('PUT', `${getApiBase()}/api/orders`, __ordersCache);
+    apiRequest('PUT', `${getApiBase()}/api/orders`, __ordersCache).catch(error => {
+        console.warn('Failed to save orders to DB:', error);
+    });
     return __ordersCache;
 }
 
 function getCustomers() {
     if (__customersCache === null) {
-        seedData();
+        void seedData();
     }
     return __customersCache || DEMO_CUSTOMERS;
 }
 
 function saveCustomers(customers) {
     __customersCache = Array.isArray(customers) ? customers : [];
-    apiRequestSync('PUT', `${getApiBase()}/api/customers`, __customersCache);
+    apiRequest('PUT', `${getApiBase()}/api/customers`, __customersCache).catch(error => {
+        console.warn('Failed to save customers to DB:', error);
+    });
     return __customersCache;
 }
 
@@ -665,17 +684,44 @@ function getCartSessionId() {
 function getCart() {
     if (typeof window === 'undefined') return [];
     if (__cartCache === null) {
+        __cartCache = [];
         const sessionId = getCartSessionId();
-        if (sessionId) {
-            try {
-                const data = apiRequestSync('GET', `${getApiBase()}/api/cart?sessionId=${encodeURIComponent(sessionId)}`);
-                __cartCache = data && Array.isArray(data.items) ? data.items : [];
-            } catch (error) {
-                console.warn('Failed to load cart from DB:', error);
-                __cartCache = [];
-            }
-        } else {
-            __cartCache = [];
+        if (sessionId && typeof fetch === 'function') {
+            const url = `${getApiBase()}/api/cart?sessionId=${encodeURIComponent(sessionId)}`;
+            fetch(url)
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    __cartCache = data && Array.isArray(data.items) ? data.items : [];
+                    const dbProducts = getProducts();
+                    const resolvedCart = __cartCache.map(item => {
+                        const dbProduct = dbProducts.find(p => p.id === item.id);
+                        if (!dbProduct) return null;
+                        return {
+                            ...item,
+                            name: dbProduct.name,
+                            price: dbProduct.salePrice !== null && dbProduct.salePrice !== undefined ? dbProduct.salePrice : dbProduct.price,
+                            weight: dbProduct.weight,
+                            image: dbProduct.image || (Array.isArray(dbProduct.gallery) && dbProduct.gallery[0]) || item.image
+                        };
+                    }).filter(Boolean);
+
+                    if (resolvedCart.length !== __cartCache.length) {
+                        __cartCache = resolvedCart;
+                        saveCart(__cartCache);
+                    }
+
+                    if (typeof window.dispatchEvent === 'function') {
+                        window.dispatchEvent(new Event('cart:updated'));
+                    }
+                })
+                .catch(error => {
+                    console.warn('Failed to load cart from DB:', error);
+                });
         }
     }
 
@@ -705,14 +751,22 @@ function saveCart(cart) {
     __cartCache = Array.isArray(cart) ? cart : [];
     const sessionId = getCartSessionId();
     if (!sessionId) return;
-    try {
-        apiRequestSync('PUT', `${getApiBase()}/api/cart`, { sessionId, items: __cartCache });
+    fetch(`${getApiBase()}/api/cart`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ sessionId, items: __cartCache })
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         if (typeof window.dispatchEvent === 'function') {
             window.dispatchEvent(new Event('cart:updated'));
         }
-    } catch (error) {
+    }).catch(error => {
         console.warn('Failed to save cart to DB:', error);
-    }
+    });
 }
 
 function getCurrentUser() {
