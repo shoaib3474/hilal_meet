@@ -68,30 +68,31 @@ export async function renderTopProducts() {
         list.innerHTML = `<div style="text-align:center;color:red;">Failed to load top products</div>`;
     }
 }
-                <div class="name">${p.name}</div>
-                <div class="sales">${p.reviews} reviews</div>
-            </div >
-    <div class="top-item-revenue">£${(p.salePrice || p.price).toFixed(2)}</div>
-        </div > `).join('');
-}
 
-export function renderActivity() {
+export async function renderActivity() {
     const feed = document.getElementById('activityFeed');
     if (!feed) return;
-    const orders = getOrders().slice().reverse().slice(0, 5);
-    const activities = orders.map(o => ({
-        text: `New order < strong > ${ o.id }</strong > from ${ o.customer.name } `,
-        time: o.date,
-        type: o.status === 'cancelled' ? 'red' : o.status === 'delivered' ? '' : 'gold'
-    }));
-    feed.innerHTML = activities.map(a => `
-    < div class="activity-item" >
-            <div class="activity-dot ${a.type}"></div>
-            <div class="activity-text">
-                <div>${a.text}</div>
-                <div class="activity-time">${formatDate(a.time)}</div>
-            </div>
-        </div > `).join('');
+
+    try {
+        const orders = await getOrders();
+        const activities = orders.slice().reverse().slice(0, 5).map(o => ({
+            text: `New order <strong>${o.id}</strong> from ${o.customer.name}`,
+            time: o.date,
+            type: o.status === 'cancelled' ? 'red' : o.status === 'delivered' ? '' : 'gold'
+        }));
+
+        feed.innerHTML = activities.map(a => `
+            <div class="activity-item">
+                <div class="activity-dot ${a.type}"></div>
+                <div class="activity-text">
+                    <div>${a.text}</div>
+                    <div class="activity-time">${formatDate(a.time)}</div>
+                </div>
+            </div>`).join('');
+    } catch (error) {
+        console.error('Error rendering activity feed:', error);
+        feed.innerHTML = `<div style="text-align:center;color:red;">Failed to load activity feed</div>`;
+    }
 }
 
 export function drawRevenueChart() {
