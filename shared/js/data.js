@@ -562,6 +562,10 @@ const ADMIN_CREDENTIALS = {
     password: "Admin@123"
 };
 
+if (typeof window !== 'undefined') {
+    window.ADMIN_CREDENTIALS = ADMIN_CREDENTIALS;
+}
+
 let __productsCache = null;
 let __ordersCache = null;
 let __customersCache = null;
