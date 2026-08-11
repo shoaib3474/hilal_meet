@@ -113,8 +113,8 @@ export function drawRevenueChart() {
         y: pad.top + chartH - (v / max) * chartH
     }));
 
-    const pathD = points.map((p, i) => `${ i === 0 ? 'M' : 'L' }${ p.x },${ p.y } `).join(' ');
-    const areaD = `${ pathD } L${ points[points.length - 1].x },${ h - pad.bottom } L${ points[0].x },${ h - pad.bottom } Z`;
+    const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y} `).join(' ');
+    const areaD = `${pathD} L${points[points.length - 1].x},${h - pad.bottom} L${points[0].x},${h - pad.bottom} Z`;
 
     canvas.innerHTML = `
     < svg viewBox = "0 0 ${w} ${h}" xmlns = "http://www.w3.org/2000/svg" style = "width:100%;height:${h}px;" >
@@ -124,21 +124,19 @@ export function drawRevenueChart() {
                 <stop offset="100%" stop-color="#1B5E20" stop-opacity="0.02" />
             </linearGradient>
         </defs>
-            ${
-    [0, 0.25, 0.5, 0.75, 1].map(t => `
+            ${[0, 0.25, 0.5, 0.75, 1].map(t => `
                 <line x1="${pad.left}" y1="${pad.top + chartH * t}" x2="${w - pad.right}" y2="${pad.top + chartH * t}"
                     stroke="#E0E5E1" stroke-width="1" stroke-dasharray="4,4"/>
                 <text x="${pad.left - 8}" y="${pad.top + chartH * t + 4}" text-anchor="end" font-size="11" fill="#7A7A7A">
                     £${Math.round(max * (1 - t))}
                 </text>`).join('')
-}
+        }
             <path d="${areaD}" fill="url(#grad)"/>
             <path d="${pathD}" fill="none" stroke="#1B5E20" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-            ${ points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#1B5E20" stroke="white" stroke-width="2"/>`).join('') }
-            ${
-    labels.map((l, i) => `
+            ${points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#1B5E20" stroke="white" stroke-width="2"/>`).join('')}
+            ${labels.map((l, i) => `
                 <text x="${pad.left + (i / (data.length - 1)) * chartW}" y="${h - 8}"
                     text-anchor="middle" font-size="11" fill="#7A7A7A">${l}</text>`).join('')
-}
+        }
         </svg > `;
 }
