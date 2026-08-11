@@ -193,16 +193,58 @@
     <script type="module" src="/js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            renderCartPage();
+            void renderCartPage();
         });
 
-        function renderCartPage() {
+        async function renderCartPage() {
             const layout = document.getElementById('cartLayout');
             if (!layout) return;
 
-            const cart = getCart();
+            const sessionId = (typeof getCartSessionId === 'function') ? getCartSessionId() : (localStorage.getItem('ph_cart_session_id') || '');
+            let serverCart = [];
+            if (sessionId) {
+                try {
+                    const res = await fetch(`/api/cart?sessionId=${encodeURIComponent(sessionId)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        serverCart = Array.isArray(data.items) ? data.items : [];
+                    }
+                } catch (err) {
+                    console.warn('Failed to load cart from server:', err);
+                }
+            }
 
-            if (cart.length === 0) {
+            // If server returned only ids/qty, resolve product details
+            let resolvedCart = serverCart;
+            if (resolvedCart.length && resolvedCart[0] && !resolvedCart[0].name) {
+                try {
+                    const res = await fetch('/api/products');
+                    if (res.ok) {
+                        const products = await res.json();
+                        resolvedCart = serverCart.map(item => {
+                            const prod = products.find(p => p.id === item.id);
+                            if (!prod) return null;
+                            return {
+                                id: prod.id,
+                                name: prod.name,
+                                image: prod.image || item.image,
+                                price: prod.salePrice !== null && prod.salePrice !== undefined ? prod.salePrice : prod.price,
+                                weight: prod.weight,
+                                qty: item.qty
+                            };
+                        }).filter(Boolean);
+                    }
+                } catch (err) {
+                    console.warn('Failed to resolve product details:', err);
+                }
+            }
+
+            // Update local cache so other helpers (getCart/getCartTotal) work
+            window.__cartCache = Array.isArray(resolvedCart) ? resolvedCart : [];
+
+            const cart = window.__cartCache;
+
+            if (!cart || cart.length === 0) {
                 layout.innerHTML = `
             <div style="grid-column:1/-1;">
                 <div class="cart-empty">
@@ -212,13 +254,14 @@
                     <a href="/shop" class="btn btn-primary btn-lg"><i class="fa-solid fa-shop"></i> Continue Shopping</a>
                 </div>
             </div>`;
+                // notify UI
+                if (typeof updateCartCount === 'function') updateCartCount();
                 return;
             }
 
-            const subtotal = getCartTotal();
+            const subtotal = cart.reduce((s,i) => s + (i.price || 0) * (i.qty || 0), 0);
             const delivery = subtotal >= 30 ? 0 : 3.99;
             const total = subtotal + delivery;
-
 
             layout.innerHTML = `
         <div>
@@ -250,7 +293,6 @@
             <div class="summary-row"><span class="label">Subtotal</span><span class="value">£${subtotal.toFixed(2)}</span></div>
             <div class="summary-row"><span class="label">Delivery</span><span class="value ${delivery === 0 ? 'free' : ''}">${delivery === 0 ? 'FREE' : '£' + delivery.toFixed(2)}</span></div>
             ${delivery > 0 ? `<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-info-circle"></i> Add £${(30 - subtotal).toFixed(2)} more for free delivery!</p>` : '<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-check-circle"></i> You qualify for free delivery!</p>'}
-                        ${delivery > 0 ? `<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-info-circle"></i> Add £${(30 - subtotal).toFixed(2)} more for free delivery!</p>` : '<p style="font-size:0.78rem;color:var(--primary);padding:8px;background:var(--primary-bg);border-radius:8px;"><i class="fa-solid fa-check-circle"></i> You qualify for free delivery!</p>'}
             <div id="couponRow"></div>
             <div class="summary-row total"><span class="label">Total</span><span class="value">£<span id="cartTotalDisplay">${total.toFixed(2)}</span></span></div>
             <a href="/checkout.html" class="btn btn-primary btn-block btn-lg" style="margin-top:16px;">
@@ -269,7 +311,7 @@
         function renderCartTable() {
             const tbody = document.getElementById('cartTableBody');
             if (!tbody) return;
-            const cart = getCart();
+            const cart = Array.isArray(window.__cartCache) ? window.__cartCache : [];
             tbody.innerHTML = cart.map(item => `
         <tr>
             <td>
@@ -281,15 +323,15 @@
                     </div>
                 </div>
             </td>
-            <td><strong>£${item.price.toFixed(2)}</strong></td>
+            <td><strong>£${(item.price || 0).toFixed(2)}</strong></td>
             <td>
                 <div class="cart-qty">
                     <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})">-</button>
-                    <input class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
+                    <input id="cartQty${item.id}" name="cartQty${item.id}" class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
                     <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})">+</button>
                 </div>
             </td>
-            <td><strong>£${(item.price * item.qty).toFixed(2)}</strong></td>
+            <td><strong>£${((item.price || 0) * item.qty).toFixed(2)}</strong></td>
             <td><button class="cart-remove" onclick="removeItem(${item.id})" title="Remove"><i class="fa-solid fa-times"></i></button></td>
         </tr>`).join('');
         }

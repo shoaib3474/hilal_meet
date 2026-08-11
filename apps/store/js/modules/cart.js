@@ -143,26 +143,50 @@ export function addToCart(productId, qty = 1) {
         return false;
     }
 
-    const products = getProducts();
-    const product = products.find(p => p.id === productId);
-    if (!product) return false;
+    const products = typeof window.getProducts === 'function' ? getProducts() : [];
+    let product = products.find(p => p.id === productId);
 
-    let cart = getCart();
-    const existing = cart.find(i => i.id === productId);
-    if (existing) {
-        existing.qty += qty;
-    } else {
-        cart.push({
-            id: product.id,
-            name: product.name,
-            image: resolveProductImage(product),
-            price: product.salePrice || product.price,
-            weight: product.weight,
-            qty
-        });
+    const performAdd = (prod) => {
+        let cart = getCart();
+        const existing = cart.find(i => i.id === productId);
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            cart.push({
+                id: prod.id,
+                name: prod.name,
+                image: resolveProductImage(prod),
+                price: prod.salePrice || prod.price,
+                weight: prod.weight,
+                qty
+            });
+        }
+        saveCart(cart);
+        showToast(`${prod.name} added to cart!`, 'success');
+        if (typeof window.renderCartSidebar === 'function') {
+            try { window.renderCartSidebar(); } catch (e) {}
+        }
+    };
+
+    if (!product) {
+        // Try to fetch product list from API and resolve missing product asynchronously.
+        if (typeof fetch === 'function') {
+            fetch('/api/products')
+                .then(res => res.ok ? res.json() : Promise.reject(new Error('Failed to load products')))
+                .then(list => {
+                    product = Array.isArray(list) ? list.find(p => p.id === productId) : null;
+                    if (product) performAdd(product);
+                    else showToast('Product not found', 'error');
+                })
+                .catch(() => showToast('Unable to add product right now', 'error'));
+            // Return true because add is scheduled (async). UI will update when saved.
+            return true;
+        }
+
+        return false;
     }
-    saveCart(cart);
-    showToast(`${product.name} added to cart!`, 'success');
+
+    performAdd(product);
     return true;
 }
 

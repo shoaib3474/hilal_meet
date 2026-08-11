@@ -298,7 +298,7 @@
                 document.getElementById('pageTitle').textContent = `${catName}`;
                 document.getElementById('breadcrumbCat').textContent = catName;
             }
-            loadProducts(activeCat);
+            void loadProducts(activeCat);
         });
 
         window.addEventListener('popstate', () => {
@@ -312,15 +312,21 @@
                 document.getElementById('pageTitle').textContent = catName;
                 document.getElementById('breadcrumbCat').textContent = catName;
             }
-            loadProducts(activeCat);
+            void loadProducts(activeCat);
             if (typeof window.highlightActiveNav === 'function') {
                 window.highlightActiveNav();
             }
         });
 
-        function loadProducts(cat) {
-            let products = getProducts();
-            currentProducts = cat === 'all' ? products : products.filter(p => p.category === cat);
+        async function loadProducts(cat) {
+            try {
+                const res = await fetch('/api/products');
+                const products = res.ok ? await res.json() : [];
+                currentProducts = cat === 'all' ? products : products.filter(p => p.category === cat);
+            } catch (err) {
+                console.warn('Failed to load products from API:', err);
+                currentProducts = [];
+            }
             applySort();
         }
 
@@ -347,9 +353,9 @@
 
         function handleSearch(query) {
             const q = query.toLowerCase();
-            let products = getProducts();
+            let products = currentProducts || [];
             if (activeCat !== 'all') products = products.filter(p => p.category === activeCat);
-            currentProducts = q ? products.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)) : products;
+            currentProducts = q ? products.filter(p => p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q)) : products;
             applySort();
         }
     </script>
