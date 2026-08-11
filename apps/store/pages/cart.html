@@ -285,7 +285,7 @@
             <td>
                 <div class="cart-qty">
                     <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})">-</button>
-                    <input class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
+                    <input id="cartQty${item.id}" name="cartQty${item.id}" class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
                     <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})">+</button>
                 </div>
             </td>
