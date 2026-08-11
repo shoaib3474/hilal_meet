@@ -59,8 +59,8 @@ export async function renderProductsTable(filter = '', category = '') {
                 <td><strong>£${(p.salePrice || p.price).toFixed(2)}</strong>${p.salePrice ? `<br><small style="text-decoration:line-through;color:var(--text-muted);">£${p.price.toFixed(2)}</small>` : ''}</td>
                 <td>${p.weight}</td>
                 <td>
-                    <label class="toggle-switch" for="productStock${p.id}">
-                        <input id="productStock${p.id}" name="productStock${p.id}" type="checkbox" ${p.inStock ? 'checked' : ''} onchange="toggleStock(${p.id}, this.checked)">
+                    <label class="toggle-switch">
+                        <input type="checkbox" ${p.inStock ? 'checked' : ''} onchange="toggleStock(${p.id}, this.checked)">
                         <span class="toggle-slider"></span>
                     </label>
                 </td>
