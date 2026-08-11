@@ -18,6 +18,58 @@
     {
       "src": "/api/(.*)",
       "dest": "/api/index.js"
+    },
+    {
+      "src": "/shop/?",
+      "dest": "/shop.html"
+    },
+    {
+      "src": "/product/(.*)",
+      "dest": "/product.html"
+    },
+    {
+      "src": "/cart/?",
+      "dest": "/cart.html"
+    },
+    {
+      "src": "/checkout/?",
+      "dest": "/checkout.html"
+    },
+    {
+      "src": "/reset-demo/?",
+      "dest": "/reset-demo.html"
+    },
+    {
+      "src": "/about/?",
+      "dest": "/about.html"
+    },
+    {
+      "src": "/contact/?",
+      "dest": "/contact.html"
+    },
+    {
+      "src": "/account/(.*)",
+      "dest": "/account.html"
+    },
+    {
+      "src": "/admin/?",
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "/admin/dashboard/(.*)",
+      "dest": "/admin/dashboard.html"
+    },
+    {
+      "src": "/admin/orders/(.*)",
+      "dest": "/admin/orders.html"
+    },
+    {
+      "src": "/admin/products/(.*)",
+      "dest": "/admin/products.html"
+    },
+    {
+      "src": "/admin/customers/(.*)",
+      "dest": "/admin/customers.html"
     }
   ]
 }
