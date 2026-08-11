@@ -355,7 +355,7 @@
             const q = query.toLowerCase();
             let products = currentProducts || [];
             if (activeCat !== 'all') products = products.filter(p => p.category === activeCat);
-            currentProducts = q ? products.filter(p => p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q)) : products;
+            currentProducts = q ? products.filter(p => p.name.toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q)) : products;
             applySort();
         }
     </script>

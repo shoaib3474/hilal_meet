@@ -259,7 +259,7 @@
                 return;
             }
 
-            const subtotal = cart.reduce((s,i) => s + (i.price || 0) * (i.qty || 0), 0);
+            const subtotal = cart.reduce((s, i) => s + (i.price || 0) * (i.qty || 0), 0);
             const delivery = subtotal >= 30 ? 0 : 3.99;
             const total = subtotal + delivery;
 

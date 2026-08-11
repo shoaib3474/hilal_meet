@@ -164,7 +164,7 @@ export function addToCart(productId, qty = 1) {
         saveCart(cart);
         showToast(`${prod.name} added to cart!`, 'success');
         if (typeof window.renderCartSidebar === 'function') {
-            try { window.renderCartSidebar(); } catch (e) {}
+            try { window.renderCartSidebar(); } catch (e) { }
         }
     };
 
