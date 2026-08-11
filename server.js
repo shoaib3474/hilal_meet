@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const { pool, initializeDatabase } = require('./db');
 
 dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
