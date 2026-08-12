@@ -8,9 +8,21 @@ function getUserCartSessionId() {
     const userId = user?.id ?? user?.customerId ?? user?.email;
 
     // Cart is blocked when logged out (production requirement).
-    if (!userId) return '';
+    if (userId) {
+        return `cart-user-${userId}`;
+    }
 
-    return `cart-user-${userId}`;
+    // Support anonymous carts via a persistent session id in localStorage
+    try {
+        let sid = localStorage.getItem('ph_cart_session_id');
+        if (!sid) {
+            sid = `anon-${Date.now().toString(36)}-${Math.floor(Math.random() * 9000 + 1000)}`;
+            localStorage.setItem('ph_cart_session_id', sid);
+        }
+        return `cart-anon-${sid}`;
+    } catch (e) {
+        return '';
+    }
 }
 
 
@@ -60,23 +72,10 @@ export function getCart() {
     if (typeof window === 'undefined') return [];
 
     if (window.__cartCache === undefined || window.__cartCache === null) {
-        const sessionId = getUserCartSessionId();
-        if (!sessionId) {
-            window.__cartCache = [];
-            return window.__cartCache;
-        }
-
-        if (typeof window.apiRequestSync === 'function') {
-            try {
-                const data = window.apiRequestSync('GET', `${window.getApiBase()}/api/cart?sessionId=${encodeURIComponent(sessionId)}`);
-                window.__cartCache = data && Array.isArray(data.items) ? data.items : [];
-            } catch (error) {
-                console.warn('Failed to load cart from DB:', error);
-                window.__cartCache = [];
-            }
-        } else {
-            window.__cartCache = [];
-        }
+        // Initialize empty cache and trigger an async hydrate from server.
+        window.__cartCache = [];
+        void hydrateCartFromServer();
+        return window.__cartCache;
     }
 
 

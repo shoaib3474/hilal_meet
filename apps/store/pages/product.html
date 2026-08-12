@@ -244,7 +244,10 @@
 
             const price = product.salePrice || product.price;
             const savePct = product.salePrice ? Math.round((1 - product.salePrice / product.price) * 100) : null;
-            const stars = '?'.repeat(Math.round(product.rating)) + '?'.repeat(5 - Math.round(product.rating));
+            const filled = '<i class="fa-solid fa-star"></i>';
+            const empty = '<i class="fa-regular fa-star"></i>';
+            const filledCount = Math.max(0, Math.min(5, Math.round(product.rating || 0)));
+            const stars = filled.repeat(filledCount) + empty.repeat(5 - filledCount);
 
             document.getElementById('productDetailGrid').innerHTML = `
         <div class="product-gallery">
