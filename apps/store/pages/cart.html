@@ -200,49 +200,11 @@
             const layout = document.getElementById('cartLayout');
             if (!layout) return;
 
-            const sessionId = (typeof getCartSessionId === 'function') ? getCartSessionId() : (localStorage.getItem('ph_cart_session_id') || '');
-            let serverCart = [];
-            if (sessionId) {
-                try {
-                    const res = await fetch(`/api/cart?sessionId=${encodeURIComponent(sessionId)}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        serverCart = Array.isArray(data.items) ? data.items : [];
-                    }
-                } catch (err) {
-                    console.warn('Failed to load cart from server:', err);
-                }
+            if (typeof hydrateCartFromServer === 'function') {
+                await hydrateCartFromServer();
             }
 
-            // If server returned only ids/qty, resolve product details
-            let resolvedCart = serverCart;
-            if (resolvedCart.length && resolvedCart[0] && !resolvedCart[0].name) {
-                try {
-                    const res = await fetch('/api/products');
-                    if (res.ok) {
-                        const products = await res.json();
-                        resolvedCart = serverCart.map(item => {
-                            const prod = products.find(p => p.id === item.id);
-                            if (!prod) return null;
-                            return {
-                                id: prod.id,
-                                name: prod.name,
-                                image: prod.image || item.image,
-                                price: prod.salePrice !== null && prod.salePrice !== undefined ? prod.salePrice : prod.price,
-                                weight: prod.weight,
-                                qty: item.qty
-                            };
-                        }).filter(Boolean);
-                    }
-                } catch (err) {
-                    console.warn('Failed to resolve product details:', err);
-                }
-            }
-
-            // Update local cache so other helpers (getCart/getCartTotal) work
-            window.__cartCache = Array.isArray(resolvedCart) ? resolvedCart : [];
-
-            const cart = window.__cartCache;
+            const cart = typeof getCart === 'function' ? getCart() : [];
 
             if (!cart || cart.length === 0) {
                 layout.innerHTML = `
@@ -254,7 +216,6 @@
                     <a href="/shop" class="btn btn-primary btn-lg"><i class="fa-solid fa-shop"></i> Continue Shopping</a>
                 </div>
             </div>`;
-                // notify UI
                 if (typeof updateCartCount === 'function') updateCartCount();
                 return;
             }
