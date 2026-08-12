@@ -225,9 +225,19 @@
             return null;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const id = parseInt(getUrlParam('id'));
-            const product = getProducts().find(p => p.id === id);
+
+            let products = [];
+            try {
+                const res = await fetch('/api/products');
+                products = res.ok ? await res.json() : [];
+            } catch (err) {
+                console.warn('Failed to load products:', err);
+                products = [];
+            }
+
+            const product = products.find(p => p.id === id);
 
             if (!product) {
                 document.getElementById('productDetailGrid').innerHTML = `
@@ -322,8 +332,8 @@
             </div>
         </div>`;
 
-            // Related products
-            const related = getProducts().filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+            // Related products (from DB)
+            const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
             renderProductCards(related, 'relatedProducts');
         });
 
