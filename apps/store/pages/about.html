@@ -46,16 +46,25 @@
                 <nav class="main-nav">
                     <a href="/index.html" class="nav-link">Home</a>
                     <div class="nav-dropdown">
-                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
                         <div class="nav-dropdown-menu">
-                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
-                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
-                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
-                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
-                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
-                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
-                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
-                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
                         </div>
                     </div>
                     <a href="/about.html" class="nav-link">About</a>
@@ -93,7 +102,8 @@
                         </div>
                     </div>
                 </div>
-                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
             </div>
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
@@ -111,11 +121,14 @@
         <div class="search-box">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
-                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
             </div>
             <div class="search-input-wrap">
                 <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
-                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
             </div>
             <div id="searchResults" class="search-results-list"></div>
         </div>
@@ -126,7 +139,8 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-sidebar-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
-            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
         </div>
         <div class="cart-sidebar-body" id="cartSidebarBody"></div>
         <div class="cart-sidebar-footer">
@@ -137,7 +151,8 @@
             <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
             </p>
             <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
-            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
 
@@ -156,7 +171,8 @@
         <div class="container">
             <div class="about-grid">
                 <div class="about-img">
-                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=700&q=80" alt="Pakeeza Hilal Meat Store">
+                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=700&q=80"
+                        alt="Pakeeza Hilal Meat Store">
                 </div>
                 <div class="about-content">
                     <span class="badge"><i class="fa-solid fa-certificate" style="margin-right:5px;"></i> Halal
@@ -170,7 +186,8 @@
                         trusted UK farms, ensuring the highest standards of freshness and quality.</p>
                     <p>Whether you need fresh chicken, lamb, beef, grocery items or frozen foods - we've got you
                         covered. We also offer free local delivery on all orders over -30 to E12 and surrounding
-                        postcodes. Call us on <a href="tel:02085035721" style="color:var(--primary);font-weight:600;">020 8503 5721</a>.</p>
+                        postcodes. Call us on <a href="tel:02085035721"
+                            style="color:var(--primary);font-weight:600;">020 8503 5721</a>.</p>
                     <div class="about-stats">
                         <div class="stat-card">
                             <span class="num">15+</span>
@@ -316,7 +333,8 @@
                     and enjoy fast delivery to your door.</p>
                 <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
                     <a href="/shop" class="btn btn-gold btn-lg"><i class="fa-solid fa-shop"></i> Shop Now</a>
-                    <a href="/contact.html" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,0.5);">Contact Us</a>
+                    <a href="/contact.html" class="btn btn-outline btn-lg"
+                        style="color:white;border-color:rgba(255,255,255,0.5);">Contact Us</a>
                 </div>
             </div>
         </div>
