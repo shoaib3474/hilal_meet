@@ -1019,6 +1019,94 @@ textarea {
 }
 
 /* ============================================================
+   CATEGORIES SCROLLER / FILTER PILLS
+   ============================================================ */
+.categories-scroller {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px 6px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.categories-scroller::-webkit-scrollbar {
+    height: 8px;
+}
+
+.categories-scroller::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+}
+
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.filter-pill img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.filter-pill.active {
+    background: var(--primary);
+    color: white;
+    border-color: transparent;
+}
+
+.search-sort-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 12px 0;
+}
+
+.search-input-wrap.search-inline {
+    position: relative;
+    max-width: 420px;
+    width: 100%;
+}
+
+.search-input-wrap.search-inline input {
+    width: 100%;
+    padding: 10px 38px 10px 12px;
+}
+
+.search-input-wrap.search-inline .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.shop-sort {
+    padding: 8px 10px;
+}
+
+@media (max-width:767px) {
+    .search-sort-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input-wrap.search-inline {
+        max-width: 100%;
+    }
+}
+
+/* ============================================================
    PRODUCT CARDS
    ============================================================ */
 .products-section {
