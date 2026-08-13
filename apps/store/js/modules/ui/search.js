@@ -17,7 +17,7 @@ export function doSearch(query) {
     }
 
     resultsEl.innerHTML = matches.map(p => `
-        <div class="search-result-item" onclick="location.href='/product?id=${p.id}'">
+        <div class="search-result-item" onclick="location.href='/product/${p.id}'">
             <img src="${p.image}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100&q=60'">
             <div>
                 <div class="name">${p.name}</div>
