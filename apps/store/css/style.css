@@ -892,7 +892,7 @@ textarea {
 
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     grid-auto-rows: 1fr;
     /* ensure rows are equal height so cards don't overlap */
@@ -908,20 +908,18 @@ textarea {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.category-card:first-child {
-    grid-column: span 2;
-    height: 100%;
-    min-height: 280px;
-}
+/* Make all category cards uniform — remove featured-first sizing */
 
 /* Responsive adjustments for category cards */
+@media (max-width: 1200px) {
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 1024px) {
     .categories-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-
-    .category-card:first-child {
-        grid-column: span 2;
     }
 }
 

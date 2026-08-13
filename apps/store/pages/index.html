@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pakeeza Hilal Meat | Fresh Halal Butcher - East Ham, London</title>
-    <meta name="description" content="Pakeeza Hilal Meat - East Ham's premier halal butcher. Fresh chicken, lamb, beef, goat and marinated meats. Order online or visit us in East Ham, London.">
+    <meta name="description"
+        content="Pakeeza Hilal Meat - East Ham's premier halal butcher. Fresh chicken, lamb, beef, goat and marinated meats. Order online or visit us in East Ham, London.">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -47,16 +48,25 @@
                 <nav class="main-nav">
                     <a href="/index.html" class="nav-link">Home</a>
                     <div class="nav-dropdown">
-                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
                         <div class="nav-dropdown-menu">
-                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
-                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
-                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
-                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
-                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
-                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
-                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
-                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
                         </div>
                     </div>
                     <a href="/about.html" class="nav-link">About</a>
@@ -94,7 +104,8 @@
                         </div>
                     </div>
                 </div>
-                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
             </div>
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
@@ -112,11 +123,14 @@
         <div class="search-box">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
-                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
             </div>
             <div class="search-input-wrap">
                 <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
-                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
             </div>
             <div id="searchResults" class="search-results-list"></div>
         </div>
@@ -127,7 +141,8 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-sidebar-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
-            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
         </div>
         <div class="cart-sidebar-body" id="cartSidebarBody"></div>
         <div class="cart-sidebar-footer">
@@ -138,7 +153,8 @@
             <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
             </p>
             <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
-            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
 
@@ -149,7 +165,8 @@
         <div class="hero-slider">
             <!-- Slide 1 -->
             <div class="hero-slide active">
-                <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?w=1400&q=80');">
+                <div class="hero-slide-bg"
+                    style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?w=1400&q=80');">
                 </div>
                 <div class="container" style="position:relative;z-index:2;width:100%;">
                     <div class="hero-slide-content">
@@ -160,14 +177,16 @@
                         <div class="hero-btns">
                             <a href="/shop" class="btn btn-gold btn-lg"><i class="fa-solid fa-shop"></i> Shop
                                 Now</a>
-                            <a href="/about.html" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,0.5);">Learn More</a>
+                            <a href="/about.html" class="btn btn-outline btn-lg"
+                                style="color:white;border-color:rgba(255,255,255,0.5);">Learn More</a>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Slide 2 -->
             <div class="hero-slide">
-                <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=1400&q=80');">
+                <div class="hero-slide-bg"
+                    style="background-image:url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=1400&q=80');">
                 </div>
                 <div class="container" style="position:relative;z-index:2;width:100%;">
                     <div class="hero-slide-content">
@@ -178,14 +197,16 @@
                         <div class="hero-btns">
                             <a href="/shop?cat=lamb" class="btn btn-gold btn-lg"><i class="fa-solid fa-bone"></i>
                                 Shop Lamb</a>
-                            <a href="/shop?cat=beef" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,0.5);">Shop Beef</a>
+                            <a href="/shop?cat=beef" class="btn btn-outline btn-lg"
+                                style="color:white;border-color:rgba(255,255,255,0.5);">Shop Beef</a>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Slide 3 -->
             <div class="hero-slide">
-                <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1400&q=80');">
+                <div class="hero-slide-bg"
+                    style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1400&q=80');">
                 </div>
                 <div class="container" style="position:relative;z-index:2;width:100%;">
                     <div class="hero-slide-content">
@@ -196,7 +217,8 @@
                         <div class="hero-btns">
                             <a href="/shop?cat=marinated" class="btn btn-gold btn-lg"><i class="fa-solid fa-fire"></i>
                                 Shop Marinated</a>
-                            <a href="/contact.html" class="btn btn-outline btn-lg" style="color:white;border-color:rgba(255,255,255,0.5);">Contact Us</a>
+                            <a href="/contact.html" class="btn btn-outline btn-lg"
+                                style="color:white;border-color:rgba(255,255,255,0.5);">Contact Us</a>
                         </div>
                     </div>
                 </div>
@@ -255,26 +277,7 @@
         </div>
     </section>
 
-    <!-- ============================================================
-     FEATURED PRODUCTS
-     ============================================================ -->
-    <section class="products-section">
-        <div class="container">
-            <div class="section-title">
-                <span class="subtitle">Customer Favourites</span>
-                <h2>Best <span>Selling</span> Products</h2>
-                <p>Our most popular halal meats - loved by thousands of customers across East London.</p>
-                <p>Our most popular halal meats, poultry and groceries - loved by the E12 community.</p>
-                <div class="section-divider"></div>
-            </div>
-            <div class="products-grid" id="featuredProducts">
-                <!-- Rendered by JS -->
-            </div>
-            <div style="text-align:center;margin-top:40px;">
-                <a href="/shop" class="btn btn-outline btn-lg">View All Products <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </div>
-    </section>
+    <!-- Featured products section removed per request -->
 
     <!-- ============================================================
      WHY CHOOSE US
@@ -340,23 +343,7 @@
         </div>
     </section>
 
-    <!-- ============================================================
-     MARINATED MEATS FEATURE
-     ============================================================ -->
-    <section class="products-section" style="padding-top:50px;">
-        <div class="container">
-            <div class="section-title">
-                <span class="subtitle">Fresh Marinated Cuts</span>
-                <h2>Marinated & <span>BBQ</span> Favourites</h2>
-                <p>Our signature marinades packed with authentic spices. Prepared fresh in-store and sold as raw butcher
-                    cuts.</p>
-                <div class="section-divider"></div>
-            </div>
-            <div class="products-grid" id="marinatedProducts">
-                <!-- Rendered by JS -->
-            </div>
-        </div>
-    </section>
+    <!-- Marinated products feature removed per request -->
 
     <!-- ============================================================
      TESTIMONIALS
@@ -371,7 +358,9 @@
             <div class="testimonials-grid">
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars"> <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <div class="testimonial-stars"> <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i></div>
                     <p class="testimonial-text">Absolutely the best halal meat shop in East Ham. The lamb chops are
                         incredible and the service is always friendly. Been shopping here for 5 years and wouldn't go
                         anywhere else!</p>
@@ -386,7 +375,9 @@
                 </div>
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars"> <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <div class="testimonial-stars"> <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i></div>
                     <p class="testimonial-text">The marinated chicken tikka is out of this world! My family loves it
                         every time. Online ordering is easy and delivery was super fast. Highly recommend to everyone!
                     </p>
@@ -401,7 +392,9 @@
                 </div>
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars"> <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                    <div class="testimonial-stars"> <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                            class="fa-solid fa-star"></i></div>
                     <p class="testimonial-text">Fresh meat every time, never disappointed. The goat for our Eid
                         celebration was perfect. The butchers are very knowledgeable and helpful. Best in the area!</p>
                     <div class="testimonial-author">
@@ -429,36 +422,44 @@
             </div>
             <div class="blog-grid">
                 <div class="blog-card">
-                    <div class="blog-card-img"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80" alt="Lamb BBQ"></div>
+                    <div class="blog-card-img"><img
+                            src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80"
+                            alt="Lamb BBQ"></div>
                     <div class="blog-card-body">
                         <span class="blog-tag">BBQ Tips</span>
                         <h3><a href="#">The Perfect Halal BBQ: Marinades & Grilling Tips</a></h3>
                         <p style="font-size:0.85rem;color:var(--text-muted);">Learn how to get the most flavour from
                             your halal meats with our expert marinades and grilling techniques.</p>
-                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 5 Jun 2026</span><span><i class="fa-regular fa-clock"></i> 4 min read</span></div>
+                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 5 Jun 2026</span><span><i
+                                    class="fa-regular fa-clock"></i> 4 min read</span></div>
                         <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="blog-card">
-                    <div class="blog-card-img"><img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=600&q=80" alt="Lamb Cuts">
+                    <div class="blog-card-img"><img
+                            src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=600&q=80" alt="Lamb Cuts">
                     </div>
                     <div class="blog-card-body">
                         <span class="blog-tag">Guides</span>
                         <h3><a href="#">Understanding Halal Lamb Cuts: A Beginner's Guide</a></h3>
                         <p style="font-size:0.85rem;color:var(--text-muted);">From shoulder to leg, chops to shank -
                             understand which lamb cut is best for your dish.</p>
-                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 28 May 2026</span><span><i class="fa-regular fa-clock"></i> 5 min read</span></div>
+                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 28 May 2026</span><span><i
+                                    class="fa-regular fa-clock"></i> 5 min read</span></div>
                         <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
                 </div>
                 <div class="blog-card">
-                    <div class="blog-card-img"><img src="https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=600&q=80" alt="Whole Chicken"></div>
+                    <div class="blog-card-img"><img
+                            src="https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=600&q=80"
+                            alt="Whole Chicken"></div>
                     <div class="blog-card-body">
                         <span class="blog-tag">Recipes</span>
                         <h3><a href="#">5 Easy Halal Chicken Recipes for the Whole Family</a></h3>
                         <p style="font-size:0.85rem;color:var(--text-muted);">Quick, easy and delicious halal chicken
                             recipes that the whole family will love - ready in under 30 minutes.</p>
-                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 20 May 2026</span><span><i class="fa-regular fa-clock"></i> 3 min read</span></div>
+                        <div class="blog-meta"><span><i class="fa-regular fa-calendar"></i> 20 May 2026</span><span><i
+                                    class="fa-regular fa-clock"></i> 3 min read</span></div>
                         <a href="#" class="read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
                 </div>
@@ -472,7 +473,8 @@
     <section class="newsletter-section">
         <div class="container">
             <div class="newsletter-inner">
-                <i class="fa-solid fa-envelope-open-text" style="font-size:2rem;color:var(--primary);margin-bottom:12px;display:block;"></i>
+                <i class="fa-solid fa-envelope-open-text"
+                    style="font-size:2rem;color:var(--primary);margin-bottom:12px;display:block;"></i>
                 <h2>Stay in the Loop</h2>
                 <p>Subscribe for exclusive deals, new products and special Eid offers.</p>
                 <div class="newsletter-form" id="newsletterForm">
