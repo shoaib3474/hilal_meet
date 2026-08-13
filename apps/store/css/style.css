@@ -689,7 +689,7 @@ textarea {
     min-height: 580px;
     overflow: hidden;
     background: var(--primary-dark);
-    padding-bottom: 50px;
+    padding-bottom: 80px; /* make room for controls below slider on small screens */
 }
 
 .hero-slider {
@@ -770,7 +770,7 @@ textarea {
 
 .hero-controls {
     position: absolute;
-    bottom: 24px;
+    bottom: -18px; /* position controls slightly below slider to avoid overlap */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -3738,6 +3738,26 @@ textarea {
 
     .hero-dot.active {
         width: 24px;
+    }
+
+    /* Keep hero controls and dots from overlapping content on small screens */
+    @media (max-width: 767px) {
+        .hero {
+            padding-bottom: 88px;
+        }
+        .hero-slider {
+            height: 420px;
+        }
+        .hero-controls {
+            bottom: -28px;
+        }
+        .hero-dot {
+            width: 7px;
+            height: 7px;
+        }
+        .hero-dot.active {
+            width: 20px;
+        }
     }
 
     /* Hero trust */
