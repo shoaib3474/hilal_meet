@@ -46,25 +46,16 @@
                 <nav class="main-nav">
                     <a href="/index.html" class="nav-link">Home</a>
                     <div class="nav-dropdown">
-                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
-                                style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
                         <div class="nav-dropdown-menu">
-                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
-                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
-                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
-                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
-                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
-                                    style="width:20px;color:var(--primary);"></i> Beef</a>
-                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
-                                    style="width:20px;color:var(--primary);"></i> Goat</a>
-                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
-                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
-                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
-                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
-                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
-                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
-                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
-                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
                         </div>
                     </div>
                     <a href="/about.html" class="nav-link">About</a>
@@ -102,8 +93,7 @@
                         </div>
                     </div>
                 </div>
-                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
-                        class="fa-solid fa-times"></i></button>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
@@ -121,14 +111,11 @@
         <div class="search-box">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
-                <button id="searchClose"
-                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
-                        class="fa-solid fa-times"></i></button>
+                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="search-input-wrap">
                 <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
-                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
-                        class="fa-solid fa-search"></i></button>
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
             </div>
             <div id="searchResults" class="search-results-list"></div>
         </div>
@@ -139,8 +126,7 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-sidebar-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
-            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
-                    class="fa-solid fa-times"></i></button>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
         </div>
         <div class="cart-sidebar-body" id="cartSidebarBody"></div>
         <div class="cart-sidebar-footer">
@@ -151,16 +137,14 @@
             <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
             </p>
             <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
-            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
-                    class="fa-solid fa-arrow-right"></i></a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
 
     <div class="page-hero">
         <div class="container">
             <h1 id="pageHeading">My Account</h1>
-            <div class="breadcrumb"><a href="/index.html">Home</a><span
-                    class="breadcrumb-sep">/</span><span>Account</span></div>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><span>Account</span></div>
         </div>
     </div>
 
@@ -170,8 +154,7 @@
             <div id="authForms">
                 <div class="auth-card">
                     <div class="auth-logo">
-                        <div
-                            style="width:60px;height:60px;background:var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;font-weight:800;color:white;">
+                        <div style="width:60px;height:60px;background:var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;font-weight:800;color:white;">
                             PH</div>
                     </div>
                     <div class="auth-tabs">
@@ -183,8 +166,7 @@
                     <div id="loginForm">
                         <h2>Welcome Back</h2>
                         <p class="subtitle">Sign in to your Pakeeza Hilal Meat account</p>
-                        <div id="loginError"
-                            style="background:var(--red-bg,#FFEBEE);color:var(--red);padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px;display:none;">
+                        <div id="loginError" style="background:var(--red-bg,#FFEBEE);color:var(--red);padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px;display:none;">
                         </div>
                         <div class="form-group">
                             <label>Email Address</label>
@@ -194,20 +176,17 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label style="display:flex;justify-content:space-between;"><span>Password</span><a href="#"
-                                    class="forgot-link">Forgot password?</a></label>
+                            <label style="display:flex;justify-content:space-between;"><span>Password</span><a href="#" class="forgot-link">Forgot password?</a></label>
                             <div class="input-icon">
                                 <i class="fa-solid fa-lock"></i>
                                 <input type="password" class="form-control" id="loginPassword" placeholder="Password">
-                                <span class="password-toggle" onclick="togglePass('loginPassword', this)"><i
-                                        class="fa-regular fa-eye"></i></span>
+                                <span class="password-toggle" onclick="togglePass('loginPassword', this)"><i class="fa-regular fa-eye"></i></span>
                             </div>
                         </div>
                         <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()" style="margin-top:8px;">
                             <i class="fa-solid fa-right-to-bracket"></i> Sign In
                         </button>
-                        <div
-                            style="margin-top:14px;padding:12px;background:var(--bg);border-radius:8px;font-size:0.78rem;color:var(--text-muted);">
+                        <div style="margin-top:14px;padding:12px;background:var(--bg);border-radius:8px;font-size:0.78rem;color:var(--text-muted);">
                             <strong>Demo:</strong> customer@example.com / Pass@123
                         </div>
                         <p class="auth-switch">Don't have an account? <a onclick="switchTab('register')">Register
@@ -218,8 +197,7 @@
                     <div id="registerForm" style="display:none;">
                         <h2>Create Account</h2>
                         <p class="subtitle">Join Pakeeza Hilal Meat and enjoy exclusive benefits</p>
-                        <div id="regError"
-                            style="background:var(--red-bg,#FFEBEE);color:var(--red);padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px;display:none;">
+                        <div id="regError" style="background:var(--red-bg,#FFEBEE);color:var(--red);padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:14px;display:none;">
                         </div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                             <div class="form-group" style="margin:0;">
@@ -249,16 +227,13 @@
                             <label>Password</label>
                             <div class="input-icon">
                                 <i class="fa-solid fa-lock"></i>
-                                <input type="password" class="form-control" id="regPassword"
-                                    placeholder="Minimum 8 characters">
-                                <span class="password-toggle" onclick="togglePass('regPassword', this)"><i
-                                        class="fa-regular fa-eye"></i></span>
+                                <input type="password" class="form-control" id="regPassword" placeholder="Minimum 8 characters">
+                                <span class="password-toggle" onclick="togglePass('regPassword', this)"><i class="fa-regular fa-eye"></i></span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="checkbox-group" style="font-size:0.82rem;color:var(--text-muted);">
-                                <input type="checkbox" id="termsCheck"> I agree to the <a href="#"
-                                    style="color:var(--primary);">Terms & Conditions</a>
+                                <input type="checkbox" id="termsCheck"> I agree to the <a href="#" style="color:var(--primary);">Terms & Conditions</a>
                             </label>
                         </div>
                         <button class="btn btn-primary btn-block btn-lg" onclick="doRegister()">
@@ -272,47 +247,35 @@
             <!-- LOGGED IN DASHBOARD -->
             <div id="userDashboard" style="display:none;">
                 <div style="max-width:800px;margin:0 auto;">
-                    <div
-                        style="display:flex;align-items:center;gap:16px;background:white;border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;">
-                        <div style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;"
-                            id="userAvatarDash">A</div>
+                    <div style="display:flex;align-items:center;gap:16px;background:white;border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;">
+                        <div style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;" id="userAvatarDash">A</div>
                         <div>
                             <h2 id="userNameDash" style="font-size:1.2rem;font-weight:800;">Welcome back!</h2>
                             <p id="userEmailDash" style="color:var(--text-muted);font-size:0.88rem;"></p>
                         </div>
-                        <button onclick="logout()" class="btn btn-ghost" style="margin-left:auto;"><i
-                                class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                        <button onclick="logout()" class="btn btn-ghost" style="margin-left:auto;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                     </div>
 
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
-                        <a href="/shop"
-                            style="background:white;border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow);display:block;transition:var(--transition);"
-                            onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-                            <i class="fa-solid fa-shop"
-                                style="font-size:1.6rem;color:var(--primary);margin-bottom:8px;display:block;"></i>
+                        <a href="/shop" style="background:white;border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow);display:block;transition:var(--transition);" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                            <i class="fa-solid fa-shop" style="font-size:1.6rem;color:var(--primary);margin-bottom:8px;display:block;"></i>
                             <div style="font-weight:700;">Shop Now</div>
                             <div style="font-size:0.78rem;color:var(--text-muted);">Browse products</div>
                         </a>
-                        <a href="/cart.html"
-                            style="background:white;border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow);display:block;transition:var(--transition);"
-                            onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
-                            <i class="fa-solid fa-basket-shopping"
-                                style="font-size:1.6rem;color:var(--gold);margin-bottom:8px;display:block;"></i>
+                        <a href="/cart.html" style="background:white;border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow);display:block;transition:var(--transition);" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                            <i class="fa-solid fa-basket-shopping" style="font-size:1.6rem;color:var(--gold);margin-bottom:8px;display:block;"></i>
                             <div style="font-weight:700;">My Cart</div>
                             <div style="font-size:0.78rem;color:var(--text-muted);">View cart</div>
                         </a>
-                        <div
-                            style="background:white;border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow);">
-                            <i class="fa-solid fa-phone"
-                                style="font-size:1.6rem;color:var(--primary);margin-bottom:8px;display:block;"></i>
+                        <div style="background:white;border-radius:var(--radius-lg);padding:20px;text-align:center;box-shadow:var(--shadow);">
+                            <i class="fa-solid fa-phone" style="font-size:1.6rem;color:var(--primary);margin-bottom:8px;display:block;"></i>
                             <div style="font-weight:700;">020 8503 5721</div>
                             <div style="font-size:0.78rem;color:var(--text-muted);">Contact us</div>
                         </div>
                     </div>
 
                     <div style="background:white;border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);">
-                        <h3 style="font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-clock-rotate-left"
-                                style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
+                        <h3 style="font-weight:700;margin-bottom:16px;"><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
                         <div id="userOrdersHistory"></div>
                     </div>
                 </div>

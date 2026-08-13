@@ -46,25 +46,16 @@
                 <nav class="main-nav">
                     <a href="/index.html" class="nav-link">Home</a>
                     <div class="nav-dropdown">
-                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
-                                style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
                         <div class="nav-dropdown-menu">
-                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
-                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
-                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
-                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
-                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
-                                    style="width:20px;color:var(--primary);"></i> Beef</a>
-                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
-                                    style="width:20px;color:var(--primary);"></i> Goat</a>
-                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
-                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
-                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
-                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
-                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
-                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
-                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
-                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
                         </div>
                     </div>
                     <a href="/about.html" class="nav-link">About</a>
@@ -102,8 +93,7 @@
                         </div>
                     </div>
                 </div>
-                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
-                        class="fa-solid fa-times"></i></button>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
@@ -121,14 +111,11 @@
         <div class="search-box">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
-                <button id="searchClose"
-                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
-                        class="fa-solid fa-times"></i></button>
+                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
             </div>
             <div class="search-input-wrap">
                 <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
-                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
-                        class="fa-solid fa-search"></i></button>
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
             </div>
             <div id="searchResults" class="search-results-list"></div>
         </div>
@@ -139,8 +126,7 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-sidebar-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
-            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
-                    class="fa-solid fa-times"></i></button>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
         </div>
         <div class="cart-sidebar-body" id="cartSidebarBody"></div>
         <div class="cart-sidebar-footer">
@@ -151,16 +137,14 @@
             <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
             </p>
             <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
-            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
-                    class="fa-solid fa-arrow-right"></i></a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
 
     <div class="page-hero">
         <div class="container">
             <h1><i class="fa-solid fa-lock" style="margin-right:12px;"></i>Secure Checkout</h1>
-            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><a
-                    href="/cart.html">Cart</a><span class="breadcrumb-sep">/</span><span>Checkout</span></div>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><a href="/cart.html">Cart</a><span class="breadcrumb-sep">/</span><span>Checkout</span></div>
         </div>
     </div>
 
@@ -168,8 +152,7 @@
     <div class="modal-overlay" id="successModal">
         <div class="modal" style="max-width:480px;">
             <div class="modal-body" style="text-align:center;padding:40px;">
-                <div
-                    style="width:72px;height:72px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:var(--primary);">
+                <div style="width:72px;height:72px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:var(--primary);">
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
                 <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:10px;">Order Placed!</h2>
@@ -206,13 +189,11 @@
                             </div>
                             <div class="form-group">
                                 <label>Email Address *</label>
-                                <input type="email" class="form-control" id="email" placeholder="ahmed@example.com"
-                                    required>
+                                <input type="email" class="form-control" id="email" placeholder="ahmed@example.com" required>
                             </div>
                             <div class="form-group">
                                 <label>Phone Number *</label>
-                                <input type="tel" class="form-control" id="phone" placeholder="+44 7700 900123"
-                                    required>
+                                <input type="tel" class="form-control" id="phone" placeholder="+44 7700 900123" required>
                             </div>
                         </div>
                     </div>
@@ -221,12 +202,10 @@
                     <div class="checkout-section">
                         <h3><span class="step-num">2</span> Delivery Method</h3>
                         <div class="delivery-options">
-                            <label class="delivery-option selected" id="optDelivery"
-                                onclick="selectDelivery('delivery')">
+                            <label class="delivery-option selected" id="optDelivery" onclick="selectDelivery('delivery')">
                                 <input type="radio" name="deliveryMethod" value="delivery" checked>
                                 <div class="option-info">
-                                    <strong><i class="fa-solid fa-truck"
-                                            style="color:var(--primary);margin-right:6px;"></i> Home Delivery</strong>
+                                    <strong><i class="fa-solid fa-truck" style="color:var(--primary);margin-right:6px;"></i> Home Delivery</strong>
                                     <span style="font-size:0.78rem;color:var(--text-muted);">Delivered to your
                                         door</span>
                                     <div class="price" id="deliveryPrice">£3.99 (Free over £30)</div>
@@ -236,8 +215,7 @@
                             <label class="delivery-option" id="optCollection" onclick="selectDelivery('collection')">
                                 <input type="radio" name="deliveryMethod" value="collection">
                                 <div class="option-info">
-                                    <strong><i class="fa-solid fa-store"
-                                            style="color:var(--gold);margin-right:6px;"></i> Click & Collect</strong>
+                                    <strong><i class="fa-solid fa-store" style="color:var(--gold);margin-right:6px;"></i> Click & Collect</strong>
                                     <span style="font-size:0.78rem;color:var(--text-muted);">East Ham store
                                         pickup</span>
                                     <div class="price" style="color:var(--primary);">FREE</div>
@@ -250,13 +228,11 @@
                             <div class="form-grid">
                                 <div class="form-group full">
                                     <label>Address Line 1 *</label>
-                                    <input type="text" class="form-control" id="address1"
-                                        placeholder="123 Green Street">
+                                    <input type="text" class="form-control" id="address1" placeholder="123 Green Street">
                                 </div>
                                 <div class="form-group full">
                                     <label>Address Line 2</label>
-                                    <input type="text" class="form-control" id="address2"
-                                        placeholder="Flat/Apartment (optional)">
+                                    <input type="text" class="form-control" id="address2" placeholder="Flat/Apartment (optional)">
                                 </div>
                                 <div class="form-group">
                                     <label>City *</label>
@@ -271,15 +247,13 @@
                         </div>
 
                         <!-- Collection info (hidden by default) -->
-                        <div id="collectionInfo"
-                            style="display:none;background:var(--primary-bg);border-radius:var(--radius);padding:16px;">
+                        <div id="collectionInfo" style="display:none;background:var(--primary-bg);border-radius:var(--radius);padding:16px;">
                             <p style="font-size:0.88rem;color:var(--primary);"><i class="fa-solid fa-location-dot"></i>
                                 <strong>Pakeeza Hilal Meat</strong>
                             </p>
                             <p style="font-size:0.85rem;color:var(--text-muted);">High Street North, London E12 6SB</p>
                             <p style="font-size:0.85rem;color:var(--text-muted);">High Street North, London E12 6SB</p>
-                            <p style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;"><i
-                                    class="fa-solid fa-clock"></i> Ready for collection: Same day (orders before 5pm)
+                            <p style="font-size:0.82rem;color:var(--text-muted);margin-top:6px;"><i class="fa-solid fa-clock"></i> Ready for collection: Same day (orders before 5pm)
                             </p>
                         </div>
                     </div>
@@ -289,8 +263,7 @@
                         <h3><span class="step-num">3</span> Additional Notes</h3>
                         <div class="form-group">
                             <label>Order Notes (optional)</label>
-                            <textarea class="form-control" id="orderNotes" rows="3"
-                                placeholder="Any special requests, butchering preferences or dietary requirements..."></textarea>
+                            <textarea class="form-control" id="orderNotes" rows="3" placeholder="Any special requests, butchering preferences or dietary requirements..."></textarea>
                         </div>
                     </div>
 
@@ -301,15 +274,13 @@
                             <label class="payment-method selected" onclick="selectPayment('card', this)">
                                 <input type="radio" name="payment" value="card" checked>
                                 <i class="fa-solid fa-credit-card" style="font-size:1.2rem;color:var(--primary);"></i>
-                                <div><strong>Credit / Debit Card</strong><br><span
-                                        style="font-size:0.78rem;color:var(--text-muted);">Visa, Mastercard, Amex</span>
+                                <div><strong>Credit / Debit Card</strong><br><span style="font-size:0.78rem;color:var(--text-muted);">Visa, Mastercard, Amex</span>
                                 </div>
                             </label>
                             <label class="payment-method" onclick="selectPayment('cash', this)">
                                 <input type="radio" name="payment" value="cash">
                                 <i class="fa-solid fa-money-bill-wave" style="font-size:1.2rem;color:var(--gold);"></i>
-                                <div><strong>Cash on Delivery</strong><br><span
-                                        style="font-size:0.78rem;color:var(--text-muted);">Pay when your order
+                                <div><strong>Cash on Delivery</strong><br><span style="font-size:0.78rem;color:var(--text-muted);">Pay when your order
                                         arrives</span></div>
                             </label>
                         </div>
@@ -318,27 +289,23 @@
                         <div id="cardDetails" class="card-form" style="margin-top:16px;">
                             <div class="form-group">
                                 <label>Card Number</label>
-                                <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19"
-                                    id="cardNum" oninput="formatCard(this)">
+                                <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNum" oninput="formatCard(this)">
                             </div>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label>Expiry Date</label>
-                                    <input type="text" class="form-control" placeholder="MM / YY" maxlength="7"
-                                        id="cardExpiry" oninput="formatExpiry(this)">
+                                    <input type="text" class="form-control" placeholder="MM / YY" maxlength="7" id="cardExpiry" oninput="formatExpiry(this)">
                                 </div>
                                 <div class="form-group">
                                     <label>CVV</label>
-                                    <input type="text" class="form-control" placeholder="123" maxlength="4" id="cardCvv"
-                                        oninput="this.value=this.value.replace(/\D/g,'')">
+                                    <input type="text" class="form-control" placeholder="123" maxlength="4" id="cardCvv" oninput="this.value=this.value.replace(/\D/g,'')">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Name on Card</label>
                                 <input type="text" class="form-control" placeholder="Ahmed Khan" id="cardName">
                             </div>
-                            <div
-                                style="background:var(--primary-bg);border-radius:var(--radius);padding:10px;font-size:0.78rem;color:var(--primary);">
+                            <div style="background:var(--primary-bg);border-radius:var(--radius);padding:10px;font-size:0.78rem;color:var(--primary);">
                                 <i class="fa-solid fa-lock"></i> Your payment details are secure. This is an MVP demo £
                                 no real payments processed.
                             </div>
@@ -352,25 +319,19 @@
                         <h3>Your Order</h3>
                         <div id="checkoutItems"></div>
                         <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
-                        <div class="summary-row"><span class="label">Subtotal</span><span class="value"
-                                id="checkoutSubtotal">£0.00</span></div>
-                        <div class="summary-row"><span class="label">Delivery</span><span class="value"
-                                id="checkoutDelivery">£3.99</span></div>
+                        <div class="summary-row"><span class="label">Subtotal</span><span class="value" id="checkoutSubtotal">£0.00</span></div>
+                        <div class="summary-row"><span class="label">Delivery</span><span class="value" id="checkoutDelivery">£3.99</span></div>
                         <div class="summary-row total"><span>Total</span><strong id="checkoutTotal">£0.00</strong></div>
-                        <button class="btn btn-primary btn-block btn-lg" style="margin-top:20px;"
-                            onclick="placeOrder()">
+                        <button class="btn btn-primary btn-block btn-lg" style="margin-top:20px;" onclick="placeOrder()">
                             <i class="fa-solid fa-lock"></i> Place Order
                         </button>
                         <p style="text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
                             <i class="fa-solid fa-shield-halved"></i> Secure & encrypted checkout
                         </p>
                         <div style="text-align:center;margin-top:12px;display:flex;justify-content:center;gap:8px;">
-                            <span
-                                style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">VISA</span>
-                            <span
-                                style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">MC</span>
-                            <span
-                                style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">AMEX</span>
+                            <span style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">VISA</span>
+                            <span style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">MC</span>
+                            <span style="background:var(--border);border-radius:4px;padding:4px 10px;font-size:0.7rem;font-weight:700;">AMEX</span>
                         </div>
                     </div>
 
@@ -378,8 +339,7 @@
                         <h4 style="font-size:0.88rem;font-weight:700;margin-bottom:10px;color:var(--primary);">
                             <i class="fa-solid fa-shield-halved"></i> Why shop with us?
                         </h4>
-                        <ul
-                            style="font-size:0.8rem;color:var(--text-muted);display:flex;flex-direction:column;gap:6px;">
+                        <ul style="font-size:0.8rem;color:var(--text-muted);display:flex;flex-direction:column;gap:6px;">
                             <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>100%
                                 Halal Certified</li>
                             <li><i class="fa-solid fa-check" style="color:var(--primary);margin-right:6px;"></i>Farm
