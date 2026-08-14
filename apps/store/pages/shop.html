@@ -270,9 +270,10 @@
             // Render compact category pills into horizontal scroller
             const scroller = document.getElementById('categoriesScroller');
             if (scroller && typeof CATEGORIES !== 'undefined') {
-                const allBtn = `<button class="filter-pill active" data-cat="all" onclick="filterProducts('all', this)">All</button>`;
+                const isAllActive = !catParam;
+                const allBtn = `<button class="filter-pill ${isAllActive ? 'active' : ''}" data-cat="all" onclick="filterProducts('all', this)">All</button>`;
                 scroller.innerHTML = allBtn + CATEGORIES.map(cat => `
-                    <button class="filter-pill" data-cat="${cat.id}" onclick="filterProducts('${cat.id}', this)">
+                    <button class="filter-pill ${catParam === cat.id ? 'active' : ''}" data-cat="${cat.id}" onclick="filterProducts('${cat.id}', this)">
                         <span>${cat.name}</span>
                     </button>
                 `).join('');

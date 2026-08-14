@@ -15,20 +15,20 @@ export function renderProductCards(products, containerId) {
         const salePriceHtml = p.salePrice ? `<span class="product-price-old">£${p.price.toFixed(2)}</span>` : '';
         const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating));
         return `
-<div class="product-card ${!p.inStock ? 'out-of-stock' : ''}" data-id="${p.id}">
+<div class="product-card ${!p.inStock ? 'out-of-stock' : ''}" data-id="${p.id}" onclick="handleProductCardClick(event, ${p.id})">
             <div class="product-card-img">
                 <a href="/product/${p.id}">
                     <img src="${p.image}" alt="${p.name}" loading="lazy"
                         onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=60'">
                 </a>
                 ${badgeHtml}
-                <button class="product-wishlist" title="Add to wishlist" onclick="toggleWishlist(this, ${p.id})">
+                <button class="product-wishlist" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist(this, ${p.id})">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
             <div class="product-card-body">
                 <div class="product-category">${p.category}</div>
-                <a href="/product/${p.id}"><div class="product-name">${p.name}</div></a>
+                <a href="/product/${p.id}" onclick="event.stopPropagation();"><div class="product-name">${p.name}</div></a>
                 <div class="product-weight"><i class="fa-solid fa-weight-hanging" style="font-size:0.7rem;margin-right:4px;"></i>${p.weight}</div>
                 <div class="product-price-row">
                     <span class="product-price">£${price.toFixed(2)}</span>
@@ -40,13 +40,25 @@ export function renderProductCards(products, containerId) {
                 </div>
             </div>
             <div class="product-card-footer">
-                <button class="btn-add-cart" onclick="addToCart(${p.id})">
+                <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart(${p.id})">
                     <i class="fa-solid fa-cart-plus"></i>
                     ${p.inStock ? 'Add to Cart' : 'Out of Stock'}
                 </button>
             </div>
         </div>`;
     }).join('');
+
+    // Add event listeners for product card clicks
+    setTimeout(() => {
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (!e.target.closest('.product-wishlist') && !e.target.closest('.btn-add-cart')) {
+                    const productId = this.getAttribute('data-id');
+                    window.location.href = `/product/${productId}`;
+                }
+            });
+        });
+    }, 0);
 }
 
 export function renderCategories(containerId) {
