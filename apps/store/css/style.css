@@ -1115,6 +1115,11 @@ textarea {
     transform: translateY(-1px);
 }
 
+.shop-filters-bar {
+    position: relative;
+    z-index: 50;
+}
+
 .shop-filters {
     display: flex;
     flex-direction: column;
@@ -1123,7 +1128,6 @@ textarea {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    overflow-x: hidden;
 }
 
 .search-sort-row {
@@ -1203,6 +1207,7 @@ textarea {
     display: inline-flex;
     align-items: center;
     flex: 0 0 auto;
+    z-index: 100;
 }
 
 .shop-sort-btn {
@@ -1271,19 +1276,42 @@ textarea {
     right: 0;
     background: #ffffff;
     min-width: 200px;
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(118, 92, 54, 0.25) transparent;
     border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.18), 0 3px 10px rgba(0, 0, 0, 0.06);
     border: 1px solid rgba(118, 92, 54, 0.15);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-6px);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
+    z-index: 9999;
     padding: 6px;
     display: flex;
     flex-direction: column;
     gap: 2px;
     box-sizing: border-box;
+}
+
+.sort-dropdown-menu::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sort-dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sort-dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(118, 92, 54, 0.2);
+    border-radius: 999px;
+}
+
+.sort-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(118, 92, 54, 0.35);
 }
 
 .sort-dropdown-menu.active {
