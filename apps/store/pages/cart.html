@@ -251,8 +251,8 @@
             if (!tbody) return;
             const cart = Array.isArray(window.__cartCache) ? window.__cartCache : [];
             tbody.innerHTML = cart.map(item => `
-        <tr>
-            <td>
+        <tr data-item-id="${item.id}">
+            <td data-label="Product">
                 <div class="cart-product">
                     <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
                     <div class="details">
@@ -261,16 +261,16 @@
                     </div>
                 </div>
             </td>
-            <td><strong>£${(item.price || 0).toFixed(2)}</strong></td>
-            <td>
+            <td data-label="Price"><span class="price-label">£</span><strong>${(item.price || 0).toFixed(2)}</strong></td>
+            <td data-label="Quantity">
                 <div class="cart-qty">
-                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})">-</button>
+                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})" title="Decrease">-</button>
                     <input id="cartQty${item.id}" name="cartQty${item.id}" class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
-                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})">+</button>
+                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})" title="Increase">+</button>
                 </div>
             </td>
-            <td><strong>£${((item.price || 0) * item.qty).toFixed(2)}</strong></td>
-            <td><button class="cart-remove" onclick="removeItem(${item.id})" title="Remove"><i class="fa-solid fa-times"></i></button></td>
+            <td data-label="Total"><span class="price-label">£</span><strong>${((item.price || 0) * item.qty).toFixed(2)}</strong></td>
+            <td class="remove-col"><button class="cart-remove" onclick="removeItem(${item.id})" title="Remove item"><i class="fa-solid fa-times"></i></button></td>
         </tr>`).join('');
         }
 
