@@ -166,15 +166,32 @@
                         <i class="fa-solid fa-search search-icon"></i>
                     </div>
                     <div class="sort-dropdown-wrapper">
-                        <button class="shop-sort-btn" id="sortBtn" onclick="toggleSortDropdown()">
-                            <i class="fa-solid fa-arrow-down-up"></i>
+                        <button class="shop-sort-btn" id="sortBtn" onclick="toggleSortDropdown()" title="Sort Products" aria-label="Sort products" aria-haspopup="true">
+                            <i class="fa-solid fa-arrow-down-up sort-icon"></i>
+                            <span class="sort-btn-label" id="sortBtnLabel">Sort</span>
+                            <i class="fa-solid fa-chevron-down sort-chevron"></i>
                         </button>
-                        <div class="sort-dropdown-menu" id="sortDropdown">
-                            <button class="sort-option" data-value="default" onclick="selectSort('default')">Sort: Default</button>
-                            <button class="sort-option" data-value="price-asc" onclick="selectSort('price-asc')">Price: Low to High</button>
-                            <button class="sort-option" data-value="price-desc" onclick="selectSort('price-desc')">Price: High to Low</button>
-                            <button class="sort-option" data-value="name-asc" onclick="selectSort('name-asc')">Name: A to Z</button>
-                            <button class="sort-option" data-value="rating" onclick="selectSort('rating')">Top Rated</button>
+                        <div class="sort-dropdown-menu" id="sortDropdown" role="menu">
+                            <button class="sort-option active" data-value="default" onclick="selectSort('default')" role="menuitem">
+                                <span>Sort: Default</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-value="price-asc" onclick="selectSort('price-asc')" role="menuitem">
+                                <span>Price: Low to High</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-value="price-desc" onclick="selectSort('price-desc')" role="menuitem">
+                                <span>Price: High to Low</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-value="name-asc" onclick="selectSort('name-asc')" role="menuitem">
+                                <span>Name: A to Z</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
+                            <button class="sort-option" data-value="rating" onclick="selectSort('rating')" role="menuitem">
+                                <span>Top Rated</span>
+                                <i class="fa-solid fa-check sort-check"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -320,6 +337,13 @@
         }
 
         let currentSortValue = 'default';
+        const SORT_LABELS = {
+            'default': 'Sort: Default',
+            'price-asc': 'Price: Low to High',
+            'price-desc': 'Price: High to Low',
+            'name-asc': 'Name: A to Z',
+            'rating': 'Top Rated'
+        };
 
         function applySort() {
             let sorted = [...currentProducts];
@@ -339,9 +363,22 @@
         function selectSort(value) {
             currentSortValue = value;
             const dropdown = document.getElementById('sortDropdown');
-            dropdown.classList.remove('active');
-            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-value="${value}"]`).classList.add('active');
+            if (dropdown) dropdown.classList.remove('active');
+
+            document.querySelectorAll('.sort-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === value);
+            });
+
+            const sortLabel = document.getElementById('sortBtnLabel');
+            if (sortLabel) {
+                sortLabel.textContent = SORT_LABELS[value] || 'Sort';
+            }
+
+            const sortBtn = document.getElementById('sortBtn');
+            if (sortBtn) {
+                sortBtn.classList.toggle('has-active-sort', value !== 'default');
+            }
+
             applySort();
         }
 

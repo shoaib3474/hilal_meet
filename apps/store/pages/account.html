@@ -245,13 +245,13 @@
             <!-- LOGGED IN DASHBOARD -->
             <div id="userDashboard" style="display:none;">
                 <div style="max-width:800px;margin:0 auto;">
-                    <div style="display:flex;align-items:center;gap:16px;background:white;border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;">
-                        <div style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;" id="userAvatarDash">A</div>
-                        <div>
-                            <h2 id="userNameDash" style="font-size:1.2rem;font-weight:800;">Welcome back!</h2>
-                            <p id="userEmailDash" style="color:var(--text-muted);font-size:0.88rem;"></p>
+                    <div class="user-profile-card">
+                        <div class="user-avatar-circle" id="userAvatarDash">A</div>
+                        <div class="user-profile-info">
+                            <h2 id="userNameDash">Welcome back!</h2>
+                            <p id="userEmailDash"></p>
                         </div>
-                        <button onclick="logout()" class="btn btn-ghost" style="margin-left:auto;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                        <button onclick="logout()" class="btn btn-ghost user-logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                     </div>
 
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
