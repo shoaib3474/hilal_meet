@@ -161,20 +161,25 @@
         <div class="container">
             <!-- Category Filter Tabs -->
             <div class="shop-filters" id="categoryFilters">
+                <div class="categories-scroller" id="categoriesScroller" aria-label="Browse categories"></div>
                 <div class="search-sort-row">
                     <div class="search-input-wrap search-inline">
                         <input type="text" id="shopSearch" placeholder="Search products..." oninput="handleSearch(this.value)">
                         <i class="fa-solid fa-search search-icon"></i>
                     </div>
-                    <select class="shop-sort" id="sortSelect" onchange="applySort()">
-                        <option value="default">Sort: Default</option>
-                        <option value="price-asc">Price: Low to High</option>
-                        <option value="price-desc">Price: High to Low</option>
-                        <option value="name-asc">Name: A to Z</option>
-                        <option value="rating">Top Rated</option>
-                    </select>
+                    <div class="sort-dropdown-wrapper">
+                        <button class="shop-sort-btn" id="sortBtn" onclick="toggleSortDropdown()">
+                            <i class="fa-solid fa-arrow-down-up"></i>
+                        </button>
+                        <div class="sort-dropdown-menu" id="sortDropdown">
+                            <button class="sort-option" data-value="default" onclick="selectSort('default')">Sort: Default</button>
+                            <button class="sort-option" data-value="price-asc" onclick="selectSort('price-asc')">Price: Low to High</button>
+                            <button class="sort-option" data-value="price-desc" onclick="selectSort('price-desc')">Price: High to Low</button>
+                            <button class="sort-option" data-value="name-asc" onclick="selectSort('name-asc')">Name: A to Z</button>
+                            <button class="sort-option" data-value="rating" onclick="selectSort('rating')">Top Rated</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="categories-scroller" id="categoriesScroller" aria-label="Browse categories"></div>
             </div>
         </div>
     </div>
@@ -268,7 +273,7 @@
                 const allBtn = `<button class="filter-pill active" data-cat="all" onclick="filterProducts('all', this)">All</button>`;
                 scroller.innerHTML = allBtn + CATEGORIES.map(cat => `
                     <button class="filter-pill" data-cat="${cat.id}" onclick="filterProducts('${cat.id}', this)">
-                        <img src="${cat.image}" alt="${cat.name}"><span>${cat.name}</span>
+                        <span>${cat.name}</span>
                     </button>
                 `).join('');
             }
@@ -315,16 +320,39 @@
             document.getElementById('breadcrumbCat').textContent = catName;
         }
 
+        let currentSortValue = 'default';
+
         function applySort() {
-            const sort = document.getElementById('sortSelect').value;
             let sorted = [...currentProducts];
-            if (sort === 'price-asc') sorted.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
-            else if (sort === 'price-desc') sorted.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
-            else if (sort === 'name-asc') sorted.sort((a, b) => a.name.localeCompare(b.name));
-            else if (sort === 'rating') sorted.sort((a, b) => b.rating - a.rating);
+            if (currentSortValue === 'price-asc') sorted.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
+            else if (currentSortValue === 'price-desc') sorted.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+            else if (currentSortValue === 'name-asc') sorted.sort((a, b) => a.name.localeCompare(b.name));
+            else if (currentSortValue === 'rating') sorted.sort((a, b) => b.rating - a.rating);
             document.getElementById('resultsCount').textContent = `Showing ${sorted.length} product${sorted.length !== 1 ? 's' : ''}`;
             renderProductCards(sorted, 'shopProducts');
         }
+
+        function toggleSortDropdown() {
+            const dropdown = document.getElementById('sortDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function selectSort(value) {
+            currentSortValue = value;
+            const dropdown = document.getElementById('sortDropdown');
+            dropdown.classList.remove('active');
+            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-value="${value}"]`).classList.add('active');
+            applySort();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const sortWrapper = document.querySelector('.sort-dropdown-wrapper');
+            if (sortWrapper && !sortWrapper.contains(event.target)) {
+                document.getElementById('sortDropdown').classList.remove('active');
+            }
+        });
 
         function handleSearch(query) {
             const q = query.toLowerCase();
