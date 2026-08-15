@@ -237,6 +237,14 @@
                     document.getElementById('pendingText').textContent = `You have ${pending} pending order${pending > 1 ? 's' : ''}!`;
                 }
             }
+
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (typeof drawRevenueChart === 'function') drawRevenueChart();
+                }, 150);
+            });
         });
     </script>
 </body>
