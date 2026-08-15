@@ -106,6 +106,9 @@ export async function hydrateWishlistFromServer() {
 
         wishlistCache = [];
         wishlistItemsCache = [];
+        try {
+            localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
+        } catch (_) { }
         notifyWishlistUpdated();
         return [];
     } catch (error) {
@@ -129,11 +132,14 @@ export function getWishlist() {
         return [...wishlistCache];
     }
 
-    wishlistCache = [];
-    if (typeof window !== 'undefined' && typeof fetch === 'function') {
-        void hydrateWishlistFromServer();
-    }
     return [];
+}
+
+async function ensureWishlistHydrated() {
+    if (wishlistCache === null && typeof window !== 'undefined' && typeof fetch === 'function') {
+        await hydrateWishlistFromServer();
+    }
+    return getWishlist();
 }
 
 export function getWishlistItems() {
@@ -161,19 +167,18 @@ export async function toggleWishlist(btn, productId) {
     if (isNaN(id) || id <= 0) return false;
 
     const userId = getWishlistUserId();
-    let currentIds = getWishlist();
-    const isAlreadyInList = currentIds.includes(id);
-    let isAdded = !isAlreadyInList;
+    const hydratedIds = await ensureWishlistHydrated();
+    const isAlreadyInList = hydratedIds.includes(id);
+    const isAdded = !isAlreadyInList;
 
-    // Immediate optimistic local update
     if (isAlreadyInList) {
-        wishlistCache = currentIds.filter(item => item !== id);
+        wishlistCache = hydratedIds.filter(item => item !== id);
         if (wishlistItemsCache) {
             wishlistItemsCache = wishlistItemsCache.filter(item => parseInt(item.id, 10) !== id);
         }
         showToast('Removed from wishlist', 'info');
     } else {
-        wishlistCache = Array.from(new Set([...currentIds, id]));
+        wishlistCache = Array.from(new Set([...hydratedIds, id]));
         showToast('Added to wishlist!', 'success');
     }
 
@@ -183,7 +188,6 @@ export async function toggleWishlist(btn, productId) {
 
     notifyWishlistUpdated();
 
-    // Database persistence via server
     if (userId && typeof fetch === 'function') {
         try {
             const res = await fetch('/api/wishlist/toggle', {
