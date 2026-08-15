@@ -176,18 +176,18 @@
                         <textarea class="form-control" id="pDescription" rows="3"
                             placeholder="Product description..."></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom:8px;">
                         <label>Online Image URL</label>
                         <input type="url" class="form-control" id="pImage" placeholder="https://..."
                             oninput="previewImage(this.value)">
                         <div class="form-hint">Paste a direct image URL (Unsplash, etc.)</div>
                     </div>
+                    <div class="form-or-divider"><span>OR</span></div>
                     <div class="form-group">
-                        <label>Gallery Image <span
-                                style="font-size:0.72rem;color:var(--text-muted);">(optional)</span></label>
+                        <label>Gallery Image</label>
                         <input type="file" class="form-control" id="pGallery" accept="image/*"
                             onchange="handleGalleryFile(this.files)">
-                        <div class="form-hint">Or choose an image directly from your device gallery.</div>
+                        <div class="form-hint">Choose an image directly from your device gallery.</div>
                         <img id="imgPreview" class="img-preview" style="display:none;margin-top:8px;"
                             onerror="this.style.display='none'">
                     </div>

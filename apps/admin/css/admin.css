@@ -788,6 +788,29 @@ img {
     margin-bottom: 18px;
 }
 
+.form-or-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 12px 0;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.form-or-divider::before,
+.form-or-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border);
+}
+
+.form-or-divider span {
+    padding: 0 10px;
+    background: var(--white);
+}
+
 .form-group label {
     display: block;
     font-size: 0.82rem;
