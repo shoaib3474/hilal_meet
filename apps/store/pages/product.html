@@ -249,12 +249,7 @@
                 </div>
             </div>
             <div class="product-info-summary">
-                <div class="product-title-row">
-                    <h1 class="product-title">${product.name}</h1>
-                    <button class="btn-wishlist-detail wishlist-header-btn" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                </div>
+                <h1 class="product-title">${product.name}</h1>
                 <div class="product-meta">
                     <span><i class="fa-solid fa-weight-hanging"></i> ${product.weight}</span>
                     <span class="meta-dot">•</span>
@@ -286,7 +281,7 @@
                 <button class="btn btn-primary btn-add" onclick="addProductToCart()">
                     <i class="fa-solid fa-cart-shopping"></i> Add to Cart
                 </button>
-                <button class="btn-wishlist-detail wishlist-inline-btn" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
+                <button class="btn-wishlist-detail" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
