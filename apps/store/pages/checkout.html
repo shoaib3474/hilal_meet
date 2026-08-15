@@ -393,19 +393,30 @@
         let deliveryMethod = 'delivery';
         let paymentMethod = 'card';
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCheckoutSummary();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await renderCheckoutSummary();
         });
 
-        function renderCheckoutSummary() {
-            const cart = getCart();
+        async function renderCheckoutSummary() {
             const itemsEl = document.getElementById('checkoutItems');
             const subtotalEl = document.getElementById('checkoutSubtotal');
             const deliveryEl = document.getElementById('checkoutDelivery');
             const totalEl = document.getElementById('checkoutTotal');
 
-            if (!cart.length) {
+            if (!itemsEl || !subtotalEl || !deliveryEl || !totalEl) return;
+
+            if (typeof window !== 'undefined' && typeof waitForCartHydration === 'function') {
+                await waitForCartHydration();
+            }
+
+            const cart = typeof getCart === 'function' ? getCart() : [];
+
+            if (!Array.isArray(cart) || cart.length === 0) {
                 itemsEl.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:20px;">No items in cart</p>';
+                subtotalEl.textContent = '£0.00';
+                deliveryEl.textContent = '£0.00';
+                deliveryEl.style.color = 'var(--text-muted)';
+                totalEl.textContent = '£0.00';
                 return;
             }
 
@@ -415,12 +426,12 @@
                 onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
             <div style="flex:1;font-size:0.85rem;">
                 <div style="font-weight:600;">${item.name}</div>
-                <div style="color:var(--text-muted);">£${item.qty} £ ${item.weight}</div>
+                <div style="color:var(--text-muted);">${item.qty} × ${item.weight || 'Item'}</div>
             </div>
-            <span style="font-weight:700;font-size:0.9rem;">£${(item.price * item.qty).toFixed(2)}</span>
+            <span style="font-weight:700;font-size:0.9rem;">£${((item.price || 0) * (item.qty || 0)).toFixed(2)}</span>
         </div>`).join('');
 
-            const subtotal = getCartTotal();
+            const subtotal = typeof getCartTotal === 'function' ? getCartTotal() : 0;
             const delivery = deliveryMethod === 'collection' ? 0 : (subtotal >= 30 ? 0 : 3.99);
             const total = subtotal + delivery;
 

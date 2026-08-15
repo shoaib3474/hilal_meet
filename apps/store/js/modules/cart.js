@@ -62,35 +62,62 @@ function normalizeCartItems(items) {
 export async function hydrateCartFromServer() {
     if (typeof window === 'undefined' || typeof fetch !== 'function') return;
 
-    const sessionId = getUserCartSessionId();
-    if (!sessionId) {
-        window.__cartCache = [];
-        notifyCartUpdated();
+    if (window.__cartHydrationPromise) {
+        await window.__cartHydrationPromise;
         return;
     }
 
+    window.__cartHydrationPromise = (async () => {
+        const sessionId = getUserCartSessionId();
+        if (!sessionId) {
+            window.__cartCache = [];
+            notifyCartUpdated();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/cart?sessionId=${encodeURIComponent(sessionId)}`, {
+                headers: { 'x-cart-session-id': sessionId }
+            });
+
+            if (!response.ok) throw new Error('Unable to load cart');
+
+            const data = await response.json();
+            if (Array.isArray(data.items)) {
+                window.__cartCache = normalizeCartItems(data.items);
+                notifyCartUpdated();
+            } else {
+                window.__cartCache = [];
+                notifyCartUpdated();
+            }
+        } catch (error) {
+            console.warn('Cart sync unavailable:', error.message);
+            if (!Array.isArray(window.__cartCache)) {
+                window.__cartCache = [];
+            }
+            notifyCartUpdated();
+        }
+    })();
+
     try {
-        const response = await fetch(`/api/cart?sessionId=${encodeURIComponent(sessionId)}`, {
-            headers: { 'x-cart-session-id': sessionId }
-        });
-
-        if (!response.ok) throw new Error('Unable to load cart');
-
-        const data = await response.json();
-        if (Array.isArray(data.items)) {
-            window.__cartCache = normalizeCartItems(data.items);
-            notifyCartUpdated();
-        } else {
-            window.__cartCache = [];
-            notifyCartUpdated();
-        }
-    } catch (error) {
-        console.warn('Cart sync unavailable:', error.message);
-        if (!Array.isArray(window.__cartCache)) {
-            window.__cartCache = [];
-        }
-        notifyCartUpdated();
+        await window.__cartHydrationPromise;
+    } finally {
+        window.__cartHydrationPromise = null;
     }
+}
+
+export async function waitForCartHydration() {
+    if (typeof window === 'undefined') return [];
+
+    if (!window.__cartHydrationPromise) {
+        window.__cartHydrationPromise = hydrateCartFromServer();
+    }
+
+    await window.__cartHydrationPromise;
+    if (!Array.isArray(window.__cartCache)) {
+        window.__cartCache = [];
+    }
+    return window.__cartCache;
 }
 
 export function getCart() {
