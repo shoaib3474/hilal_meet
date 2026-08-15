@@ -315,24 +315,41 @@
             document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
         }
 
-        function doLogin() {
+        async function doLogin() {
             const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
             const errEl = document.getElementById('loginError');
 
-            const users = JSON.parse(localStorage.getItem('ph_users') || JSON.stringify(DEMO_USERS));
-            const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
-            if (!user) {
-                errEl.textContent = 'Invalid email or password. Try customer@example.com / Pass@123';
-                errEl.style.display = 'block'; return;
+            if (!email || !password) {
+                errEl.textContent = 'Please enter both email and password';
+                errEl.style.display = 'block';
+                return;
             }
-            errEl.style.display = 'none';
-            setCurrentUser(user);
-            showToast(`Welcome back, ${user.firstName}! 👋`, 'success');
-            setTimeout(() => showDashboard(user), 500);
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    errEl.textContent = data.error || 'Invalid email or password';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                errEl.style.display = 'none';
+                setCurrentUser(data.user);
+                showToast(`Welcome back, ${data.user.firstName}! 👋`, 'success');
+                setTimeout(() => showDashboard(data.user), 400);
+            } catch (err) {
+                errEl.textContent = 'Connection error. Please try again.';
+                errEl.style.display = 'block';
+            }
         }
 
-        function doRegister() {
+        async function doRegister() {
             const firstName = document.getElementById('regFirstName').value.trim();
             const lastName = document.getElementById('regLastName').value.trim();
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
@@ -354,22 +371,30 @@
                 errEl.textContent = 'Please accept the Terms & Conditions'; errEl.style.display = 'block'; return;
             }
 
-            const users = JSON.parse(localStorage.getItem('ph_users') || JSON.stringify(DEMO_USERS));
-            if (users.find(u => u.email.toLowerCase() === email)) {
-                errEl.textContent = 'An account with this email already exists'; errEl.style.display = 'block'; return;
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ firstName, lastName, email, phone, password })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    errEl.textContent = data.error || 'Registration failed';
+                    errEl.style.display = 'block';
+                    return;
+                }
+
+                errEl.style.display = 'none';
+                setCurrentUser(data.user);
+                showToast(`Account created! Welcome, ${data.user.firstName}! 👋`, 'success');
+                setTimeout(() => showDashboard(data.user), 400);
+            } catch (err) {
+                errEl.textContent = 'Connection error. Please try again.';
+                errEl.style.display = 'block';
             }
-
-            const newUser = { id: 'U' + Date.now(), firstName, lastName, email, phone, password };
-            users.push(newUser);
-            localStorage.setItem('ph_users', JSON.stringify(users));
-            setCurrentUser(newUser);
-
-            errEl.style.display = 'none';
-            showToast(`Account created! Welcome, ${firstName}! 👋`, 'success');
-            setTimeout(() => showDashboard(newUser), 500);
         }
 
-        function showDashboard(user) {
+        async function showDashboard(user) {
             document.getElementById('authForms').style.display = 'none';
             document.getElementById('userDashboard').style.display = '';
             document.getElementById('pageHeading').textContent = `Welcome, ${user.firstName}`;
@@ -377,15 +402,27 @@
             document.getElementById('userNameDash').textContent = `${user.firstName} ${user.lastName}`;
             document.getElementById('userEmailDash').textContent = user.email;
 
-            const orders = getOrders().filter(o => o.customer.email === user.email);
+            let orders = [];
+            try {
+                const res = await fetch('/api/orders');
+                if (res.ok) {
+                    const allOrders = await res.json();
+                    orders = allOrders.filter(o => o.customer?.email?.toLowerCase() === user.email.toLowerCase());
+                }
+            } catch (_) {}
+
+            if (orders.length === 0 && typeof getOrders === 'function') {
+                orders = getOrders().filter(o => o.customer?.email?.toLowerCase() === user.email.toLowerCase());
+            }
+
             const histEl = document.getElementById('userOrdersHistory');
             if (!orders.length) {
                 histEl.innerHTML = `<p style="text-align:center;color:var(--text-muted);padding:20px;">No orders yet. <a href="/shop" style="color:var(--primary);">Start shopping!</a></p>`;
             } else {
                 histEl.innerHTML = orders.slice().reverse().map(o => `
             <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;background:var(--bg);margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-                <div><strong>${o.id}</strong><br><span style="font-size:0.78rem;color:var(--text-muted);">${o.date} · ${o.items.length} item(s)</span></div>
-                <div style="text-align:right;"><strong style="color:var(--primary);">£${o.total.toFixed(2)}</strong><br>
+                <div><strong>${o.id}</strong><br><span style="font-size:0.78rem;color:var(--text-muted);">${o.date} · ${(o.items || []).length} item(s)</span></div>
+                <div style="text-align:right;"><strong style="color:var(--primary);">£${(o.total || 0).toFixed(2)}</strong><br>
                     <span class="status-badge status-${o.status}" style="font-size:0.68rem;">${o.status}</span>
                 </div>
             </div>`).join('');

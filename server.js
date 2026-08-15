@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
-const { pool, initializeDatabase, SEED_PRODUCTS } = require('./db');
+const { pool, initializeDatabase, SEED_PRODUCTS, SEED_USERS, SEED_CUSTOMERS, SEED_ORDERS } = require('./db');
 
 dotenv.config();
 dotenv.config({ path: '.env.local' });
@@ -74,7 +74,7 @@ function getFallbackProducts() {
 }
 
 function getCartSessionId(req) {
-    return req.query?.sessionId || req.get('x-cart-session-id') || req.get('x-cart-session') || '';
+    return req.query?.sessionId || req.body?.sessionId || req.get('x-cart-session-id') || req.get('x-cart-session') || '';
 }
 
 function getWishlistUserId(req) {
@@ -100,8 +100,159 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
+// In-Memory Fallback Caches
+let inMemoryUsers = [...(SEED_USERS || [])];
 let inMemoryWishlistItems = [];
+let inMemoryCartItems = [];
 
+// ==========================================
+// AUTHENTICATION & USER ENDPOINTS
+// ==========================================
+app.post('/api/auth/register', async (req, res) => {
+    try {
+        const { firstName, lastName, email, phone, password, address } = req.body || {};
+        if (!firstName || !lastName || !email || !password) {
+            return res.status(400).json({ error: 'First name, last name, email, and password are required' });
+        }
+        const cleanEmail = email.trim().toLowerCase();
+
+        try {
+            const existing = await pool.query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
+            if (existing.rowCount > 0) {
+                return res.status(400).json({ error: 'An account with this email already exists' });
+            }
+            const { rows } = await pool.query(
+                `INSERT INTO users (first_name, last_name, email, password_hash, phone, address)
+                 VALUES ($1, $2, $3, $4, $5, $6)
+                 RETURNING id, first_name, last_name, email, phone, address, joined, orders_count, spent`,
+                [firstName.trim(), lastName.trim(), cleanEmail, password, phone?.trim() || '', address?.trim() || '']
+            );
+
+            await pool.query(
+                `INSERT INTO customers (name, email, phone, address)
+                 VALUES ($1, $2, $3, $4)
+                 ON CONFLICT (email) DO NOTHING`,
+                [`${firstName.trim()} ${lastName.trim()}`, cleanEmail, phone?.trim() || '', address?.trim() || '']
+            );
+
+            const user = {
+                id: rows[0].id,
+                firstName: rows[0].first_name,
+                lastName: rows[0].last_name,
+                email: rows[0].email,
+                phone: rows[0].phone,
+                address: rows[0].address
+            };
+            inMemoryUsers.push({ ...user, password });
+            return res.status(201).json({ success: true, user });
+        } catch (dbErr) {
+            console.warn('DB register error, using memory fallback:', dbErr.message);
+            if (inMemoryUsers.some(u => u.email.toLowerCase() === cleanEmail)) {
+                return res.status(400).json({ error: 'An account with this email already exists' });
+            }
+            const user = {
+                id: inMemoryUsers.length + 1,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                email: cleanEmail,
+                phone: phone?.trim() || '',
+                address: address?.trim() || '',
+                password
+            };
+            inMemoryUsers.push(user);
+            return res.status(201).json({
+                success: true,
+                user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, address: user.address }
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body || {};
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
+        }
+        const cleanEmail = email.trim().toLowerCase();
+
+        try {
+            const { rows } = await pool.query(
+                `SELECT id, first_name, last_name, email, password_hash, phone, address, orders_count, spent 
+                 FROM users WHERE LOWER(email) = $1`,
+                [cleanEmail]
+            );
+            if (rows.length === 0 || rows[0].password_hash !== password) {
+                return res.status(401).json({ error: 'Invalid email or password' });
+            }
+            const user = {
+                id: rows[0].id,
+                firstName: rows[0].first_name,
+                lastName: rows[0].last_name,
+                email: rows[0].email,
+                phone: rows[0].phone,
+                address: rows[0].address
+            };
+            return res.json({ success: true, user });
+        } catch (dbErr) {
+            console.warn('DB login error, using memory fallback:', dbErr.message);
+            const found = inMemoryUsers.find(u => u.email.toLowerCase() === cleanEmail && u.password === password);
+            if (!found) {
+                return res.status(401).json({ error: 'Invalid email or password' });
+            }
+            return res.json({
+                success: true,
+                user: { id: found.id, firstName: found.firstName, lastName: found.lastName, email: found.email, phone: found.phone, address: found.address }
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/auth/me', async (req, res) => {
+    const email = req.query?.email || req.get('x-user-email');
+    const userId = req.query?.id || req.get('x-user-id');
+    if (!email && !userId) {
+        return res.status(400).json({ error: 'User identifier required' });
+    }
+    try {
+        let query = 'SELECT id, first_name, last_name, email, phone, address, joined, orders_count, spent FROM users WHERE ';
+        let params = [];
+        if (userId) {
+            query += 'id = $1';
+            params.push(parseInt(userId.toString().replace('user-', '')) || 0);
+        } else {
+            query += 'LOWER(email) = $1';
+            params.push(email.toLowerCase());
+        }
+        const { rows } = await pool.query(query, params);
+        if (rows.length > 0) {
+            return res.json({
+                id: rows[0].id,
+                firstName: rows[0].first_name,
+                lastName: rows[0].last_name,
+                email: rows[0].email,
+                phone: rows[0].phone,
+                address: rows[0].address,
+                joined: rows[0].joined,
+                ordersCount: rows[0].orders_count,
+                spent: Number(rows[0].spent)
+            });
+        }
+    } catch (_) {}
+    const found = inMemoryUsers.find(u => (userId && (u.id == userId || `user-${u.id}` == userId)) || (email && u.email.toLowerCase() === email.toLowerCase()));
+    if (found) {
+        return res.json({ id: found.id, firstName: found.firstName, lastName: found.lastName, email: found.email, phone: found.phone, address: found.address });
+    }
+    res.status(404).json({ error: 'User not found' });
+});
+
+// ==========================================
+// RELATIONAL WISHLIST ENDPOINTS
+// ==========================================
 app.get('/api/wishlist', async (req, res) => {
     const userId = getWishlistUserId(req);
     if (!userId) {
@@ -358,49 +509,294 @@ const handleClearWishlist = async (req, res) => {
 app.delete('/api/wishlist/clear', handleClearWishlist);
 app.post('/api/wishlist/clear', handleClearWishlist);
 
+// ==========================================
+// RELATIONAL CART ENDPOINTS (SQL JOIN)
+// ==========================================
 app.get('/api/cart', async (req, res) => {
-    try {
-        const sessionId = getCartSessionId(req);
-        if (!sessionId) {
-            return res.json({ sessionId: '', items: [] });
-        }
+    const sessionId = getCartSessionId(req);
+    if (!sessionId) {
+        return res.json({ sessionId: '', items: [] });
+    }
 
+    try {
         const { rows } = await pool.query(
-            'SELECT session_id, items FROM carts WHERE session_id = $1',
+            `SELECT 
+                c.id as cart_item_id,
+                c.session_id,
+                c.product_id,
+                c.quantity,
+                c.updated_at,
+                p.id,
+                p.name,
+                p.category,
+                p.price,
+                p.sale_price,
+                p.weight,
+                p.image,
+                p.gallery,
+                p.in_stock,
+                p.rating,
+                p.badge
+             FROM cart_items c
+             JOIN products p ON c.product_id = p.id
+             WHERE c.session_id = $1
+             ORDER BY c.updated_at DESC`,
             [sessionId]
         );
 
-        const items = rows[0] && Array.isArray(rows[0].items) ? rows[0].items : [];
-        res.json({ sessionId, items });
+        const items = rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            category: r.category,
+            price: r.sale_price !== null ? Number(r.sale_price) : Number(r.price || 0),
+            regularPrice: Number(r.price || 0),
+            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+            weight: r.weight,
+            image: r.image,
+            gallery: Array.isArray(r.gallery) ? r.gallery : [],
+            inStock: r.in_stock,
+            rating: Number(r.rating || 4.5),
+            badge: r.badge,
+            qty: Number(r.quantity || 1)
+        }));
+
+        inMemoryCartItems = inMemoryCartItems.filter(item => item.session_id !== sessionId);
+        items.forEach(it => inMemoryCartItems.push({ id: Date.now(), session_id: sessionId, product_id: it.id, quantity: it.qty, updated_at: new Date() }));
+
+        return res.json({ sessionId, items });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.warn('DB cart query failed, using memory fallback:', error.message);
+    }
+
+    const sessionRecords = inMemoryCartItems.filter(item => item.session_id === sessionId);
+    const allProducts = getFallbackProducts();
+    const items = sessionRecords.map(rec => {
+        const prod = allProducts.find(p => p.id === rec.product_id);
+        if (!prod) return null;
+        return {
+            id: prod.id,
+            name: prod.name,
+            category: prod.category,
+            price: prod.salePrice !== null ? prod.salePrice : prod.price,
+            regularPrice: prod.price,
+            salePrice: prod.salePrice,
+            weight: prod.weight,
+            image: prod.image,
+            gallery: prod.gallery,
+            inStock: prod.inStock,
+            rating: prod.rating,
+            badge: prod.badge,
+            qty: rec.quantity
+        };
+    }).filter(Boolean);
+
+    res.json({ sessionId, items });
+});
+
+app.post('/api/cart', async (req, res) => {
+    const sessionId = req.body?.sessionId || getCartSessionId(req);
+    const productId = parseInt(req.body?.productId || req.body?.id);
+    let qty = parseInt(req.body?.qty || req.body?.quantity || 1);
+
+    if (!sessionId) return res.status(400).json({ error: 'Session ID is required' });
+    if (isNaN(productId) || productId <= 0) return res.status(400).json({ error: 'Valid product ID is required' });
+
+    if (req.body?.change !== undefined) {
+        const change = parseInt(req.body.change);
+        try {
+            const curr = await pool.query('SELECT quantity FROM cart_items WHERE session_id = $1 AND product_id = $2', [sessionId, productId]);
+            qty = (curr.rows[0]?.quantity || 0) + change;
+        } catch (_) {
+            const currRec = inMemoryCartItems.find(i => i.session_id === sessionId && i.product_id === productId);
+            qty = (currRec?.quantity || 0) + change;
+        }
+    }
+
+    if (qty <= 0) {
+        try {
+            await pool.query('DELETE FROM cart_items WHERE session_id = $1 AND product_id = $2', [sessionId, productId]);
+        } catch (_) {
+            inMemoryCartItems = inMemoryCartItems.filter(i => !(i.session_id === sessionId && i.product_id === productId));
+        }
+    } else {
+        try {
+            await pool.query(
+                `INSERT INTO cart_items (session_id, product_id, quantity, updated_at)
+                 VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+                 ON CONFLICT (session_id, product_id) DO UPDATE SET
+                     quantity = EXCLUDED.quantity,
+                     updated_at = CURRENT_TIMESTAMP`,
+                [sessionId, productId, qty]
+            );
+        } catch (_) {
+            const existingIdx = inMemoryCartItems.findIndex(i => i.session_id === sessionId && i.product_id === productId);
+            if (existingIdx > -1) {
+                inMemoryCartItems[existingIdx].quantity = qty;
+                inMemoryCartItems[existingIdx].updated_at = new Date();
+            } else {
+                inMemoryCartItems.push({ id: Date.now(), session_id: sessionId, product_id: productId, quantity: qty, updated_at: new Date() });
+            }
+        }
+    }
+
+    try {
+        const { rows } = await pool.query(
+            `SELECT 
+                c.id as cart_item_id, c.session_id, c.product_id, c.quantity, c.updated_at,
+                p.id, p.name, p.category, p.price, p.sale_price, p.weight, p.image, p.gallery, p.in_stock, p.rating, p.badge
+             FROM cart_items c
+             JOIN products p ON c.product_id = p.id
+             WHERE c.session_id = $1
+             ORDER BY c.updated_at DESC`,
+            [sessionId]
+        );
+        const items = rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            category: r.category,
+            price: r.sale_price !== null ? Number(r.sale_price) : Number(r.price || 0),
+            regularPrice: Number(r.price || 0),
+            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+            weight: r.weight,
+            image: r.image,
+            gallery: Array.isArray(r.gallery) ? r.gallery : [],
+            inStock: r.in_stock,
+            rating: Number(r.rating || 4.5),
+            badge: r.badge,
+            qty: Number(r.quantity || 1)
+        }));
+        return res.json({ sessionId, items });
+    } catch (_) {
+        const sessionRecords = inMemoryCartItems.filter(item => item.session_id === sessionId);
+        const allProducts = getFallbackProducts();
+        const items = sessionRecords.map(rec => {
+            const prod = allProducts.find(p => p.id === rec.product_id);
+            return prod ? { ...prod, qty: rec.quantity } : null;
+        }).filter(Boolean);
+        return res.json({ sessionId, items });
     }
 });
 
 app.put('/api/cart', async (req, res) => {
+    const sessionId = req.body?.sessionId || getCartSessionId(req);
+    const rawItems = Array.isArray(req.body?.items) ? req.body.items : [];
+
+    if (!sessionId) return res.status(400).json({ error: 'Session ID is required' });
+
     try {
-        const sessionId = req.body?.sessionId || getCartSessionId(req);
-        const items = Array.isArray(req.body?.items) ? req.body.items : [];
-
-        if (!sessionId) {
-            return res.status(400).json({ error: 'Session id is required' });
+        await pool.query('DELETE FROM cart_items WHERE session_id = $1', [sessionId]);
+        for (const item of rawItems) {
+            const pid = parseInt(item.id || item.productId);
+            const q = parseInt(item.qty || item.quantity || 1);
+            if (!isNaN(pid) && pid > 0 && q > 0) {
+                await pool.query(
+                    `INSERT INTO cart_items (session_id, product_id, quantity, updated_at)
+                     VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+                     ON CONFLICT (session_id, product_id) DO UPDATE SET quantity = EXCLUDED.quantity`,
+                    [sessionId, pid, q]
+                );
+            }
         }
+    } catch (err) {
+        inMemoryCartItems = inMemoryCartItems.filter(i => i.session_id !== sessionId);
+        rawItems.forEach(item => {
+            const pid = parseInt(item.id || item.productId);
+            const q = parseInt(item.qty || item.quantity || 1);
+            if (!isNaN(pid) && pid > 0 && q > 0) {
+                inMemoryCartItems.push({ id: Date.now(), session_id: sessionId, product_id: pid, quantity: q, updated_at: new Date() });
+            }
+        });
+    }
 
-        await pool.query(
-            `INSERT INTO carts (session_id, items, updated_at)
-             VALUES ($1, $2, CURRENT_TIMESTAMP)
-             ON CONFLICT (session_id) DO UPDATE SET
-                 items = EXCLUDED.items,
-                 updated_at = CURRENT_TIMESTAMP`,
-            [sessionId, JSON.stringify(items)]
+    try {
+        const { rows } = await pool.query(
+            `SELECT c.product_id, c.quantity, p.id, p.name, p.category, p.price, p.sale_price, p.weight, p.image, p.gallery, p.in_stock, p.rating, p.badge
+             FROM cart_items c
+             JOIN products p ON c.product_id = p.id
+             WHERE c.session_id = $1`,
+            [sessionId]
         );
-
-        res.json({ sessionId, items });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+        const items = rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            price: r.sale_price !== null ? Number(r.sale_price) : Number(r.price || 0),
+            regularPrice: Number(r.price || 0),
+            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+            weight: r.weight,
+            image: r.image,
+            qty: r.quantity
+        }));
+        return res.json({ sessionId, items });
+    } catch (_) {
+        return res.json({ sessionId, items: rawItems });
     }
 });
 
+app.delete('/api/cart/item', async (req, res) => {
+    const sessionId = req.query?.sessionId || req.body?.sessionId || getCartSessionId(req);
+    const productId = parseInt(req.query?.productId || req.body?.productId || req.query?.id);
+    if (!sessionId || isNaN(productId)) {
+        return res.status(400).json({ error: 'Session ID and Product ID required' });
+    }
+
+    try {
+        await pool.query('DELETE FROM cart_items WHERE session_id = $1 AND product_id = $2', [sessionId, productId]);
+    } catch (_) {
+        inMemoryCartItems = inMemoryCartItems.filter(i => !(i.session_id === sessionId && i.product_id === productId));
+    }
+
+    res.json({ success: true, sessionId, productId });
+});
+
+app.post('/api/cart/migrate', async (req, res) => {
+    const guestSessionId = req.body?.guestSessionId;
+    const userSessionId = req.body?.userSessionId;
+
+    if (!guestSessionId || !userSessionId || guestSessionId === userSessionId) {
+        return res.json({ success: true, message: 'No cart migration needed' });
+    }
+
+    try {
+        await pool.query(
+            `INSERT INTO cart_items (session_id, product_id, quantity, updated_at)
+             SELECT $1, product_id, quantity, CURRENT_TIMESTAMP FROM cart_items WHERE session_id = $2
+             ON CONFLICT (session_id, product_id) DO UPDATE SET
+                 quantity = cart_items.quantity + EXCLUDED.quantity,
+                 updated_at = CURRENT_TIMESTAMP`,
+            [userSessionId, guestSessionId]
+        );
+        await pool.query('DELETE FROM cart_items WHERE session_id = $1', [guestSessionId]);
+    } catch (_) {
+        const guestCart = inMemoryCartItems.filter(i => i.session_id === guestSessionId);
+        guestCart.forEach(g => {
+            const u = inMemoryCartItems.find(i => i.session_id === userSessionId && i.product_id === g.product_id);
+            if (u) u.quantity += g.quantity;
+            else inMemoryCartItems.push({ id: Date.now(), session_id: userSessionId, product_id: g.product_id, quantity: g.quantity, updated_at: new Date() });
+        });
+        inMemoryCartItems = inMemoryCartItems.filter(i => i.session_id !== guestSessionId);
+    }
+
+    res.json({ success: true, migrated: true });
+});
+
+const handleClearCart = async (req, res) => {
+    const sessionId = req.body?.sessionId || getCartSessionId(req);
+    if (!sessionId) return res.status(400).json({ error: 'Session ID is required' });
+
+    try {
+        await pool.query('DELETE FROM cart_items WHERE session_id = $1', [sessionId]);
+    } catch (_) {
+        inMemoryCartItems = inMemoryCartItems.filter(i => i.session_id !== sessionId);
+    }
+
+    res.json({ sessionId, items: [] });
+};
+app.delete('/api/cart/clear', handleClearCart);
+app.post('/api/cart/clear', handleClearCart);
+
+// ==========================================
+// PRODUCTS ENDPOINTS
+// ==========================================
 app.get('/api/products', async (req, res) => {
     try {
         const { rows } = await pool.query(

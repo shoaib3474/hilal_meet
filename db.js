@@ -236,6 +236,33 @@ const SEED_CUSTOMERS = [
     { name: 'Fatima Ali', email: 'fatima.ali@email.com', phone: '07700900456', address: '12 Barking Road, East Ham, E6 2PQ', joined: '2025-12-02', orders: 1, spent: 29.98 }
 ];
 
+const SEED_USERS = [
+    {
+        id: 1,
+        firstName: 'Ahmed',
+        lastName: 'Khan',
+        email: 'customer@example.com',
+        password: 'Pass@123',
+        phone: '07700900123',
+        address: '45 Green Street, East Ham, E7 8DA',
+        joined: '2025-11-15',
+        orders: 2,
+        spent: 37.97
+    },
+    {
+        id: 2,
+        firstName: 'Fatima',
+        lastName: 'Ali',
+        email: 'fatima.ali@email.com',
+        password: 'Pass@123',
+        phone: '07700900456',
+        address: '12 Barking Road, East Ham, E6 2PQ',
+        joined: '2025-12-02',
+        orders: 1,
+        spent: 29.98
+    }
+];
+
 async function waitForDatabaseConnection(maxAttempts = 15, delayMs = 1000) {
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         try {
@@ -254,6 +281,7 @@ async function waitForDatabaseConnection(maxAttempts = 15, delayMs = 1000) {
 async function initializeDatabase() {
     await waitForDatabaseConnection();
 
+    // 1. Products Table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS products (
             id SERIAL PRIMARY KEY,
@@ -275,37 +303,57 @@ async function initializeDatabase() {
         );
     `);
 
+    // 2. Users Table (Authentication & User Profile)
     await pool.query(`
-        ALTER TABLE products
-            ADD COLUMN IF NOT EXISTS category VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS sale_price NUMERIC(10, 2),
-            ADD COLUMN IF NOT EXISTS weight VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS image TEXT,
-            ADD COLUMN IF NOT EXISTS gallery JSONB DEFAULT '[]'::jsonb,
-            ADD COLUMN IF NOT EXISTS description TEXT,
-            ADD COLUMN IF NOT EXISTS badge VARCHAR(100),
-            ADD COLUMN IF NOT EXISTS in_stock BOOLEAN DEFAULT TRUE,
-            ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE,
-            ADD COLUMN IF NOT EXISTS rating NUMERIC(2, 1) DEFAULT 4.5,
-            ADD COLUMN IF NOT EXISTS reviews INTEGER DEFAULT 0,
-            ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            first_name VARCHAR(100) NOT NULL,
+            last_name VARCHAR(100) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            password_hash VARCHAR(255) NOT NULL,
+            phone VARCHAR(50),
+            address TEXT,
+            joined DATE NOT NULL DEFAULT CURRENT_DATE,
+            orders_count INTEGER DEFAULT 0,
+            spent NUMERIC(10, 2) DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
     `);
 
+    // 3. Customers Table (Admin Panel Customer Management Sync)
     await pool.query(`
-        CREATE TABLE IF NOT EXISTS carts (
-            session_id VARCHAR(100) PRIMARY KEY,
-            items JSONB NOT NULL DEFAULT '[]'::jsonb,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        CREATE TABLE IF NOT EXISTS customers (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            phone VARCHAR(50),
+            address TEXT,
+            joined DATE NOT NULL DEFAULT CURRENT_DATE,
+            orders_count INTEGER DEFAULT 0,
+            spent NUMERIC(10, 2) DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `);
+
+    // 4. Relational Cart Items (session_id, product_id, quantity)
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS cart_items (
+            id SERIAL PRIMARY KEY,
+            session_id VARCHAR(100) NOT NULL,
+            product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+            quantity INTEGER NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT unique_session_cart_product UNIQUE (session_id, product_id)
         );
     `);
 
     await pool.query(`
-        ALTER TABLE carts
-            ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]'::jsonb,
-            ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+        CREATE INDEX IF NOT EXISTS idx_cart_items_session ON cart_items(session_id);
+        CREATE INDEX IF NOT EXISTS idx_cart_items_prod ON cart_items(product_id);
     `);
 
+    // 5. Relational Wishlist Items (user_id, product_id)
     await pool.query(`
         CREATE TABLE IF NOT EXISTS wishlist_items (
             id SERIAL PRIMARY KEY,
@@ -321,9 +369,11 @@ async function initializeDatabase() {
         CREATE INDEX IF NOT EXISTS idx_wishlist_items_prod ON wishlist_items(product_id);
     `);
 
+    // 6. Orders Table
     await pool.query(`
         CREATE TABLE IF NOT EXISTS orders (
             id VARCHAR(50) PRIMARY KEY,
+            user_id VARCHAR(100),
             order_date DATE NOT NULL DEFAULT CURRENT_DATE,
             status VARCHAR(50) NOT NULL DEFAULT 'pending',
             customer_name VARCHAR(255) NOT NULL,
@@ -340,20 +390,7 @@ async function initializeDatabase() {
         );
     `);
 
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS customers (
-            id SERIAL PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            email VARCHAR(255) NOT NULL UNIQUE,
-            phone VARCHAR(50),
-            address TEXT,
-            joined DATE NOT NULL DEFAULT CURRENT_DATE,
-            orders_count INTEGER DEFAULT 0,
-            spent NUMERIC(10, 2) DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-    `);
-
+    // Seed Products
     const existingProducts = await pool.query('SELECT id FROM products LIMIT 1');
     if (existingProducts.rowCount === 0) {
         for (const product of SEED_PRODUCTS) {
@@ -379,12 +416,33 @@ async function initializeDatabase() {
         }
     }
 
+    // Seed Users & Customers
+    const existingUsers = await pool.query('SELECT id FROM users LIMIT 1');
+    if (existingUsers.rowCount === 0) {
+        for (const user of SEED_USERS) {
+            await pool.query(
+                `INSERT INTO users (first_name, last_name, email, password_hash, phone, address, joined, orders_count, spent)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                 ON CONFLICT (email) DO NOTHING`,
+                [user.firstName, user.lastName, user.email, user.password, user.phone, user.address, user.joined, user.orders, user.spent]
+            );
+            await pool.query(
+                `INSERT INTO customers (name, email, phone, address, joined, orders_count, spent)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                 ON CONFLICT (email) DO NOTHING`,
+                [`${user.firstName} ${user.lastName}`, user.email, user.phone, user.address, user.joined, user.orders, user.spent]
+            );
+        }
+    }
+
+    // Seed Orders
     const existingOrders = await pool.query('SELECT id FROM orders LIMIT 1');
     if (existingOrders.rowCount === 0) {
         for (const order of SEED_ORDERS) {
             await pool.query(
                 `INSERT INTO orders (id, order_date, status, customer_name, customer_email, customer_phone, address, subtotal, delivery, total, payment_method, notes, items)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                 ON CONFLICT (id) DO NOTHING`,
                 [
                     order.id,
                     order.date,
@@ -403,21 +461,13 @@ async function initializeDatabase() {
             );
         }
     }
-
-    const existingCustomers = await pool.query('SELECT id FROM customers LIMIT 1');
-    if (existingCustomers.rowCount === 0) {
-        for (const customer of SEED_CUSTOMERS) {
-            await pool.query(
-                `INSERT INTO customers (name, email, phone, address, joined, orders_count, spent)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-                [customer.name, customer.email, customer.phone, customer.address, customer.joined, customer.orders, customer.spent]
-            );
-        }
-    }
 }
 
 module.exports = {
     pool,
     initializeDatabase,
-    SEED_PRODUCTS
+    SEED_PRODUCTS,
+    SEED_USERS,
+    SEED_CUSTOMERS,
+    SEED_ORDERS
 };

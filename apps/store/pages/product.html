@@ -220,25 +220,27 @@
             const id = parseInt(getUrlParam('id'));
             window.__currentProductId = id;
 
-            let products = [];
-            try {
-                const res = await fetch('/api/products');
-                if (res.ok) {
-                    products = await res.json();
+            let product = null;
+            if (!isNaN(id) && id > 0) {
+                try {
+                    const res = await fetch(`/api/products/${id}`);
+                    if (res.ok) {
+                        product = await res.json();
+                    }
+                } catch (err) {
+                    console.warn('Failed to load product detail from API:', err);
                 }
-            } catch (err) {
-                console.warn('Failed to load products:', err);
             }
 
-            if (!Array.isArray(products) || products.length === 0) {
+            if (!product) {
+                let products = [];
                 if (typeof getProducts === 'function') {
                     products = getProducts();
                 } else if (typeof PRODUCTS !== 'undefined') {
                     products = PRODUCTS;
                 }
+                product = (products || []).find(p => p.id === id);
             }
-
-            const product = (products || []).find(p => p.id === id);
 
             if (!product) {
                 document.getElementById('productDetailGrid').innerHTML = `

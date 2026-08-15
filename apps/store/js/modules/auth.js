@@ -6,18 +6,32 @@ export function getCurrentUser() {
 }
 
 export function setCurrentUser(user) {
-    const prevGuestId = localStorage.getItem('ph_wishlist_session_id');
+    const prevWishlistGuestId = localStorage.getItem('ph_wishlist_session_id');
+    const prevCartGuestId = localStorage.getItem('ph_cart_session_id');
     localStorage.setItem('ph_current_user', JSON.stringify(user));
     const newUserId = `user-${user?.id ?? user?.customerId ?? user?.email}`;
+    const newCartSessionId = `cart-user-${user?.id ?? user?.customerId ?? user?.email}`;
 
-    if (prevGuestId && typeof window !== 'undefined') {
+    if (prevWishlistGuestId && typeof window !== 'undefined') {
         fetch('/api/wishlist/migrate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guestId: `anon-${prevGuestId}`, userId: newUserId })
+            body: JSON.stringify({ guestId: `anon-${prevWishlistGuestId}`, userId: newUserId })
         }).catch(() => {}).finally(() => {
             if (typeof window.dispatchEvent === 'function') {
                 window.dispatchEvent(new Event('wishlist:updated'));
+            }
+        });
+    }
+
+    if (prevCartGuestId && typeof window !== 'undefined') {
+        fetch('/api/cart/migrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ guestSessionId: `cart-anon-${prevCartGuestId}`, userSessionId: newCartSessionId })
+        }).catch(() => {}).finally(() => {
+            if (typeof window.dispatchEvent === 'function') {
+                window.dispatchEvent(new Event('cart:updated'));
             }
         });
     }
