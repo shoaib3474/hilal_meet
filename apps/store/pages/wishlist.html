@@ -180,24 +180,22 @@
     <script src="/js/data.js"></script>
     <script type="module" src="/js/main.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            await renderWishlistPage();
+        document.addEventListener('DOMContentLoaded', () => {
+            renderWishlistPage();
             window.addEventListener('wishlist:updated', renderWishlistPage);
         });
 
-        async function renderWishlistPage() {
+        function renderWishlistPage() {
             const container = document.getElementById('wishlistContainer');
             if (!container) return;
 
             let wishlistProducts = [];
-            if (typeof hydrateWishlistFromServer === 'function') {
-                wishlistProducts = await hydrateWishlistFromServer();
+            if (typeof getWishlistItems === 'function') {
+                wishlistProducts = getWishlistItems();
             }
 
-            if (!Array.isArray(wishlistProducts) || wishlistProducts.length === 0) {
-                if (typeof getWishlistItems === 'function') {
-                    wishlistProducts = getWishlistItems();
-                }
+            if ((!Array.isArray(wishlistProducts) || wishlistProducts.length === 0) && typeof getWishlist === 'function') {
+                wishlistProducts = getWishlist().map(id => ({ id }));
             }
 
             if (!Array.isArray(wishlistProducts) || wishlistProducts.length === 0) {

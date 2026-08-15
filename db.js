@@ -10,10 +10,23 @@ const connectionString = process.env.DATABASE_URL
     || process.env.NEON_DATABASE_URL
     || '';
 
-const isRemoteDatabase = Boolean(connectionString) && /postgres(?:ql)?:\/\//i.test(connectionString);
+function normalizeConnectionString(value) {
+    if (!value) return '';
+
+    const cleaned = value.replace(/([?&])sslmode=(prefer|require|verify-ca)/gi, '$1sslmode=verify-full');
+    if (/(?:^|[?&])sslmode=/i.test(cleaned)) {
+        return cleaned;
+    }
+
+    const separator = cleaned.includes('?') ? '&' : '?';
+    return `${cleaned}${separator}sslmode=verify-full`;
+}
+
+const normalizedConnectionString = normalizeConnectionString(connectionString);
+const isRemoteDatabase = Boolean(normalizedConnectionString) && /postgres(?:ql)?:\/\//i.test(normalizedConnectionString);
 
 const pool = new Pool({
-    ...(connectionString ? { connectionString } : {
+    ...(normalizedConnectionString ? { connectionString: normalizedConnectionString } : {
         host: process.env.POSTGRES_HOST || 'localhost',
         port: Number(process.env.POSTGRES_PORT || 5432),
         database: process.env.POSTGRES_DB || 'hilal_meet',
