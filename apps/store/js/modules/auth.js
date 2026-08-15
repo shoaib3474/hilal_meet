@@ -8,6 +8,7 @@ export function getCurrentUser() {
 export function setCurrentUser(user) {
     localStorage.setItem('ph_current_user', JSON.stringify(user));
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+        window.dispatchEvent(new Event('auth:changed'));
         window.dispatchEvent(new Event('wishlist:updated'));
     }
 }
@@ -15,10 +16,10 @@ export function setCurrentUser(user) {
 export function logout() {
     localStorage.removeItem('ph_current_user');
 
-    // Hard clear cart UI/cache so logged-out users never see old cart items.
     try {
         if (typeof window !== 'undefined') {
             window.__cartCache = [];
+            window.dispatchEvent?.(new Event('auth:changed'));
             window.dispatchEvent?.(new Event('cart:updated'));
             window.dispatchEvent?.(new Event('wishlist:updated'));
         }

@@ -118,6 +118,19 @@ export async function hydrateWishlistFromServer(force = false) {
     return wishlistSyncInFlight;
 }
 
+export function syncWishlistStateForCurrentUser() {
+    const userId = getWishlistUserId();
+    if (!userId) {
+        wishlistCache = [];
+        wishlistItemsCache = [];
+        wishlistLastHydratedAt = 0;
+        notifyWishlistUpdated();
+        return Promise.resolve([]);
+    }
+
+    return hydrateWishlistFromServer(true);
+}
+
 export function getWishlist() {
     return Array.isArray(wishlistCache) ? [...wishlistCache] : [];
 }
@@ -215,6 +228,16 @@ export async function clearWishlist() {
 
 export async function migrateGuestWishlistToUser() {
     return;
+}
+
+if (typeof window !== 'undefined') {
+    window.addEventListener('auth:changed', () => {
+        void syncWishlistStateForCurrentUser();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        void syncWishlistStateForCurrentUser();
+    });
 }
 
 
