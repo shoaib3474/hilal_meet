@@ -10,9 +10,17 @@ dotenv.config({ path: '.env.local' });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({ limit: '25mb', strict: false }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
+
+app.use((err, req, res, next) => {
+    if (err && err.type === 'entity.parse.failed') {
+        console.warn('JSON parse failed for', req.method, req.path, err.message);
+        return res.status(400).json({ success: false, error: 'Invalid JSON payload' });
+    }
+    next(err);
+});
 
 let databaseReady = false;
 
