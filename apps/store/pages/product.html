@@ -248,48 +248,53 @@
             </div>
         </div>
         <div class="product-info">
-            ${product.badge ? `<span class="product-badge badge-${product.badge.toLowerCase().replace(/\s/g, '-')}" style="position:static;display:inline-block;margin-bottom:12px;">${product.badge}</span>` : ''}
-            <h1 class="product-title">${product.name}</h1>
-            <div class="product-meta">
-                <span><i class="fa-solid fa-weight-hanging"></i> ${product.weight}</span>
-                <span><i class="fa-solid fa-tag"></i> ${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
-                <span><i class="fa-solid fa-certificate" style="color:var(--primary);"></i> Halal Certified</span>
+            <div class="product-info-header">
+                ${product.badge ? `<span class="product-badge badge-${product.badge.toLowerCase().replace(/\s/g, '-')}">${product.badge}</span>` : ''}
+                <h1 class="product-title">${product.name}</h1>
+                <div class="product-meta">
+                    <div class="product-meta-row">
+                        <span><i class="fa-solid fa-weight-hanging"></i> ${product.weight}</span>
+                        <span><i class="fa-solid fa-tag"></i> ${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
+                    </div>
+                    <div class="product-meta-row">
+                        <span><i class="fa-solid fa-certificate"></i> Halal Certified</span>
+                    </div>
+                </div>
+                <div class="product-rating">
+                    <span class="stars">${stars}</span>
+                    <span class="rating-text">${product.rating || 4.5} (${product.reviews || 0} reviews)</span>
+                </div>
+                <div class="price-block">
+                    <span class="price">£${price.toFixed(2)}</span>
+                    ${product.salePrice ? `<span class="old">£${product.price.toFixed(2)}</span><span class="save">Save -${savePct}%</span>` : ''}
+                </div>
             </div>
-            <div class="product-rating" style="margin-bottom:16px;font-size:0.9rem;">
-                <span class="stars" style="color:var(--gold);">${stars}</span>
-                <span style="margin-left:6px;color:var(--text-muted);">${product.rating} (${product.reviews} reviews)</span>
-            </div>
-            <div class="price-block">
-                <span class="price">£${price.toFixed(2)}</span>
-                ${product.salePrice ? `<span class="old">£${product.price.toFixed(2)}</span><span class="save">Save ${savePct}%</span>` : ''}
-            </div>
-            <p class="desc">${product.description}</p>
 
             <div class="qty-selector">
                 <label>Quantity:</label>
                 <div class="qty-wrap">
-                    <button onclick="changeQty(-1)">-</button>
+                    <button type="button" onclick="changeQty(-1)">-</button>
                     <input type="number" id="qtyInput" value="1" min="1" max="99">
-                    <button onclick="changeQty(1)">+</button>
+                    <button type="button" onclick="changeQty(1)">+</button>
                 </div>
             </div>
 
             <div class="add-to-cart-row">
                 <button class="btn btn-primary btn-add" onclick="addProductToCart()">
-                    <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    <i class="fa-solid fa-cart-shopping"></i> Add to Cart
                 </button>
-                <button class="btn btn-outline" onclick="toggleWishlist(this, ${product.id})" style="width:50px;">
+                <button class="btn-wishlist-detail" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
 
-            <div style="background:var(--primary-bg);border-radius:var(--radius);padding:16px;margin-bottom:20px;">
-                <div style="display:flex;gap:20px;flex-wrap:wrap;">
-                    <span style="font-size:0.83rem;color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> Same-day delivery available</span>
-                    <span style="font-size:0.83rem;color:var(--primary);"><i class="fa-solid fa-certificate"></i> 100% Halal Certified</span>
-                    <span style="font-size:0.83rem;color:var(--primary);"><i class="fa-solid fa-leaf"></i> Farm fresh daily</span>
-                </div>
+            <div class="product-trust-banner">
+                <span class="trust-item-pill"><i class="fa-solid fa-truck-fast"></i> Same-day delivery available</span>
+                <span class="trust-item-pill"><i class="fa-solid fa-certificate"></i> 100% Halal Certified</span>
+                <span class="trust-item-pill"><i class="fa-solid fa-leaf"></i> Farm fresh daily</span>
             </div>
+
+            <p class="desc">${product.description}</p>
 
             <div class="product-tags">
                 <span class="product-tag">${product.category}</span>
@@ -298,7 +303,7 @@
                 ${product.badge ? `<span class="product-tag">${product.badge}</span>` : ''}
             </div>
 
-            <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+            <div class="product-extra-meta" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
                 <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:0.85rem;color:var(--text-muted);">
                     <span><strong>SKU:</strong> PH-${String(product.id).padStart(4, '0')}</span>
                     <span><strong>Category:</strong> <a href="/shop?cat=${product.category}" style="color:var(--primary);">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</a></span>
