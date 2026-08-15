@@ -3,6 +3,7 @@ import { getCurrentUser } from './auth.js';
 
 let wishlistCache = null;
 let wishlistItemsCache = null;
+let wishlistSyncInFlight = null;
 
 export function getWishlistUserId() {
     if (typeof window === 'undefined') return '';
@@ -76,6 +77,9 @@ function notifyWishlistUpdated() {
 
 export async function hydrateWishlistFromServer() {
     if (typeof window === 'undefined' || typeof fetch !== 'function') return [];
+    if (wishlistSyncInFlight) {
+        return wishlistSyncInFlight;
+    }
 
     const userId = getWishlistUserId();
     if (!userId) {
@@ -85,46 +89,52 @@ export async function hydrateWishlistFromServer() {
         return [];
     }
 
-    try {
-        const response = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
-            headers: { 'x-user-id': userId }
-        });
-
-        if (!response.ok) throw new Error('Unable to load wishlist');
-
-        const data = await response.json();
-        if (Array.isArray(data.productIds)) {
-            const raw = data.productIds.map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
-            wishlistCache = Array.from(new Set(raw));
-            wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
-            try {
-                localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-            } catch (_) { }
-            notifyWishlistUpdated();
-            return wishlistItemsCache;
-        }
-
-        wishlistCache = [];
-        wishlistItemsCache = [];
+    wishlistSyncInFlight = (async () => {
         try {
-            localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
-        } catch (_) { }
-        notifyWishlistUpdated();
-        return [];
-    } catch (error) {
-        console.warn('Wishlist server sync fallback:', error.message);
-        try {
-            const local = localStorage.getItem(`ph_wishlist_${userId}`);
-            const parsed = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
-            wishlistCache = Array.from(new Set(parsed));
-            wishlistItemsCache = [];
-        } catch (_) {
+            const response = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
+                headers: { 'x-user-id': userId }
+            });
+
+            if (!response.ok) throw new Error('Unable to load wishlist');
+
+            const data = await response.json();
+            if (Array.isArray(data.productIds)) {
+                const raw = data.productIds.map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
+                wishlistCache = Array.from(new Set(raw));
+                wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
+                try {
+                    localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
+                } catch (_) { }
+                notifyWishlistUpdated();
+                return wishlistItemsCache;
+            }
+
             wishlistCache = [];
             wishlistItemsCache = [];
+            try {
+                localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
+            } catch (_) { }
+            notifyWishlistUpdated();
+            return [];
+        } catch (error) {
+            console.warn('Wishlist server sync fallback:', error.message);
+            try {
+                const local = localStorage.getItem(`ph_wishlist_${userId}`);
+                const parsed = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
+                wishlistCache = Array.from(new Set(parsed));
+                wishlistItemsCache = [];
+            } catch (_) {
+                wishlistCache = [];
+                wishlistItemsCache = [];
+            }
+            notifyWishlistUpdated();
+            return wishlistItemsCache || [];
+        } finally {
+            wishlistSyncInFlight = null;
         }
-        notifyWishlistUpdated();
-        return wishlistItemsCache || [];
-    }
+    })();
+
+    return wishlistSyncInFlight;
 }
 
 export function getWishlist() {
