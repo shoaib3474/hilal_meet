@@ -316,7 +316,7 @@ app.get('/api/wishlist', async (req, res) => {
     }
 
     const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
-    const allProducts = getFallbackProducts();
+    const allProducts = inMemoryProducts;
     const items = userRecords.map(rec => {
         const p = allProducts.find(prod => prod.id === rec.product_id);
         return p ? { ...p, wishlistedAt: rec.created_at } : null;
@@ -407,7 +407,7 @@ app.post('/api/wishlist/toggle', async (req, res) => {
         return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
     } catch (_) {
         const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
-        const allProducts = getFallbackProducts();
+        const allProducts = inMemoryProducts;
         const items = userRecords.map(rec => allProducts.find(p => p.id === rec.product_id)).filter(Boolean);
         return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
     }
@@ -570,7 +570,7 @@ app.get('/api/cart', async (req, res) => {
     }
 
     const sessionRecords = inMemoryCartItems.filter(item => item.session_id === sessionId);
-    const allProducts = getFallbackProducts();
+    const allProducts = inMemoryProducts;
     const items = sessionRecords.map(rec => {
         const prod = allProducts.find(p => p.id === rec.product_id);
         if (!prod) return null;

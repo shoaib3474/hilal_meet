@@ -4,24 +4,8 @@ import { getProducts, createProduct, updateProduct, updateProductStock, deletePr
 
 let editingProductId = null;
 let productsCache = [];
-let selectedDeviceImage = null; // { dataUrl, name, size }
+let selectedGalleryImage = null;
 let existingProductImage = null;
-
-function parseGalleryUrls(value = '') {
-    return value
-        .split(/\r?\n/)
-        .map((url) => url.trim())
-        .filter(Boolean)
-        .filter((url, index, array) => array.indexOf(url) === index);
-}
-
-function formatFileSize(bytes) {
-    if (!bytes || bytes === 0) return '0 KB';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
 
 function compressImage(file, maxDimension = 1200, quality = 0.85) {
     return new Promise((resolve, reject) => {
@@ -56,181 +40,39 @@ function compressImage(file, maxDimension = 1200, quality = 0.85) {
     });
 }
 
-export function initProductImageDropzone() {
-    const dropzone = document.getElementById('galleryDropzone');
-    if (!dropzone) return;
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropzone.classList.add('drag-over');
-        }, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropzone.classList.remove('drag-over');
-        }, false);
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt?.files;
-        if (files && files.length > 0) {
-            handleGalleryFileSelect(files);
-        }
-    }, false);
-}
-
-export function triggerGalleryFilePicker() {
-    const fileInput = document.getElementById('pGalleryFileInput');
-    if (fileInput) {
-        fileInput.click();
-    }
-}
-
-export async function handleGalleryFileSelect(files) {
+export async function handleGalleryFile(files) {
     if (!files || files.length === 0) return;
     const file = files[0];
     if (!file.type.startsWith('image/')) {
-        adminToast('Please select a valid image file (JPG, PNG, WebP)', 'error');
+        adminToast('Please select a valid image file', 'error');
         return;
     }
 
     try {
-        const compressedDataUrl = await compressImage(file, 1200, 0.85);
-        selectedDeviceImage = {
-            dataUrl: compressedDataUrl,
-            name: file.name,
-            size: file.size
-        };
-
-        const previewImg = document.getElementById('deviceImgPreview');
-        const fileNameEl = document.getElementById('deviceFileName');
-        const fileMetaEl = document.getElementById('deviceFileMeta');
-        const previewCard = document.getElementById('devicePreviewCard');
-        const dropzone = document.getElementById('galleryDropzone');
-
-        if (previewImg) previewImg.src = compressedDataUrl;
-        if (fileNameEl) fileNameEl.textContent = file.name;
-        if (fileMetaEl) fileMetaEl.textContent = `${formatFileSize(file.size)} • Ready to save`;
-        if (previewCard) previewCard.style.display = 'flex';
-        if (dropzone) dropzone.style.display = 'none';
-
-        updateImageStatusUI();
-    } catch (err) {
-        console.error('Error processing gallery image:', err);
-        adminToast('Failed to process device image', 'error');
+        const dataUrl = await compressImage(file, 1200, 0.85);
+        selectedGalleryImage = dataUrl;
+        const img = document.getElementById('imgPreview');
+        if (img) {
+            img.src = dataUrl;
+            img.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error reading gallery image:', error);
+        adminToast('Failed to load gallery image', 'error');
     }
 }
 
-export function removeDeviceGalleryImage() {
-    selectedDeviceImage = null;
-    const fileInput = document.getElementById('pGalleryFileInput');
-    if (fileInput) fileInput.value = '';
-
-    const previewCard = document.getElementById('devicePreviewCard');
-    const dropzone = document.getElementById('galleryDropzone');
-    if (previewCard) previewCard.style.display = 'none';
-    if (dropzone) dropzone.style.display = 'flex';
-
-    updateImageStatusUI();
-}
-
-export function onOnlineUrlInput(url) {
-    const trimmed = (url || '').trim();
-    const clearBtn = document.getElementById('btnClearUrl');
-    const previewBox = document.getElementById('urlPreviewBox');
-    const previewImg = document.getElementById('urlImgPreview');
-
-    if (clearBtn) clearBtn.style.display = trimmed ? 'flex' : 'none';
-
-    if (trimmed) {
-        if (previewImg) previewImg.src = trimmed;
-        if (previewBox) previewBox.style.display = 'flex';
+export function previewImage(url) {
+    const img = document.getElementById('imgPreview');
+    if (!img) return;
+    if (url) {
+        img.src = url;
+        img.style.display = 'block';
+    } else if (selectedGalleryImage) {
+        img.src = selectedGalleryImage;
+        img.style.display = 'block';
     } else {
-        if (previewBox) previewBox.style.display = 'none';
-    }
-
-    updateImageStatusUI();
-}
-
-export function clearOnlineUrl() {
-    const urlInput = document.getElementById('pImage');
-    if (urlInput) urlInput.value = '';
-    onOnlineUrlInput('');
-}
-
-export function onUrlImageError() {
-    const previewBox = document.getElementById('urlPreviewBox');
-    if (previewBox) {
-        previewBox.innerHTML = `
-            <div style="font-size:0.75rem;color:var(--red);display:flex;align-items:center;gap:6px;">
-                <i class="fa-solid fa-triangle-exclamation"></i> Unable to load image from URL
-            </div>
-        `;
-    }
-}
-
-function updateImageStatusUI() {
-    const urlInput = document.getElementById('pImage');
-    const onlineUrl = urlInput ? urlInput.value.trim() : '';
-    const hasDeviceImage = Boolean(selectedDeviceImage);
-    const hasExistingImage = Boolean(editingProductId && existingProductImage && !onlineUrl && !hasDeviceImage);
-
-    const cardOnline = document.getElementById('cardOnlineUrl');
-    const cardGallery = document.getElementById('cardDeviceGallery');
-    const urlBadge = document.getElementById('urlStatusBadge');
-    const galleryBadge = document.getElementById('galleryStatusBadge');
-    const reqBadge = document.getElementById('imageRequirementBadge');
-    const section = document.getElementById('productImageSection');
-
-    if (section) section.classList.remove('has-error');
-
-    // Online URL Card State
-    if (onlineUrl) {
-        if (cardOnline) cardOnline.classList.add('active');
-        if (urlBadge) {
-            urlBadge.textContent = 'Provided';
-            urlBadge.className = 'source-status-badge provided';
-        }
-    } else {
-        if (cardOnline) cardOnline.classList.remove('active');
-        if (urlBadge) {
-            urlBadge.textContent = hasDeviceImage ? 'Optional (Gallery used)' : 'Optional';
-            urlBadge.className = 'source-status-badge optional';
-        }
-    }
-
-    // Device Gallery Card State
-    if (hasDeviceImage) {
-        if (cardGallery) cardGallery.classList.add('active');
-        if (galleryBadge) {
-            galleryBadge.textContent = 'Provided';
-            galleryBadge.className = 'source-status-badge provided';
-        }
-    } else {
-        if (cardGallery && !hasExistingImage) cardGallery.classList.remove('active');
-        if (galleryBadge) {
-            galleryBadge.textContent = onlineUrl ? 'Optional (URL used)' : 'Optional';
-            galleryBadge.className = 'source-status-badge optional';
-        }
-    }
-
-    // Top Requirement Badge
-    if (onlineUrl || hasDeviceImage || hasExistingImage) {
-        if (reqBadge) {
-            reqBadge.textContent = '✓ Image provided';
-            reqBadge.className = 'image-requirement-badge valid';
-        }
-    } else {
-        if (reqBadge) {
-            reqBadge.textContent = 'Provide either Online URL or Device Gallery Image';
-            reqBadge.className = 'image-requirement-badge';
-        }
+        img.style.display = 'none';
     }
 }
 
@@ -322,7 +164,7 @@ export async function editProduct(productId) {
     if (!p) return;
     editingProductId = productId;
     existingProductImage = p.image || null;
-    selectedDeviceImage = null;
+    selectedGalleryImage = null;
 
     document.getElementById('modalTitle').textContent = 'Edit Product';
     document.getElementById('pName').value = p.name || '';
@@ -334,61 +176,36 @@ export async function editProduct(productId) {
     document.getElementById('pBadge').value = p.badge || '';
     document.getElementById('pInStock').checked = Boolean(p.inStock);
 
-    const urlInput = document.getElementById('pImage');
-    const fileInput = document.getElementById('pGalleryFileInput');
-    if (fileInput) fileInput.value = '';
+    const imageInput = document.getElementById('pImage');
+    const galleryInput = document.getElementById('pGallery');
+    if (galleryInput) galleryInput.value = '';
 
-    const previewCard = document.getElementById('devicePreviewCard');
-    const dropzone = document.getElementById('galleryDropzone');
-
-    if (p.image && p.image.startsWith('data:image/')) {
-        // Device upload / base64 image
-        if (urlInput) urlInput.value = '';
-        onOnlineUrlInput('');
-        const previewImg = document.getElementById('deviceImgPreview');
-        const fileNameEl = document.getElementById('deviceFileName');
-        const fileMetaEl = document.getElementById('deviceFileMeta');
-        if (previewImg) previewImg.src = p.image;
-        if (fileNameEl) fileNameEl.textContent = 'Current Product Image';
-        if (fileMetaEl) fileMetaEl.textContent = 'Device gallery image saved';
-        if (previewCard) previewCard.style.display = 'flex';
-        if (dropzone) dropzone.style.display = 'none';
-        selectedDeviceImage = { dataUrl: p.image, name: 'Current Image', size: 0 };
-    } else if (p.image) {
-        // Online URL image
-        if (urlInput) urlInput.value = p.image;
-        onOnlineUrlInput(p.image);
-        if (previewCard) previewCard.style.display = 'none';
-        if (dropzone) dropzone.style.display = 'flex';
-    } else {
-        if (urlInput) urlInput.value = '';
-        onOnlineUrlInput('');
-        if (previewCard) previewCard.style.display = 'none';
-        if (dropzone) dropzone.style.display = 'flex';
+    if (imageInput) {
+        imageInput.value = p.image && !p.image.startsWith('data:') ? p.image : '';
     }
 
-    updateImageStatusUI();
+    const preview = document.getElementById('imgPreview');
+    if (preview) {
+        if (p.image) {
+            preview.src = p.image;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
     openModal('productModal');
 }
 
 export function openAddProductModal() {
     editingProductId = null;
     existingProductImage = null;
-    selectedDeviceImage = null;
+    selectedGalleryImage = null;
 
     document.getElementById('modalTitle').textContent = 'Add New Product';
     document.getElementById('productForm')?.reset();
-
-    const fileInput = document.getElementById('pGalleryFileInput');
-    if (fileInput) fileInput.value = '';
-
-    const previewCard = document.getElementById('devicePreviewCard');
-    const dropzone = document.getElementById('galleryDropzone');
-    if (previewCard) previewCard.style.display = 'none';
-    if (dropzone) dropzone.style.display = 'flex';
-
-    clearOnlineUrl();
-    updateImageStatusUI();
+    const preview = document.getElementById('imgPreview');
+    if (preview) preview.style.display = 'none';
     openModal('productModal');
 }
 
@@ -402,42 +219,28 @@ export async function saveProduct() {
     const badge = document.getElementById('pBadge')?.value || null;
     const inStock = document.getElementById('pInStock')?.checked ?? true;
 
-    // Check standard required fields
+    // Check required basic fields
     if (!name || !category || isNaN(price) || !weight) {
         adminToast('Please fill in all required fields (Name, Category, Price, Weight)', 'error');
         return;
     }
 
-    // Dual Image Validation
+    // Dual Image Validation (either Online URL OR Gallery image)
     const onlineUrl = document.getElementById('pImage')?.value.trim() || '';
-    const deviceImage = selectedDeviceImage?.dataUrl || '';
-    const existingImg = (editingProductId && !onlineUrl && !deviceImage) ? existingProductImage : '';
+    const galleryImage = selectedGalleryImage || (editingProductId && !onlineUrl ? existingProductImage : null);
 
-    const primaryImage = deviceImage || onlineUrl || existingImg;
+    const primaryImage = onlineUrl || galleryImage;
 
     if (!primaryImage) {
-        adminToast('Please provide a product image (either an Online Image URL or select an image from your Device Gallery)', 'error');
-        const section = document.getElementById('productImageSection');
-        if (section) section.classList.add('has-error');
-        const reqBadge = document.getElementById('imageRequirementBadge');
-        if (reqBadge) {
-            reqBadge.textContent = '⚠ Required: Provide URL or Device Image';
-            reqBadge.className = 'image-requirement-badge error';
-        }
+        adminToast('Please provide an Online Image URL or choose a Gallery Image from your device', 'error');
         return;
     }
 
     try {
-        // Construct gallery
-        const gallery = [];
-        if (deviceImage) gallery.push(deviceImage);
-        if (onlineUrl && onlineUrl !== deviceImage) gallery.push(onlineUrl);
-        if (gallery.length === 0 && existingImg) gallery.push(existingImg);
-
         const productData = {
             name, category, price, salePrice, weight, description,
             image: primaryImage,
-            gallery: gallery.length ? gallery : [primaryImage],
+            gallery: [primaryImage],
             badge, inStock, featured: false, rating: 4.5, reviews: 0
         };
 
@@ -473,4 +276,3 @@ export async function confirmDeleteProduct(productId) {
         }
     }
 }
-
