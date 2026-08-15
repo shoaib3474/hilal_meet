@@ -218,17 +218,27 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             const id = parseInt(getUrlParam('id'));
+            window.__currentProductId = id;
 
             let products = [];
             try {
                 const res = await fetch('/api/products');
-                products = res.ok ? await res.json() : [];
+                if (res.ok) {
+                    products = await res.json();
+                }
             } catch (err) {
                 console.warn('Failed to load products:', err);
-                products = [];
             }
 
-            const product = products.find(p => p.id === id);
+            if (!Array.isArray(products) || products.length === 0) {
+                if (typeof getProducts === 'function') {
+                    products = getProducts();
+                } else if (typeof PRODUCTS !== 'undefined') {
+                    products = PRODUCTS;
+                }
+            }
+
+            const product = (products || []).find(p => p.id === id);
 
             if (!product) {
                 document.getElementById('productDetailGrid').innerHTML = `

@@ -15,23 +15,204 @@ const pool = new Pool({
 
 const SEED_PRODUCTS = [
     {
+        id: 1,
         name: 'Whole Chicken', category: 'chicken', price: 7.99, salePrice: null, weight: '1.2kg avg',
         image: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=80',
-        gallery: ['https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=800&q=80'],
-        description: 'Fresh whole halal chicken.', inStock: true, featured: true, badge: 'Best Seller', rating: 4.9, reviews: 124
+        gallery: ['https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=800&q=80', 'https://images.unsplash.com/photo-1563897539633-7374c276c212?w=800&q=80'],
+        description: 'Fresh whole halal chicken, hand-slaughtered following Islamic guidelines. Perfect for roasting, currying or grilling. Sourced from UK farms.',
+        inStock: true, featured: true, badge: 'Best Seller', rating: 4.9, reviews: 124
     },
-
     {
+        id: 2,
+        name: 'Chicken Breast (Boneless)', category: 'chicken', price: 8.99, salePrice: 7.49, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1604503468506-a8da13d11e19?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1604503468506-a8da13d11e19?w=800&q=80'],
+        description: 'Lean, boneless chicken breast fillet. Ideal for grilling, stir-fry, salads or curries. Low fat and high protein.',
+        inStock: true, featured: true, badge: 'Sale', rating: 4.8, reviews: 98
+    },
+    {
+        id: 3,
+        name: 'Chicken Wings', category: 'chicken', price: 5.49, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=800&q=80'],
+        description: 'Fresh chicken wings, perfect for BBQ, frying, or marinating. Great for parties and family meals.',
+        inStock: true, featured: true, badge: null, rating: 4.7, reviews: 76
+    },
+    {
+        id: 4,
+        name: 'Chicken Thighs (Bone-in)', category: 'chicken', price: 6.49, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1569209257695-79f51ee4c11b?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1569209257695-79f51ee4c11b?w=800&q=80'],
+        description: 'Juicy chicken thighs with bone. Perfect for curries, oven-baking and roasting. More flavourful than breast.',
+        inStock: true, featured: false, badge: null, rating: 4.6, reviews: 55
+    },
+    {
+        id: 5,
+        name: 'Chicken Drumsticks', category: 'chicken', price: 5.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c4?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1598103442097-8b74394b95c4?w=800&q=80'],
+        description: "Fresh chicken drumsticks, great for BBQ, baking or frying. Kids' favourite.",
+        inStock: true, featured: false, badge: null, rating: 4.5, reviews: 42
+    },
+    {
+        id: 6,
+        name: 'Chicken Mince', category: 'chicken', price: 6.99, salePrice: null, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80'],
+        description: 'Fresh chicken mince. Ideal for burgers, kebabs, pasta and stuffed dishes.',
+        inStock: true, featured: false, badge: null, rating: 4.4, reviews: 33
+    },
+    {
+        id: 7,
         name: 'Lamb Chops', category: 'lamb', price: 14.99, salePrice: null, weight: '1kg',
         image: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=500&q=80',
         gallery: ['https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=800&q=80'],
-        description: 'Premium quality lamb chops.', inStock: true, featured: true, badge: 'Popular', rating: 4.9, reviews: 151
+        description: 'Premium quality lamb chops, tender and full of flavour. Perfect for grilling, BBQ or pan-frying.',
+        inStock: true, featured: true, badge: 'Popular', rating: 4.9, reviews: 151
     },
     {
+        id: 8,
+        name: 'Lamb Leg (Whole)', category: 'lamb', price: 29.99, salePrice: 24.99, weight: '2kg avg',
+        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80'],
+        description: 'Whole lamb leg, ideal for Sunday roast, Eid celebrations or slow-cooking. Succulent and flavourful.',
+        inStock: true, featured: true, badge: 'Sale', rating: 4.8, reviews: 87
+    },
+    {
+        id: 9,
+        name: 'Lamb Shoulder (Diced)', category: 'lamb', price: 12.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80'],
+        description: 'Diced lamb shoulder, perfect for curries, stews and slow cooking. Rich, tender meat.',
+        inStock: true, featured: false, badge: null, rating: 4.7, reviews: 63
+    },
+    {
+        id: 10,
+        name: 'Lamb Mince', category: 'lamb', price: 9.99, salePrice: null, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80'],
+        description: "Fresh lamb mince, ideal for koftas, burgers, Bolognese, shepherd's pie and more.",
+        inStock: true, featured: true, badge: null, rating: 4.8, reviews: 112
+    },
+    {
+        id: 11,
+        name: 'Lamb Shank', category: 'lamb', price: 11.99, salePrice: null, weight: 'per shank ~400g',
+        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80'],
+        description: 'Succulent lamb shank, perfect for slow cooking and braising. Falls off the bone.',
+        inStock: true, featured: false, badge: null, rating: 4.9, reviews: 44
+    },
+    {
+        id: 12,
         name: 'Beef Mince', category: 'beef', price: 8.49, salePrice: null, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80'],
+        description: 'Fresh lean beef mince. Great for burgers, pasta, cottage pie and traditional dishes.',
+        inStock: true, featured: true, badge: 'Best Seller', rating: 4.8, reviews: 143
+    },
+    {
+        id: 13,
+        name: 'Sirloin Steak', category: 'beef', price: 16.99, salePrice: null, weight: '300g',
         image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=500&q=80',
         gallery: ['https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800&q=80'],
-        description: 'Fresh halal beef mince.', inStock: true, featured: false, badge: null, rating: 4.7, reviews: 67
+        description: 'Premium halal sirloin steak. Tender, juicy and full of flavour. Perfect for grilling or pan-frying.',
+        inStock: true, featured: true, badge: 'Premium', rating: 4.9, reviews: 68
+    },
+    {
+        id: 14,
+        name: 'Beef Ribs', category: 'beef', price: 13.99, salePrice: 11.99, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80'],
+        description: 'Meaty beef ribs, perfect for slow cooking, BBQ or braising. Fall-off-the-bone tender.',
+        inStock: true, featured: false, badge: 'Sale', rating: 4.7, reviews: 52
+    },
+    {
+        id: 15,
+        name: 'Beef Brisket', category: 'beef', price: 12.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800&q=80'],
+        description: 'Fresh halal beef brisket cut, ideal for home roasting or slow cooking.',
+        inStock: true, featured: false, badge: null, rating: 4.6, reviews: 38
+    },
+    {
+        id: 16,
+        name: 'Beef Diced (Shoulder)', category: 'beef', price: 10.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80'],
+        description: 'Diced beef shoulder, perfect for stews, curries and casseroles.',
+        inStock: true, featured: false, badge: null, rating: 4.5, reviews: 29
+    },
+    {
+        id: 17,
+        name: 'Goat Meat (Diced)', category: 'goat', price: 12.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80'],
+        description: 'Fresh goat meat diced, perfect for traditional karahi, nihari, and biryani.',
+        inStock: true, featured: true, badge: 'Popular', rating: 4.8, reviews: 95
+    },
+    {
+        id: 18,
+        name: 'Goat Leg', category: 'goat', price: 24.99, salePrice: null, weight: '2kg avg',
+        image: 'https://images.unsplash.com/photo-1602543090842-f06d6a1095ba?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1602543090842-f06d6a1095ba?w=800&q=80'],
+        description: 'Whole goat leg, ideal for Eid celebrations and special occasions.',
+        inStock: true, featured: false, badge: null, rating: 4.7, reviews: 41
+    },
+    {
+        id: 19,
+        name: 'Goat Chops', category: 'goat', price: 11.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=800&q=80'],
+        description: 'Goat chops perfect for grilling, BBQ or traditional cooking.',
+        inStock: true, featured: false, badge: null, rating: 4.6, reviews: 33
+    },
+    {
+        id: 20,
+        name: 'Marinated Chicken Tikka', category: 'marinated', price: 10.99, salePrice: null, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80'],
+        description: 'Chicken tikka marinated in our secret blend of aromatic spices. Sold raw and ready for home oven or grill.',
+        inStock: true, featured: true, badge: 'Popular', rating: 4.9, reviews: 178
+    },
+    {
+        id: 21,
+        name: 'Marinated Lamb Chops', category: 'marinated', price: 16.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80'],
+        description: 'Succulent lamb chops marinated in aromatic spices. BBQ and grill perfect.',
+        inStock: true, featured: true, badge: 'New', rating: 4.8, reviews: 64
+    },
+    {
+        id: 22,
+        name: 'Seekh Kebab Mix', category: 'marinated', price: 9.99, salePrice: 8.49, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80'],
+        description: 'Traditional seekh kebab mix, prepared fresh in-store and sold raw for home cooking.',
+        inStock: true, featured: true, badge: 'Sale', rating: 4.8, reviews: 89
+    },
+    {
+        id: 23,
+        name: 'Marinated Chicken Wings', category: 'marinated', price: 7.99, salePrice: null, weight: '1kg',
+        image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=800&q=80'],
+        description: 'Chicken wings in our hot & spicy marinade. Fresh raw wings for home cooking.',
+        inStock: true, featured: false, badge: null, rating: 4.7, reviews: 57
+    },
+    {
+        id: 24,
+        name: 'Lamb Liver', category: 'offal', price: 5.99, salePrice: null, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80'],
+        description: 'Fresh lamb liver, rich in iron and nutrients. Great for traditional liver & onions.',
+        inStock: true, featured: false, badge: null, rating: 4.4, reviews: 28
+    },
+    {
+        id: 25,
+        name: 'Chicken Liver', category: 'offal', price: 3.99, salePrice: null, weight: '500g',
+        image: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=80',
+        gallery: ['https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=800&q=80'],
+        description: 'Fresh chicken liver, great for pâté, stir-fry and traditional recipes.',
+        inStock: true, featured: false, badge: null, rating: 4.3, reviews: 21
     }
 ];
 
@@ -236,5 +417,6 @@ async function initializeDatabase() {
 
 module.exports = {
     pool,
-    initializeDatabase
+    initializeDatabase,
+    SEED_PRODUCTS
 };

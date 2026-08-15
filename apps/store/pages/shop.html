@@ -102,7 +102,7 @@
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
                 <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
-                <a href="/wishlist.html"><i class="fa-solid fa-heart" style="color:var(--red);"></i> Wishlist</a>
+                <a href="/wishlist.html"><i class="fa-solid fa-heart" style="color:var(--white);"></i> Wishlist</a>
                 <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
                 <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
                 <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
@@ -321,14 +321,23 @@
         });
 
         async function loadProducts(cat) {
+            let products = [];
             try {
                 const res = await fetch('/api/products');
-                const products = res.ok ? await res.json() : [];
-                currentProducts = cat === 'all' ? products : products.filter(p => p.category === cat);
+                if (res.ok) {
+                    products = await res.json();
+                }
             } catch (err) {
                 console.warn('Failed to load products from API:', err);
-                currentProducts = [];
             }
+            if (!Array.isArray(products) || products.length === 0) {
+                if (typeof getProducts === 'function') {
+                    products = getProducts();
+                } else if (typeof PRODUCTS !== 'undefined') {
+                    products = PRODUCTS;
+                }
+            }
+            currentProducts = cat === 'all' ? (products || []) : (products || []).filter(p => p.category === cat);
             applySort();
         }
 

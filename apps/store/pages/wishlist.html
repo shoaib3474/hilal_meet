@@ -195,14 +195,23 @@
             let products = [];
             try {
                 const res = await fetch('/api/products');
-                products = res.ok ? await res.json() : [];
+                if (res.ok) {
+                    products = await res.json();
+                }
             } catch (err) {
-                console.warn('Failed to load products:', err);
-                products = [];
+                console.warn('Failed to load products from API:', err);
             }
 
-            const wishlistIds = typeof getWishlist === 'function' ? getWishlist() : [];
-            const wishlistProducts = products.filter(p => wishlistIds.includes(p.id));
+            if (!Array.isArray(products) || products.length === 0) {
+                if (typeof getProducts === 'function') {
+                    products = getProducts();
+                } else if (typeof PRODUCTS !== 'undefined') {
+                    products = PRODUCTS;
+                }
+            }
+
+            const wishlistIds = typeof getWishlist === 'function' ? getWishlist().map(Number) : [];
+            const wishlistProducts = (products || []).filter(p => wishlistIds.includes(Number(p.id)));
 
             if (wishlistProducts.length === 0) {
                 container.innerHTML = `

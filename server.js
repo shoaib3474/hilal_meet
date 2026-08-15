@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
-const { pool, initializeDatabase } = require('./db');
+const { pool, initializeDatabase, SEED_PRODUCTS } = require('./db');
 
 dotenv.config();
 dotenv.config({ path: '.env.local' });
@@ -54,6 +54,25 @@ function parseProductRow(row) {
     };
 }
 
+function getFallbackProducts() {
+    return (SEED_PRODUCTS || []).map((p, idx) => ({
+        id: p.id || idx + 1,
+        name: p.name,
+        category: p.category,
+        price: Number(p.price || 0),
+        salePrice: p.salePrice !== null && p.salePrice !== undefined ? Number(p.salePrice) : null,
+        weight: p.weight || '',
+        image: p.image || '',
+        gallery: Array.isArray(p.gallery) ? p.gallery : [],
+        description: p.description || '',
+        badge: p.badge || null,
+        inStock: p.inStock !== false,
+        featured: Boolean(p.featured),
+        rating: Number(p.rating || 4.5),
+        reviews: Number(p.reviews || 0)
+    }));
+}
+
 function getCartSessionId(req) {
     return req.query?.sessionId || req.get('x-cart-session-id') || req.get('x-cart-session') || '';
 }
@@ -94,11 +113,13 @@ app.get('/api/wishlist', async (req, res) => {
             'SELECT user_id, product_ids FROM wishlists WHERE user_id = $1',
             [userId]
         );
-        const productIds = rows[0] && Array.isArray(rows[0].product_ids) ? rows[0].product_ids : [];
+        const rawIds = rows[0] && Array.isArray(rows[0].product_ids) ? rows[0].product_ids : [];
+        const productIds = Array.from(new Set(rawIds.map(Number))).filter(n => !isNaN(n) && n > 0);
         inMemoryWishlists.set(userId, productIds);
         res.json({ userId, productIds });
     } catch (error) {
-        const productIds = inMemoryWishlists.get(userId) || [];
+        const raw = inMemoryWishlists.get(userId) || [];
+        const productIds = Array.from(new Set(raw.map(Number))).filter(n => !isNaN(n) && n > 0);
         res.json({ userId, productIds });
     }
 });
@@ -110,7 +131,7 @@ app.post('/api/wishlist/toggle', async (req, res) => {
     if (!userId) {
         return res.status(400).json({ error: 'User id is required' });
     }
-    if (isNaN(productId)) {
+    if (isNaN(productId) || productId <= 0) {
         return res.status(400).json({ error: 'Valid product id is required' });
     }
 
@@ -126,6 +147,7 @@ app.post('/api/wishlist/toggle', async (req, res) => {
         }
     } catch (_) {}
 
+    productIds = Array.from(new Set(productIds.map(Number))).filter(n => !isNaN(n) && n > 0);
     const idx = productIds.indexOf(productId);
     let action = '';
 
@@ -133,7 +155,7 @@ app.post('/api/wishlist/toggle', async (req, res) => {
         productIds = productIds.filter(id => id !== productId);
         action = 'removed';
     } else {
-        productIds = [...productIds, productId];
+        productIds.push(productId);
         action = 'added';
     }
 
@@ -155,7 +177,8 @@ app.post('/api/wishlist/toggle', async (req, res) => {
 
 app.put('/api/wishlist', async (req, res) => {
     const userId = getWishlistUserId(req);
-    const productIds = Array.isArray(req.body?.productIds) ? req.body.productIds.map(Number).filter(n => !isNaN(n)) : [];
+    const rawIds = Array.isArray(req.body?.productIds) ? req.body.productIds : [];
+    const productIds = Array.from(new Set(rawIds.map(Number))).filter(n => !isNaN(n) && n > 0);
 
     if (!userId) {
         return res.status(400).json({ error: 'User id is required' });
@@ -250,10 +273,34 @@ app.get('/api/products', async (req, res) => {
         const { rows } = await pool.query(
             'SELECT id, name, category, price, sale_price, weight, image, gallery, description, badge, in_stock, featured, rating, reviews FROM products ORDER BY id ASC'
         );
-        res.json(rows.map(parseProductRow));
+        if (rows && rows.length > 0) {
+            return res.json(rows.map(parseProductRow));
+        }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.warn('DB query for products failed, falling back to seed catalog:', error.message);
     }
+    res.json(getFallbackProducts());
+});
+
+app.get('/api/products/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+        const { rows } = await pool.query(
+            'SELECT id, name, category, price, sale_price, weight, image, gallery, description, badge, in_stock, featured, rating, reviews FROM products WHERE id = $1',
+            [id]
+        );
+        if (rows && rows.length > 0) {
+            return res.json(parseProductRow(rows[0]));
+        }
+    } catch (error) {
+        console.warn('DB query for product by id failed:', error.message);
+    }
+    const all = getFallbackProducts();
+    const found = all.find(p => p.id === id);
+    if (found) {
+        return res.json(found);
+    }
+    res.status(404).json({ error: 'Product not found' });
 });
 
 app.post('/api/products', async (req, res) => {

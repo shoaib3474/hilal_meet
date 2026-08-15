@@ -5,11 +5,13 @@ let wishlistCache = null;
 
 export function getWishlistUserId() {
     if (typeof window === 'undefined') return '';
-    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-    const userId = user?.id ?? user?.customerId ?? user?.email;
-    if (userId) {
-        return `user-${userId}`;
-    }
+    try {
+        const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+        const userId = user?.id ?? user?.customerId ?? user?.email;
+        if (userId) {
+            return `user-${userId}`;
+        }
+    } catch (_) {}
 
     try {
         let sid = localStorage.getItem('ph_wishlist_session_id');
@@ -23,8 +25,48 @@ export function getWishlistUserId() {
     }
 }
 
+export function syncAllWishlistButtonsOnPage() {
+    if (typeof document === 'undefined') return;
+    const wishlist = getWishlist();
+
+    // Update all product cards on current screen
+    document.querySelectorAll('.product-card').forEach(card => {
+        const idAttr = card.getAttribute('data-id');
+        const id = Number(idAttr);
+        const btn = card.querySelector('.product-wishlist');
+        if (btn && !isNaN(id) && id > 0) {
+            const inList = wishlist.includes(id);
+            btn.classList.toggle('active', inList);
+            btn.setAttribute('title', inList ? 'Remove from wishlist' : 'Add to wishlist');
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = inList ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            }
+        }
+    });
+
+    // Update product details page button
+    document.querySelectorAll('.btn-wishlist-detail').forEach(btn => {
+        let id = Number(window.__currentProductId);
+        if (isNaN(id) || id <= 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            id = Number(urlParams.get('id'));
+        }
+        if (!isNaN(id) && id > 0) {
+            const inList = wishlist.includes(id);
+            btn.classList.toggle('active', inList);
+            btn.setAttribute('title', inList ? 'Remove from wishlist' : 'Add to wishlist');
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = inList ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            }
+        }
+    });
+}
+
 function notifyWishlistUpdated() {
     updateWishlistCount();
+    syncAllWishlistButtonsOnPage();
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
         window.dispatchEvent(new Event('wishlist:updated'));
     }
@@ -49,22 +91,26 @@ export async function hydrateWishlistFromServer() {
 
         const data = await response.json();
         if (Array.isArray(data.productIds)) {
-            wishlistCache = data.productIds.map(Number).filter(n => !isNaN(n));
+            const raw = data.productIds.map(Number).filter(n => !isNaN(n) && n > 0);
+            wishlistCache = Array.from(new Set(raw));
             try {
                 localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
+                localStorage.setItem('ph_wishlist', JSON.stringify(wishlistCache));
             } catch (_) {}
             notifyWishlistUpdated();
         } else {
             wishlistCache = [];
         }
     } catch (error) {
-        console.warn('Wishlist sync unavailable:', error.message);
+        console.warn('Wishlist server sync fallback:', error.message);
         try {
-            const local = localStorage.getItem(`ph_wishlist_${userId}`);
-            wishlistCache = local ? JSON.parse(local) : [];
+            const local = localStorage.getItem(`ph_wishlist_${userId}`) || localStorage.getItem('ph_wishlist');
+            const parsed = local ? JSON.parse(local).map(Number).filter(n => !isNaN(n) && n > 0) : [];
+            wishlistCache = Array.from(new Set(parsed));
         } catch (_) {
             wishlistCache = [];
         }
+        notifyWishlistUpdated();
     }
 }
 
@@ -76,7 +122,8 @@ export function getWishlist() {
 
     try {
         const local = localStorage.getItem(`ph_wishlist_${userId}`) || localStorage.getItem('ph_wishlist');
-        wishlistCache = local ? JSON.parse(local).map(Number).filter(n => !isNaN(n)) : [];
+        const raw = local ? JSON.parse(local).map(Number).filter(n => !isNaN(n) && n > 0) : [];
+        wishlistCache = Array.from(new Set(raw));
     } catch (_) {
         wishlistCache = [];
     }
@@ -101,7 +148,7 @@ export function updateWishlistCount() {
 
 export async function toggleWishlist(btn, productId) {
     const id = Number(productId);
-    if (isNaN(id)) return;
+    if (isNaN(id) || id <= 0) return false;
 
     let wishlist = getWishlist();
     const idx = wishlist.indexOf(id);
@@ -109,22 +156,12 @@ export async function toggleWishlist(btn, productId) {
     let isAdded = false;
 
     if (idx > -1) {
-        wishlist.splice(idx, 1);
+        wishlist = wishlist.filter(item => item !== id);
         isAdded = false;
-        if (btn) {
-            const icon = btn.querySelector('i');
-            if (icon) icon.className = 'fa-regular fa-heart';
-            btn.classList.remove('active');
-        }
         showToast('Removed from wishlist', 'info');
     } else {
-        wishlist.push(id);
+        wishlist = Array.from(new Set([...wishlist, id]));
         isAdded = true;
-        if (btn) {
-            const icon = btn.querySelector('i');
-            if (icon) icon.className = 'fa-solid fa-heart';
-            btn.classList.add('active');
-        }
         showToast('Added to wishlist!', 'success');
     }
 
@@ -157,7 +194,7 @@ export async function toggleWishlist(btn, productId) {
 
 export async function removeFromWishlist(productId) {
     const id = Number(productId);
-    if (isNaN(id)) return;
+    if (isNaN(id) || id <= 0) return;
 
     let wishlist = getWishlist().filter(item => item !== id);
     const userId = getWishlistUserId();
@@ -201,7 +238,7 @@ export async function clearWishlist() {
     if (userId && typeof fetch === 'function') {
         try {
             await fetch('/api/wishlist/clear', {
-                method: 'DELETE',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-user-id': userId
@@ -214,4 +251,10 @@ export async function clearWishlist() {
     }
 }
 
-void hydrateWishlistFromServer();
+if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+        updateWishlistCount();
+        syncAllWishlistButtonsOnPage();
+        void hydrateWishlistFromServer();
+    });
+}

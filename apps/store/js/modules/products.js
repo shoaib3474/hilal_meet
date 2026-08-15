@@ -1,4 +1,4 @@
-import { isProductInWishlist } from './wishlist.js';
+import { isProductInWishlist, syncAllWishlistButtonsOnPage } from './wishlist.js';
 
 export function renderProductCards(products, containerId) {
     const container = document.getElementById(containerId);
@@ -28,13 +28,13 @@ export function renderProductCards(products, containerId) {
                         onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=60'">
                 </a>
                 ${badgeHtml}
-                <button class="product-wishlist ${wishlistActiveClass}" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist(this, ${p.id})">
+                <button class="product-wishlist ${wishlistActiveClass}" title="${inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}" onclick="event.stopPropagation(); toggleWishlist(this, ${p.id})">
                     <i class="${heartClass}"></i>
                 </button>
             </div>
             <div class="product-card-body">
                 <div class="product-category">${p.category}</div>
-                <a href="/product/${p.id}" onclick="event.stopPropagation();"><div class="product-name">${p.name}</div></a>
+                <a href="/product.html?id=${p.id}" onclick="event.stopPropagation();"><div class="product-name">${p.name}</div></a>
                 <div class="product-weight"><i class="fa-solid fa-weight-hanging" style="font-size:0.7rem;margin-right:4px;"></i>${p.weight}</div>
                 <div class="product-price-row">
                     <span class="product-price">£${price.toFixed(2)}</span>
@@ -54,17 +54,9 @@ export function renderProductCards(products, containerId) {
         </div>`;
     }).join('');
 
-    // Add event listeners for product card clicks
-    setTimeout(() => {
-        document.querySelectorAll('.product-card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                if (!e.target.closest('.product-wishlist') && !e.target.closest('.btn-add-cart')) {
-                    const productId = this.getAttribute('data-id');
-                    window.location.href = `/product/${productId}`;
-                }
-            });
-        });
-    }, 0);
+    if (typeof syncAllWishlistButtonsOnPage === 'function') {
+        syncAllWishlistButtonsOnPage();
+    }
 }
 
 export function renderCategories(containerId) {
