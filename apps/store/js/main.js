@@ -26,6 +26,8 @@ function removeFromCart(productId) {
 
 function initAll() {
     cart.updateCartCount();
+    wishlist.updateWishlistCount();
+    void wishlist.hydrateWishlistFromServer();
     initMobileNav();
     initSearchOverlay();
     cartSidebar.initCartSidebar();

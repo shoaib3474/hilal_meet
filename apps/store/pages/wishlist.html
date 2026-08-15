@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i> info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/wishlist.html" style="color:var(--primary);font-weight:600;"><i class="fa-solid fa-heart" style="color:var(--red);"></i> Wishlist</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <div class="nav-dropdown">
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <div class="nav-dropdown-menu">
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                        </div>
+                    </div>
+                    <a href="/wishlist.html" class="nav-link active">Wishlist</a>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" title="Search">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    <a href="/wishlist.html" class="header-btn" title="Wishlist">
+                        <i class="fa-solid fa-heart" style="color:var(--red);"></i>
+                        <span class="cart-badge wishlist-count" style="display:none;">0</span>
+                    </a>
+                    <a href="/account.html" class="header-btn" title="My Account">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                    <div class="hamburger" id="hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-drawer">
+            <div class="mobile-nav-header">
+                <div class="logo">
+                    <img src="/images/logo-icon.svg" alt="Pakeeza Hilal Meat" class="mobile-logo-icon">
+                    <div class="logo-text">
+                        <div class="name" style="font-weight:700;font-size:0.9rem;color:var(--dark);">Pakeeza Hilal Meat</div>
+                    </div>
+                </div>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="mobile-nav-links">
+                <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/wishlist.html" class="active"><i class="fa-solid fa-heart" style="color:var(--red);"></i> Wishlist</a>
+                <a href="/cart.html"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
+                <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
+                <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
+                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="search-input-wrap">
+                <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
+            </div>
+            <div id="searchResults" class="search-results-list"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+        </div>
+        <div class="cart-sidebar-body" id="cartSidebarBody"></div>
+        <div class="cart-sidebar-footer">
+            <div class="cart-sidebar-total">
+                <span>Total:</span>
+                <span id="cartSidebarTotal">£0.00</span>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30</p>
+            <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <!-- PAGE HERO -->
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fa-solid fa-heart" style="color:var(--red);margin-right:12px;"></i>My Wishlist</h1>
+            <div class="breadcrumb">
+                <a href="/index.html">Home</a>
+                <span class="breadcrumb-sep">/</span>
+                <span>Wishlist</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- WISHLIST CONTENT -->
+    <section class="wishlist-page section-pad">
+        <div class="container">
+            <div id="wishlistContainer">
+                <div style="text-align:center;padding:60px 20px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:var(--primary);"></i>
+                    <p style="margin-top:12px;color:var(--text-muted);">Loading your saved items...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>© 2026 Pakeeza Hilal Meat. All rights reserved.</p>
+                <div class="halal-cert"><i class="fa-solid fa-certificate"></i> 100% Halal Certified</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof hydrateWishlistFromServer === 'function') {
+                await hydrateWishlistFromServer();
+            }
+            await renderWishlistPage();
+            window.addEventListener('wishlist:updated', renderWishlistPage);
+        });
+
+        async function renderWishlistPage() {
+            const container = document.getElementById('wishlistContainer');
+            if (!container) return;
+
+            let products = [];
+            try {
+                const res = await fetch('/api/products');
+                products = res.ok ? await res.json() : [];
+            } catch (err) {
+                console.warn('Failed to load products:', err);
+                products = [];
+            }
+
+            const wishlistIds = typeof getWishlist === 'function' ? getWishlist() : [];
+            const wishlistProducts = products.filter(p => wishlistIds.includes(p.id));
+
+            if (wishlistProducts.length === 0) {
+                container.innerHTML = `
+                <div class="wishlist-empty" style="text-align:center;padding:60px 20px;background:#ffffff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.04);border:1px solid rgba(118,92,54,0.08);max-width:560px;margin:0 auto;">
+                    <div style="width:80px;height:80px;border-radius:50%;background:#fff2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                        <i class="fa-solid fa-heart" style="font-size:2.4rem;color:var(--red);"></i>
+                    </div>
+                    <h2 style="font-size:1.4rem;font-weight:800;color:var(--dark);margin-bottom:8px;">Your Wishlist is Empty</h2>
+                    <p style="color:var(--text-muted);font-size:0.9rem;max-width:400px;margin:0 auto 24px;line-height:1.5;">Save your favorite fresh halal cuts, marinated specials, and groceries here to order anytime.</p>
+                    <a href="/shop" class="btn btn-primary btn-lg" style="display:inline-flex;align-items:center;gap:8px;">
+                        <i class="fa-solid fa-shop"></i> Explore Products
+                    </a>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+            <div class="wishlist-toolbar" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;background:#ffffff;padding:12px 18px;border-radius:12px;border:1px solid rgba(118,92,54,0.08);box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                <div style="font-size:0.95rem;font-weight:700;color:var(--dark);">
+                    Saved Items (<span id="wishlistCountNum" style="color:var(--primary);">${wishlistProducts.length}</span>)
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="addAllWishlistToCart()" style="display:inline-flex;align-items:center;gap:6px;">
+                        <i class="fa-solid fa-cart-plus"></i> Add All to Cart
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="clearWishlistConfirm()" style="display:inline-flex;align-items:center;gap:6px;color:var(--red);">
+                        <i class="fa-solid fa-trash"></i> Clear Wishlist
+                    </button>
+                </div>
+            </div>
+
+            <div class="products-grid" id="wishlistGrid">
+                ${wishlistProducts.map(p => {
+                    const price = p.salePrice || p.price;
+                    const badgeHtml = p.badge ? `<span class="product-badge badge-${p.badge.toLowerCase().replace(/\s/g, '-')}">${p.badge}</span>` : '';
+                    const salePriceHtml = p.salePrice ? `<span class="product-price-old">£${p.price.toFixed(2)}</span>` : '';
+                    const stars = '★'.repeat(Math.round(p.rating || 5)) + '☆'.repeat(5 - Math.round(p.rating || 5));
+                    return `
+                    <div class="product-card ${!p.inStock ? 'out-of-stock' : ''}" data-id="${p.id}">
+                        <div class="product-card-img" onclick="window.location.href='/product.html?id=${p.id}'" style="cursor:pointer;">
+                            <a href="/product.html?id=${p.id}">
+                                <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=60'">
+                            </a>
+                            ${badgeHtml}
+                            <button class="product-wishlist active" title="Remove from wishlist" onclick="event.stopPropagation(); removeFromWishlist(${p.id})">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="product-card-body" onclick="window.location.href='/product.html?id=${p.id}'" style="cursor:pointer;">
+                            <div class="product-category">${p.category}</div>
+                            <a href="/product.html?id=${p.id}" onclick="event.stopPropagation();"><div class="product-name">${p.name}</div></a>
+                            <div class="product-weight"><i class="fa-solid fa-weight-hanging" style="font-size:0.7rem;margin-right:4px;"></i>${p.weight}</div>
+                            <div class="product-price-row">
+                                <span class="product-price">£${price.toFixed(2)}</span>
+                                ${salePriceHtml}
+                            </div>
+                            <div class="product-rating">
+                                <span class="stars">${stars}</span>
+                                <span>(${p.reviews || 0})</span>
+                            </div>
+                        </div>
+                        <div class="product-card-footer">
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); addWishlistItemToCart(${p.id})">
+                                <i class="fa-solid fa-cart-plus"></i>
+                                ${p.inStock ? 'Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>`;
+        }
+
+        window.addWishlistItemToCart = function(productId) {
+            addToCart(productId, 1);
+        };
+
+        window.addAllWishlistToCart = function() {
+            const wishlistIds = typeof getWishlist === 'function' ? getWishlist() : [];
+            if (!wishlistIds.length) return;
+            wishlistIds.forEach(id => {
+                if (typeof addToCart === 'function') addToCart(id, 1);
+            });
+            if (typeof showToast === 'function') {
+                showToast('All available wishlist items added to cart!', 'success');
+            }
+        };
+
+        window.clearWishlistConfirm = function() {
+            if (confirm('Are you sure you want to clear your entire wishlist?')) {
+                if (typeof clearWishlist === 'function') {
+                    clearWishlist();
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>

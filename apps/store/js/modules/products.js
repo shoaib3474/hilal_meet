@@ -1,3 +1,5 @@
+import { isProductInWishlist } from './wishlist.js';
+
 export function renderProductCards(products, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -14,16 +16,20 @@ export function renderProductCards(products, containerId) {
         const badgeHtml = p.badge ? `<span class="product-badge badge-${p.badge.toLowerCase().replace(/\s/g, '-')}">${p.badge}</span>` : '';
         const salePriceHtml = p.salePrice ? `<span class="product-price-old">£${p.price.toFixed(2)}</span>` : '';
         const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating));
+        const inWishlist = typeof isProductInWishlist === 'function' && isProductInWishlist(p.id);
+        const heartClass = inWishlist ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        const wishlistActiveClass = inWishlist ? 'active' : '';
+
         return `
 <div class="product-card ${!p.inStock ? 'out-of-stock' : ''}" data-id="${p.id}" onclick="handleProductCardClick(event, ${p.id})">
             <div class="product-card-img">
-                <a href="/product/${p.id}">
+                <a href="/product.html?id=${p.id}">
                     <img src="${p.image}" alt="${p.name}" loading="lazy"
                         onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=60'">
                 </a>
                 ${badgeHtml}
-                <button class="product-wishlist" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist(this, ${p.id})">
-                    <i class="fa-regular fa-heart"></i>
+                <button class="product-wishlist ${wishlistActiveClass}" title="Add to wishlist" onclick="event.stopPropagation(); toggleWishlist(this, ${p.id})">
+                    <i class="${heartClass}"></i>
                 </button>
             </div>
             <div class="product-card-body">

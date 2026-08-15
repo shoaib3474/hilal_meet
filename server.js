@@ -58,6 +58,10 @@ function getCartSessionId(req) {
     return req.query?.sessionId || req.get('x-cart-session-id') || req.get('x-cart-session') || '';
 }
 
+function getWishlistUserId(req) {
+    return req.query?.userId || req.body?.userId || req.get('x-user-id') || req.get('x-wishlist-user-id') || '';
+}
+
 app.get('/api/health', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW() as current_time');
@@ -76,6 +80,127 @@ app.get('/api/health', async (req, res) => {
         });
     }
 });
+
+const inMemoryWishlists = new Map();
+
+app.get('/api/wishlist', async (req, res) => {
+    const userId = getWishlistUserId(req);
+    if (!userId) {
+        return res.json({ userId: '', productIds: [] });
+    }
+
+    try {
+        const { rows } = await pool.query(
+            'SELECT user_id, product_ids FROM wishlists WHERE user_id = $1',
+            [userId]
+        );
+        const productIds = rows[0] && Array.isArray(rows[0].product_ids) ? rows[0].product_ids : [];
+        inMemoryWishlists.set(userId, productIds);
+        res.json({ userId, productIds });
+    } catch (error) {
+        const productIds = inMemoryWishlists.get(userId) || [];
+        res.json({ userId, productIds });
+    }
+});
+
+app.post('/api/wishlist/toggle', async (req, res) => {
+    const userId = getWishlistUserId(req);
+    const productId = parseInt(req.body?.productId);
+
+    if (!userId) {
+        return res.status(400).json({ error: 'User id is required' });
+    }
+    if (isNaN(productId)) {
+        return res.status(400).json({ error: 'Valid product id is required' });
+    }
+
+    let productIds = inMemoryWishlists.get(userId) || [];
+
+    try {
+        const { rows } = await pool.query(
+            'SELECT product_ids FROM wishlists WHERE user_id = $1',
+            [userId]
+        );
+        if (rows[0] && Array.isArray(rows[0].product_ids)) {
+            productIds = rows[0].product_ids;
+        }
+    } catch (_) {}
+
+    const idx = productIds.indexOf(productId);
+    let action = '';
+
+    if (idx > -1) {
+        productIds = productIds.filter(id => id !== productId);
+        action = 'removed';
+    } else {
+        productIds = [...productIds, productId];
+        action = 'added';
+    }
+
+    inMemoryWishlists.set(userId, productIds);
+
+    try {
+        await pool.query(
+            `INSERT INTO wishlists (user_id, product_ids, updated_at)
+             VALUES ($1, $2, CURRENT_TIMESTAMP)
+             ON CONFLICT (user_id) DO UPDATE SET
+                 product_ids = EXCLUDED.product_ids,
+                 updated_at = CURRENT_TIMESTAMP`,
+            [userId, JSON.stringify(productIds)]
+        );
+    } catch (_) {}
+
+    res.json({ userId, productIds, action, inWishlist: action === 'added' });
+});
+
+app.put('/api/wishlist', async (req, res) => {
+    const userId = getWishlistUserId(req);
+    const productIds = Array.isArray(req.body?.productIds) ? req.body.productIds.map(Number).filter(n => !isNaN(n)) : [];
+
+    if (!userId) {
+        return res.status(400).json({ error: 'User id is required' });
+    }
+
+    inMemoryWishlists.set(userId, productIds);
+
+    try {
+        await pool.query(
+            `INSERT INTO wishlists (user_id, product_ids, updated_at)
+             VALUES ($1, $2, CURRENT_TIMESTAMP)
+             ON CONFLICT (user_id) DO UPDATE SET
+                 product_ids = EXCLUDED.product_ids,
+                 updated_at = CURRENT_TIMESTAMP`,
+            [userId, JSON.stringify(productIds)]
+        );
+    } catch (_) {}
+
+    res.json({ userId, productIds });
+});
+
+const handleClearWishlist = async (req, res) => {
+    const userId = getWishlistUserId(req);
+    if (!userId) {
+        return res.status(400).json({ error: 'User id is required' });
+    }
+
+    inMemoryWishlists.set(userId, []);
+
+    try {
+        await pool.query(
+            `INSERT INTO wishlists (user_id, product_ids, updated_at)
+             VALUES ($1, '[]'::jsonb, CURRENT_TIMESTAMP)
+             ON CONFLICT (user_id) DO UPDATE SET
+                 product_ids = '[]'::jsonb,
+                 updated_at = CURRENT_TIMESTAMP`,
+            [userId]
+        );
+    } catch (_) {}
+
+    res.json({ userId, productIds: [] });
+};
+
+app.delete('/api/wishlist/clear', handleClearWishlist);
+app.post('/api/wishlist/clear', handleClearWishlist);
 
 app.get('/api/cart', async (req, res) => {
     try {
@@ -467,7 +592,8 @@ app.get('*', (req, res, next) => {
         '/contact': 'contact.html',
         '/product': 'product.html',
         '/reset-demo': 'reset-demo.html',
-        '/shop': 'shop.html'
+        '/shop': 'shop.html',
+        '/wishlist': 'wishlist.html'
     };
 
     const firstSegment = cleanPath.split('/').filter(Boolean)[0];

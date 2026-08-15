@@ -126,6 +126,20 @@ async function initializeDatabase() {
     `);
 
     await pool.query(`
+        CREATE TABLE IF NOT EXISTS wishlists (
+            user_id VARCHAR(100) PRIMARY KEY,
+            product_ids JSONB NOT NULL DEFAULT '[]'::jsonb,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `);
+
+    await pool.query(`
+        ALTER TABLE wishlists
+            ADD COLUMN IF NOT EXISTS product_ids JSONB DEFAULT '[]'::jsonb,
+            ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+    `);
+
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS orders (
             id VARCHAR(50) PRIMARY KEY,
             order_date DATE NOT NULL DEFAULT CURRENT_DATE,

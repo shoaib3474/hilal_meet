@@ -96,10 +96,11 @@
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
                 <a href="/shop"><i class="fa-solid fa-shop"></i> Shop All</a>
+                <a href="/wishlist.html"><i class="fa-solid fa-heart" style="color:var(--red);"></i> Wishlist</a>
+                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
                 <a href="/about.html"><i class="fa-solid fa-circle-info"></i> About Us</a>
                 <a href="/contact.html"><i class="fa-solid fa-envelope"></i> Contact</a>
                 <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
-                <a href="/cart.html" onclick="closeMobileNav()"><i class="fa-solid fa-basket-shopping"></i> My Cart</a>
             </div>
         </div>
     </div>
@@ -242,6 +243,10 @@
             const empty = '<i class="fa-regular fa-star"></i>';
             const filledCount = Math.max(0, Math.min(5, Math.round(product.rating || 0)));
             const stars = filled.repeat(filledCount) + empty.repeat(5 - filledCount);
+            
+            const inWishlist = typeof isProductInWishlist === 'function' && isProductInWishlist(product.id);
+            const heartClass = inWishlist ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            const wishlistActiveClass = inWishlist ? 'active' : '';
 
             document.getElementById('productDetailGrid').innerHTML = `
         <div class="product-detail-top">
@@ -290,8 +295,8 @@
                 <button class="btn btn-primary btn-add" onclick="addProductToCart()">
                     <i class="fa-solid fa-cart-shopping"></i> Add to Cart
                 </button>
-                <button class="btn-wishlist-detail" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
-                    <i class="fa-regular fa-heart"></i>
+                <button class="btn-wishlist-detail ${wishlistActiveClass}" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
+                    <i class="${heartClass}"></i>
                 </button>
             </div>
 
