@@ -192,9 +192,18 @@
             const searchValue = new URLSearchParams(window.location.search).get(key);
             if (searchValue) return searchValue;
 
+            const hashMatch = window.location.hash.match(/[?&#]id=([^&#]+)/);
+            if (hashMatch) return hashMatch[1];
+
             const segments = window.location.pathname.split('/').filter(Boolean);
-            if (key === 'id' && segments[0] === 'product' && segments[1]) {
-                return segments[1];
+            if (key === 'id') {
+                if (segments[0] === 'product' && segments[1]) {
+                    return segments[1];
+                }
+                const lastSeg = segments[segments.length - 1];
+                if (lastSeg && !isNaN(parseInt(lastSeg))) {
+                    return lastSeg;
+                }
             }
 
             return null;

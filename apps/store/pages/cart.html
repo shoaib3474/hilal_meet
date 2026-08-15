@@ -250,26 +250,31 @@
             const cart = Array.isArray(window.__cartCache) ? window.__cartCache : [];
             tbody.innerHTML = cart.map(item => `
         <tr data-item-id="${item.id}">
-            <td data-label="Product">
-                <div class="cart-product">
+            <td data-label="Product" style="cursor:pointer;" onclick="navigateToProduct(${item.id})" title="View ${item.name} details">
+                <div class="cart-product clickable-product">
                     <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
                     <div class="details">
-                        <div class="name"><a href="/product?id=${item.id}" style="color:var(--dark);">${item.name}</a></div>
+                        <div class="name"><a href="/product.html?id=${item.id}" onclick="event.preventDefault(); navigateToProduct(${item.id});" style="color:var(--dark);">${item.name}</a></div>
                         <div class="weight" style="font-size:0.78rem;color:var(--text-muted);">${item.weight}</div>
                     </div>
                 </div>
             </td>
             <td data-label="Price"><span class="price-label">£</span><strong>${(item.price || 0).toFixed(2)}</strong></td>
-            <td data-label="Quantity">
+            <td data-label="Quantity" onclick="event.stopPropagation();">
                 <div class="cart-qty">
-                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})" title="Decrease">-</button>
-                    <input id="cartQty${item.id}" name="cartQty${item.id}" class="qty-input" type="number" value="${item.qty}" min="1" onchange="updateQty(${item.id}, parseInt(this.value))">
-                    <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})" title="Increase">+</button>
+                    <button class="qty-btn" onclick="event.stopPropagation(); updateQty(${item.id}, ${item.qty - 1})" title="Decrease">-</button>
+                    <input id="cartQty${item.id}" name="cartQty${item.id}" class="qty-input" type="number" value="${item.qty}" min="1" onclick="event.stopPropagation();" onchange="event.stopPropagation(); updateQty(${item.id}, parseInt(this.value))">
+                    <button class="qty-btn" onclick="event.stopPropagation(); updateQty(${item.id}, ${item.qty + 1})" title="Increase">+</button>
                 </div>
             </td>
             <td data-label="Total"><span class="price-label">£</span><strong>${((item.price || 0) * item.qty).toFixed(2)}</strong></td>
-            <td class="remove-col"><button class="cart-remove" onclick="removeItem(${item.id})" title="Remove item"><i class="fa-solid fa-times"></i></button></td>
+            <td class="remove-col" onclick="event.stopPropagation();"><button class="cart-remove" onclick="event.stopPropagation(); removeItem(${item.id})" title="Remove item"><i class="fa-solid fa-times"></i></button></td>
         </tr>`).join('');
+        }
+
+        function navigateToProduct(productId) {
+            if (!productId) return;
+            window.location.href = `/product.html?id=${encodeURIComponent(productId)}`;
         }
 
         function updateQty(id, qty) {

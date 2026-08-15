@@ -32,19 +32,19 @@ export function renderCartSidebar() {
             </div>`;
     } else {
         body.innerHTML = cart.map(item => `
-            <div class="cart-sidebar-item">
+            <div class="cart-sidebar-item" onclick="window.location.href='/product.html?id=${item.id}'" style="cursor:pointer;" title="View ${item.name}">
                 <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100&q=60'">
                 <div class="item-info">
                     <div class="item-name">${item.name}</div>
                     <div class="item-weight">${item.weight}</div>
                     <div class="item-price">£${(item.price * item.qty).toFixed(2)}</div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;" onclick="event.stopPropagation();">
                         <div style="display:flex;align-items:center;border:1px solid var(--border);border-radius:6px;overflow:hidden;">
-                            <button class="qty-btn" onclick="changeSidebarQty(${item.id}, -1)" style="width:26px;height:26px;background:none;border:none;cursor:pointer;font-size:0.9rem;">−</button>
+                            <button class="qty-btn" onclick="event.stopPropagation(); changeSidebarQty(${item.id}, -1)" style="width:26px;height:26px;background:none;border:none;cursor:pointer;font-size:0.9rem;">−</button>
                             <span style="width:28px;text-align:center;font-weight:600;font-size:0.85rem;">${item.qty}</span>
-                            <button class="qty-btn" onclick="changeSidebarQty(${item.id}, 1)" style="width:26px;height:26px;background:none;border:none;cursor:pointer;font-size:0.9rem;">+</button>
+                            <button class="qty-btn" onclick="event.stopPropagation(); changeSidebarQty(${item.id}, 1)" style="width:26px;height:26px;background:none;border:none;cursor:pointer;font-size:0.9rem;">+</button>
                         </div>
-                        <button onclick="removeFromCart(${item.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:0.85rem;"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="event.stopPropagation(); removeFromCart(${item.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:0.85rem;"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>`).join('');

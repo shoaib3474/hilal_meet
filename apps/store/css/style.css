@@ -2326,18 +2326,31 @@ textarea {
 
 .cart-product {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    gap: 14px;
     min-width: 0;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 4px;
+    transition: background 0.15s ease;
+}
+
+.cart-product:hover {
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .cart-product img {
-    width: 70px;
-    height: 70px;
-    min-width: 70px;
+    width: 68px;
+    height: 68px;
+    min-width: 68px;
     object-fit: cover;
     border-radius: 8px;
     flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.cart-product:hover img {
+    transform: scale(1.05);
 }
 
 .cart-product .details {
@@ -2354,12 +2367,19 @@ textarea {
     word-wrap: break-word;
     overflow-wrap: break-word;
     color: var(--dark);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
+    transition: color 0.15s ease;
+}
+
+.cart-product:hover .details .name,
+.cart-product:hover .details .name a {
+    color: var(--primary) !important;
 }
 
 .cart-product .details .name a {
     text-decoration: none;
     color: inherit;
+    transition: color 0.15s ease;
 }
 
 .cart-product .details .name a:hover {
