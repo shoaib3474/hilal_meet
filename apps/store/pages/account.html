@@ -184,8 +184,8 @@
                             <label style="display:flex;justify-content:space-between;"><span>Password</span><a href="#" class="forgot-link">Forgot password?</a></label>
                             <div class="input-icon">
                                 <i class="fa-solid fa-lock"></i>
-                                <input type="password" class="form-control" id="loginPassword" placeholder="Password">
-                                <span class="password-toggle" onclick="togglePass('loginPassword', this)"><i class="fa-regular fa-eye"></i></span>
+                                <input type="password" class="form-control" id="loginPassword" placeholder="Password" autocomplete="current-password">
+                                <button type="button" class="password-toggle" onclick="togglePass('loginPassword', this)" title="Show password" aria-label="Show password" aria-pressed="false"><i class="fa-regular fa-eye"></i></button>
                             </div>
                         </div>
                         <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()" style="margin-top:8px;">
@@ -232,8 +232,8 @@
                             <label>Password</label>
                             <div class="input-icon">
                                 <i class="fa-solid fa-lock"></i>
-                                <input type="password" class="form-control" id="regPassword" placeholder="Minimum 8 characters">
-                                <span class="password-toggle" onclick="togglePass('regPassword', this)"><i class="fa-regular fa-eye"></i></span>
+                                <input type="password" class="form-control" id="regPassword" placeholder="Minimum 8 characters" autocomplete="new-password">
+                                <button type="button" class="password-toggle" onclick="togglePass('regPassword', this)" title="Show password" aria-label="Show password" aria-pressed="false"><i class="fa-regular fa-eye"></i></button>
                             </div>
                         </div>
                         <div class="form-group">
@@ -431,9 +431,17 @@
 
         function togglePass(id, btn) {
             const input = document.getElementById(id);
-            const isText = input.type === 'text';
-            input.type = isText ? 'password' : 'text';
-            btn.querySelector('i').className = isText ? 'fa-regular fa-eye' : 'fa-regular fa-eye-slash';
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+            }
+            btn.setAttribute('title', isPassword ? 'Hide password' : 'Show password');
+            btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+            btn.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
         }
     </script>
 </body>

@@ -4,13 +4,23 @@ const dotenv = require('dotenv');
 dotenv.config();
 dotenv.config({ path: '.env.local' });
 
+const connectionString = process.env.DATABASE_URL
+    || process.env.POSTGRES_URL
+    || process.env.POSTGRES_PRISMA_URL
+    || process.env.NEON_DATABASE_URL
+    || '';
+
+const isRemoteDatabase = Boolean(connectionString) && /postgres(?:ql)?:\/\//i.test(connectionString);
+
 const pool = new Pool({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: Number(process.env.POSTGRES_PORT || 5432),
-    database: process.env.POSTGRES_DB || 'hilal_meet',
-    user: process.env.POSTGRES_USER || 'hilal',
-    password: process.env.POSTGRES_PASSWORD || 'hilal123',
-    connectionString: process.env.DATABASE_URL
+    ...(connectionString ? { connectionString } : {
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: Number(process.env.POSTGRES_PORT || 5432),
+        database: process.env.POSTGRES_DB || 'hilal_meet',
+        user: process.env.POSTGRES_USER || 'hilal',
+        password: process.env.POSTGRES_PASSWORD || 'hilal123',
+    }),
+    ...(isRemoteDatabase ? { ssl: { rejectUnauthorized: false } } : {})
 });
 
 const SEED_PRODUCTS = [
