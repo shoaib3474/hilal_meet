@@ -70,7 +70,7 @@ globalThis.fetch = async (url, init = {}) => {
 const wishlistModule = await import('../apps/store/js/modules/wishlist.js');
 const { hydrateWishlistFromServer, getWishlist, toggleWishlist } = wishlistModule;
 
-const hydrated = await hydrateWishlistFromServer();
+const hydrated = await hydrateWishlistFromServer(true);
 assert.deepEqual(hydrated.map(item => item.id), [7, 9]);
 assert.deepEqual(getWishlist(), [7, 9]);
 

@@ -203,10 +203,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderWishlistPage();
             window.addEventListener('wishlist:updated', renderWishlistPage);
-            // Non-blocking background sync if user has an active session
-            if (typeof hydrateWishlistFromServer === 'function') {
-                void hydrateWishlistFromServer();
-            }
         });
 
         function renderWishlistPage() {

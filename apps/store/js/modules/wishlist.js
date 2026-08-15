@@ -120,13 +120,17 @@ export async function hydrateWishlistFromServer(force = false) {
     if (!userId) {
         wishlistCache = [];
         wishlistItemsCache = [];
-        notifyWishlistUpdated();
         return [];
     }
 
-    // Skip redundant network calls if recently hydrated within 60s and not forced
+    // Guest users: keep strictly in localStorage, avoid network requests unless explicitly forced
+    if (!force && userId.startsWith('anon-')) {
+        return getWishlistItems();
+    }
+
+    // Skip redundant network calls if recently hydrated within 5 minutes and not forced
     const now = Date.now();
-    if (!force && wishlistLastHydratedAt && (now - wishlistLastHydratedAt < 60000) && wishlistCache !== null) {
+    if (!force && wishlistLastHydratedAt && (now - wishlistLastHydratedAt < 300000) && wishlistCache !== null) {
         return wishlistItemsCache || [];
     }
 
@@ -147,7 +151,8 @@ export async function hydrateWishlistFromServer(force = false) {
                     localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
                 } catch (_) { }
                 wishlistLastHydratedAt = Date.now();
-                notifyWishlistUpdated();
+                updateWishlistCount();
+                syncAllWishlistButtonsOnPage();
                 return wishlistItemsCache;
             }
 
@@ -157,7 +162,8 @@ export async function hydrateWishlistFromServer(force = false) {
                 localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
             } catch (_) { }
             wishlistLastHydratedAt = Date.now();
-            notifyWishlistUpdated();
+            updateWishlistCount();
+            syncAllWishlistButtonsOnPage();
             return [];
         } catch (error) {
             console.warn('Wishlist server sync fallback:', error.message);
@@ -171,7 +177,8 @@ export async function hydrateWishlistFromServer(force = false) {
                 wishlistItemsCache = [];
             }
             wishlistLastHydratedAt = Date.now();
-            notifyWishlistUpdated();
+            updateWishlistCount();
+            syncAllWishlistButtonsOnPage();
             return wishlistItemsCache || [];
         } finally {
             wishlistSyncInFlight = null;
