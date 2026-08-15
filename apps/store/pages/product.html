@@ -45,16 +45,25 @@
                 <nav class="main-nav">
                     <a href="/index.html" class="nav-link">Home</a>
                     <div class="nav-dropdown">
-                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;margin-left:3px;"></i></a>
+                        <a href="/shop" class="nav-link">Shop <i class="fa-solid fa-chevron-down"
+                                style="font-size:0.65rem;margin-left:3px;"></i></a>
                         <div class="nav-dropdown-menu">
-                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite" style="width:20px;color:var(--primary);"></i> Chicken</a>
-                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone" style="width:20px;color:var(--primary);"></i> Lamb</a>
-                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow" style="width:20px;color:var(--primary);"></i> Beef</a>
-                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw" style="width:20px;color:var(--primary);"></i> Goat</a>
-                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire" style="width:20px;color:var(--gold);"></i> Marinated</a>
-                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse" style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
-                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping" style="width:20px;color:var(--primary);"></i> Grocery</a>
-                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake" style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
+                            <a href="/shop?cat=chicken"><i class="fa-solid fa-drumstick-bite"
+                                    style="width:20px;color:var(--primary);"></i> Chicken</a>
+                            <a href="/shop?cat=lamb"><i class="fa-solid fa-bone"
+                                    style="width:20px;color:var(--primary);"></i> Lamb</a>
+                            <a href="/shop?cat=beef"><i class="fa-solid fa-cow"
+                                    style="width:20px;color:var(--primary);"></i> Beef</a>
+                            <a href="/shop?cat=goat"><i class="fa-solid fa-paw"
+                                    style="width:20px;color:var(--primary);"></i> Goat</a>
+                            <a href="/shop?cat=marinated"><i class="fa-solid fa-fire"
+                                    style="width:20px;color:var(--gold);"></i> Marinated</a>
+                            <a href="/shop?cat=offal"><i class="fa-solid fa-heart-pulse"
+                                    style="width:20px;color:var(--red);"></i> Offal &amp; Extras</a>
+                            <a href="/shop?cat=grocery"><i class="fa-solid fa-basket-shopping"
+                                    style="width:20px;color:var(--primary);"></i> Grocery</a>
+                            <a href="/shop?cat=frozen"><i class="fa-solid fa-snowflake"
+                                    style="width:20px;color:#1565C0;"></i> Frozen Foods</a>
                         </div>
                     </div>
                     <a href="/wishlist.html" class="nav-link">Wishlist</a>
@@ -97,7 +106,8 @@
                         </div>
                     </div>
                 </div>
-                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+                <button id="mobileNavClose" style="background:none;border:none;font-size:1.2rem;cursor:pointer;"><i
+                        class="fa-solid fa-times"></i></button>
             </div>
             <div class="mobile-nav-links">
                 <a href="/index.html"><i class="fa-solid fa-house"></i> Home</a>
@@ -116,11 +126,14 @@
         <div class="search-box">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                 <h3 style="font-size:1rem;font-weight:700;">Search Products</h3>
-                <button id="searchClose" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i class="fa-solid fa-times"></i></button>
+                <button id="searchClose"
+                    style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--text-muted);"><i
+                        class="fa-solid fa-times"></i></button>
             </div>
             <div class="search-input-wrap">
                 <input type="text" id="searchInput" placeholder="Search for chicken, lamb, beef..." autocomplete="off">
-                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i class="fa-solid fa-search"></i></button>
+                <button class="btn btn-primary" onclick="doSearch(document.getElementById('searchInput').value)"><i
+                        class="fa-solid fa-search"></i></button>
             </div>
             <div id="searchResults" class="search-results-list"></div>
         </div>
@@ -131,7 +144,8 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-sidebar-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary);margin-right:8px;"></i> My Cart</h3>
-            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-times"></i></button>
+            <button onclick="closeCartSidebar()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;"><i
+                    class="fa-solid fa-times"></i></button>
         </div>
         <div class="cart-sidebar-body" id="cartSidebarBody"></div>
         <div class="cart-sidebar-footer">
@@ -142,7 +156,8 @@
             <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:12px;">🚚 Free delivery on orders over £30
             </p>
             <a href="/cart.html" class="btn btn-outline btn-block" style="margin-bottom:10px;">View Cart</a>
-            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="/checkout.html" class="btn btn-primary btn-block">Checkout <i
+                    class="fa-solid fa-arrow-right"></i></a>
         </div>
     </div>
 
@@ -217,6 +232,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof hydrateWishlistFromServer === 'function') {
+                await hydrateWishlistFromServer(true);
+            }
+
             const id = parseInt(getUrlParam('id'), 10);
             window.__currentProductId = id;
 
@@ -261,7 +280,7 @@
             const empty = '<i class="fa-regular fa-star"></i>';
             const filledCount = Math.max(0, Math.min(5, Math.round(product.rating || 0)));
             const stars = filled.repeat(filledCount) + empty.repeat(5 - filledCount);
-            
+
             const inWishlist = typeof isProductInWishlist === 'function' && isProductInWishlist(product.id);
             const heartClass = inWishlist ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
             const wishlistActiveClass = inWishlist ? 'active' : '';
@@ -346,6 +365,12 @@
 
             if (typeof syncAllWishlistButtonsOnPage === 'function') {
                 syncAllWishlistButtonsOnPage();
+            }
+        });
+
+        window.addEventListener('auth:changed', () => {
+            if (typeof hydrateWishlistFromServer === 'function') {
+                void hydrateWishlistFromServer(true);
             }
         });
 
