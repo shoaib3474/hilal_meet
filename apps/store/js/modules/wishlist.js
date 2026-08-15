@@ -12,7 +12,7 @@ export function getWishlistUserId() {
         const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
         const userId = user?.id ?? user?.customerId ?? user?.email;
         if (userId) {
-            return `user-${userId}`;
+            return String(userId).replace(/^user-/i, '');
         }
     } catch (_) { }
 
@@ -123,7 +123,7 @@ export async function hydrateWishlistFromServer(force = false) {
         return [];
     }
 
-    // Guest users: keep strictly in localStorage, avoid network requests unless explicitly forced
+    // Guest users keep local-only wishlist state. Logged-in users must always use the server as the source of truth.
     if (!force && userId.startsWith('anon-')) {
         return getWishlistItems();
     }
@@ -167,14 +167,23 @@ export async function hydrateWishlistFromServer(force = false) {
             return [];
         } catch (error) {
             console.warn('Wishlist server sync fallback:', error.message);
-            try {
-                const local = localStorage.getItem(`ph_wishlist_${userId}`);
-                const parsed = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
-                wishlistCache = Array.from(new Set(parsed));
-                wishlistItemsCache = [];
-            } catch (_) {
+            // Logged-in users must never fall back to stale local or mock wishlist data.
+            if (userId && !userId.startsWith('anon-')) {
                 wishlistCache = [];
                 wishlistItemsCache = [];
+                try {
+                    localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
+                } catch (_) { }
+            } else {
+                try {
+                    const local = localStorage.getItem(`ph_wishlist_${userId}`);
+                    const parsed = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
+                    wishlistCache = Array.from(new Set(parsed));
+                    wishlistItemsCache = [];
+                } catch (_) {
+                    wishlistCache = [];
+                    wishlistItemsCache = [];
+                }
             }
             wishlistLastHydratedAt = Date.now();
             updateWishlistCount();

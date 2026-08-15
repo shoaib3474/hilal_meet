@@ -109,8 +109,15 @@ function getCartSessionId(req) {
     return req.query?.sessionId || req.body?.sessionId || req.get('x-cart-session-id') || req.get('x-cart-session') || '';
 }
 
+function normalizeWishlistUserId(value) {
+    if (value === null || value === undefined) return '';
+    const raw = String(value).trim();
+    if (!raw) return '';
+    return raw.replace(/^user-/i, '').replace(/^anon-/i, '');
+}
+
 function getWishlistUserId(req) {
-    return req.query?.userId || req.body?.userId || req.get('x-user-id') || req.get('x-wishlist-user-id') || '';
+    return normalizeWishlistUserId(req.query?.userId || req.body?.userId || req.get('x-user-id') || req.get('x-wishlist-user-id') || '');
 }
 
 function setNoStoreHeaders(res) {

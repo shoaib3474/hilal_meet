@@ -9,8 +9,9 @@ export function setCurrentUser(user) {
     const prevWishlistGuestId = localStorage.getItem('ph_wishlist_session_id');
     const prevCartGuestId = localStorage.getItem('ph_cart_session_id');
     localStorage.setItem('ph_current_user', JSON.stringify(user));
-    const newUserId = `user-${user?.id ?? user?.customerId ?? user?.email}`;
-    const newCartSessionId = `cart-user-${user?.id ?? user?.customerId ?? user?.email}`;
+    const rawUserId = user?.id ?? user?.customerId ?? user?.email;
+    const newUserId = rawUserId == null ? '' : String(rawUserId).replace(/^user-/i, '');
+    const newCartSessionId = `cart-user-${rawUserId ?? user?.email ?? 'guest'}`;
 
     if (prevWishlistGuestId && typeof window !== 'undefined') {
         const cleanGuestWishlistId = `anon-${prevWishlistGuestId.replace(/^anon-/, '')}`;
@@ -18,7 +19,7 @@ export function setCurrentUser(user) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ guestId: cleanGuestWishlistId, userId: newUserId })
-        }).catch(() => {}).finally(() => {
+        }).catch(() => { }).finally(() => {
             if (typeof window.dispatchEvent === 'function') {
                 window.dispatchEvent(new Event('wishlist:updated'));
             }
@@ -31,7 +32,7 @@ export function setCurrentUser(user) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ guestSessionId: cleanGuestCartId, userSessionId: newCartSessionId })
-        }).catch(() => {}).finally(() => {
+        }).catch(() => { }).finally(() => {
             if (typeof window.dispatchEvent === 'function') {
                 window.dispatchEvent(new Event('cart:updated'));
             }
@@ -49,7 +50,7 @@ export function logout() {
             window.dispatchEvent?.(new Event('cart:updated'));
             window.dispatchEvent?.(new Event('wishlist:updated'));
         }
-    } catch (_) {}
+    } catch (_) { }
 
     showToast('Logged out successfully', 'info');
     setTimeout(() => { location.href = '/'; }, 800);
