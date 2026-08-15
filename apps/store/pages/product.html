@@ -217,8 +217,12 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const id = parseInt(getUrlParam('id'));
+            const id = parseInt(getUrlParam('id'), 10);
             window.__currentProductId = id;
+
+            if (typeof hydrateWishlistFromServer === 'function') {
+                await hydrateWishlistFromServer();
+            }
 
             let product = null;
             if (!isNaN(id) && id > 0) {
@@ -339,8 +343,20 @@
         </div>`;
 
             // Related products (from DB)
-            const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-            renderProductCards(related, 'relatedProducts');
+            const related = (products || []).filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+            if (typeof renderProductCards === 'function') {
+                renderProductCards(related, 'relatedProducts');
+            }
+
+            if (typeof syncAllWishlistButtonsOnPage === 'function') {
+                syncAllWishlistButtonsOnPage();
+            }
+        });
+
+        window.addEventListener('wishlist:updated', () => {
+            if (typeof syncAllWishlistButtonsOnPage === 'function') {
+                syncAllWishlistButtonsOnPage();
+            }
         });
 
         function switchImage(thumb, src) {

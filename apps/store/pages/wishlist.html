@@ -181,9 +181,6 @@
     <script type="module" src="/js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            if (typeof hydrateWishlistFromServer === 'function') {
-                await hydrateWishlistFromServer();
-            }
             await renderWishlistPage();
             window.addEventListener('wishlist:updated', renderWishlistPage);
         });
@@ -192,30 +189,18 @@
             const container = document.getElementById('wishlistContainer');
             if (!container) return;
 
-            const userId = typeof getWishlistUserId === 'function' ? getWishlistUserId() : '';
             let wishlistProducts = [];
+            if (typeof hydrateWishlistFromServer === 'function') {
+                wishlistProducts = await hydrateWishlistFromServer();
+            }
 
-            if (userId && typeof fetch === 'function') {
-                try {
-                    const res = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
-                        headers: { 'x-user-id': userId }
-                    });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (Array.isArray(data.items)) {
-                            wishlistProducts = data.items;
-                        }
-                    }
-                } catch (err) {
-                    console.warn('Failed to load wishlist from server:', err);
+            if (!Array.isArray(wishlistProducts) || wishlistProducts.length === 0) {
+                if (typeof getWishlistItems === 'function') {
+                    wishlistProducts = getWishlistItems();
                 }
             }
 
-            if (wishlistProducts.length === 0 && typeof getWishlistItems === 'function') {
-                wishlistProducts = getWishlistItems();
-            }
-
-            if (wishlistProducts.length === 0) {
+            if (!Array.isArray(wishlistProducts) || wishlistProducts.length === 0) {
                 container.innerHTML = `
                 <div class="wishlist-empty" style="text-align:center;padding:60px 20px;background:#ffffff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.04);border:1px solid rgba(118,92,54,0.08);max-width:560px;margin:0 auto;">
                     <div style="width:80px;height:80px;border-radius:50%;background:#fff2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
@@ -244,51 +229,12 @@
                     </button>
                 </div>
             </div>
+            <div class="products-grid" id="wishlistGrid"></div>`;
 
-            <div class="products-grid" id="wishlistGrid">
-                ${wishlistProducts.map(p => {
-                    const price = p.salePrice || p.price;
-                    const badgeHtml = p.badge ? `<span class="product-badge badge-${p.badge.toLowerCase().replace(/\s/g, '-')}">${p.badge}</span>` : '';
-                    const salePriceHtml = p.salePrice ? `<span class="product-price-old">£${p.price.toFixed(2)}</span>` : '';
-                    const stars = '★'.repeat(Math.round(p.rating || 5)) + '☆'.repeat(5 - Math.round(p.rating || 5));
-                    return `
-                    <div class="product-card ${!p.inStock ? 'out-of-stock' : ''}" data-id="${p.id}">
-                        <div class="product-card-img" onclick="window.location.href='/product.html?id=${p.id}'" style="cursor:pointer;">
-                            <a href="/product.html?id=${p.id}">
-                                <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=500&q=60'">
-                            </a>
-                            ${badgeHtml}
-                            <button class="product-wishlist active" title="Remove from wishlist" onclick="event.stopPropagation(); removeFromWishlist(${p.id})">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="product-card-body" onclick="window.location.href='/product.html?id=${p.id}'" style="cursor:pointer;">
-                            <div class="product-category">${p.category}</div>
-                            <a href="/product.html?id=${p.id}" onclick="event.stopPropagation();"><div class="product-name">${p.name}</div></a>
-                            <div class="product-weight"><i class="fa-solid fa-weight-hanging" style="font-size:0.7rem;margin-right:4px;"></i>${p.weight}</div>
-                            <div class="product-price-row">
-                                <span class="product-price">£${price.toFixed(2)}</span>
-                                ${salePriceHtml}
-                            </div>
-                            <div class="product-rating">
-                                <span class="stars">${stars}</span>
-                                <span>(${p.reviews || 0})</span>
-                            </div>
-                        </div>
-                        <div class="product-card-footer">
-                            <button class="btn-add-cart" onclick="event.stopPropagation(); addWishlistItemToCart(${p.id})">
-                                <i class="fa-solid fa-cart-plus"></i>
-                                ${p.inStock ? 'Add to Cart' : 'Out of Stock'}
-                            </button>
-                        </div>
-                    </div>`;
-                }).join('')}
-            </div>`;
+            if (typeof renderProductCards === 'function') {
+                renderProductCards(wishlistProducts, 'wishlistGrid');
+            }
         }
-
-        window.addWishlistItemToCart = function(productId) {
-            addToCart(productId, 1);
-        };
 
         window.addAllWishlistToCart = function() {
             const wishlistIds = typeof getWishlist === 'function' ? getWishlist() : [];

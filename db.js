@@ -263,7 +263,7 @@ const SEED_USERS = [
     }
 ];
 
-async function waitForDatabaseConnection(maxAttempts = 15, delayMs = 1000) {
+async function waitForDatabaseConnection(maxAttempts = 3, delayMs = 300) {
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         try {
             await pool.query('SELECT 1');
@@ -272,7 +272,6 @@ async function waitForDatabaseConnection(maxAttempts = 15, delayMs = 1000) {
             if (attempt === maxAttempts) {
                 throw error;
             }
-            console.warn(`Database unavailable, retrying (${attempt}/${maxAttempts})...`);
             await new Promise((resolve) => setTimeout(resolve, delayMs));
         }
     }
