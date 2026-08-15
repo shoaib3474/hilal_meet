@@ -68,14 +68,29 @@
             </div>
 
             <div class="admin-content">
+                <!-- PENDING ORDERS BANNER -->
+                <div id="pendingBanner"
+                    style="display:none;background:var(--orange-bg,#FFF3E0);border:1px solid var(--orange);border-radius:var(--radius-md);padding:10px 16px;margin-bottom:16px;align-items:center;gap:12px;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:var(--orange);font-size:1.1rem;"></i>
+                    <div style="flex:1;">
+                        <strong style="color:var(--orange);font-size:0.85rem;" id="pendingText">You have pending orders!</strong>
+                        <span style="font-size:0.78rem;color:var(--text-muted);margin-left:6px;">Please review and process promptly.</span>
+                    </div>
+                    <a href="/admin/orders.html" class="btn btn-sm"
+                        style="margin-left:auto;background:var(--orange);color:white;font-size:0.75rem;padding:4px 10px;">View Orders</a>
+                </div>
+
                 <!-- PAGE HEADER -->
                 <div class="page-header">
                     <div>
                         <h1>Welcome back, Admin! 👋</h1>
                         <p>Here's what's happening at Pakeeza Hilal Meat today</p>
                     </div>
-                    <a href="/admin/orders.html" class="btn btn-primary"><i class="fa-solid fa-bag-shopping"></i> View
-                        Orders</a>
+                    <div class="page-header-actions" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                        <a href="/admin/products.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Product</a>
+                        <a href="/admin/orders.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-bag-shopping"></i> View Orders</a>
+                        <a href="/shop.html" target="_blank" class="btn btn-ghost btn-sm"><i class="fa-solid fa-store"></i> View Shop</a>
+                    </div>
                 </div>
 
                 <!-- STATS GRID -->
@@ -114,102 +129,68 @@
                     </div>
                 </div>
 
-                <!-- DASHBOARD GRID -->
-                <div class="dashboard-grid">
-                    <!-- Revenue Chart -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fa-solid fa-chart-line"
-                                    style="color:var(--primary);margin-right:8px;"></i>Weekly Revenue</h3>
-                            <span style="font-size:0.78rem;color:var(--text-muted);">Last 7 days</span>
+                <!-- MAIN DASHBOARD 2-COLUMN BALANCED GRID -->
+                <div class="dashboard-main-grid">
+                    <!-- LEFT COLUMN (Analytics & Operations) -->
+                    <div class="dashboard-col">
+                        <!-- Revenue Chart -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-line" style="color:var(--primary);margin-right:8px;"></i>Weekly Revenue</h3>
+                                <span style="font-size:0.78rem;color:var(--text-muted);">Last 7 days</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="revenueChart" class="chart-container"></div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div id="revenueChart" class="chart-container"></div>
+
+                        <!-- Recent Orders -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-bag-shopping" style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
+                                <a href="/admin/orders.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
+                            </div>
+                            <div class="table-wrap">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentOrdersBody"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Top Products -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fa-solid fa-fire" style="color:var(--gold);margin-right:8px;"></i>Top Products
-                            </h3>
-                            <a href="/admin/products.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
+                    <!-- RIGHT COLUMN (Top Products & Live Activity) -->
+                    <div class="dashboard-col">
+                        <!-- Top Products -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-fire" style="color:var(--gold);margin-right:8px;"></i>Top Products</h3>
+                                <a href="/admin/products.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
+                            </div>
+                            <div class="card-body" style="padding:14px 18px;">
+                                <div class="top-products-list" id="topProductsList"></div>
+                            </div>
                         </div>
-                        <div class="card-body" style="padding:16px 20px;">
-                            <div class="top-products-list" id="topProductsList"></div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- RECENT ORDERS + ACTIVITY -->
-                <div class="recent-grid">
-                    <!-- Recent Orders -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fa-solid fa-bag-shopping"
-                                    style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
-                            <a href="/admin/orders.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
-                        </div>
-                        <div class="table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Customer</th>
-                                        <th>Total</th>
-                                        <th>Status</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recentOrdersBody"></tbody>
-                            </table>
+                        <!-- Activity Feed -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-bell" style="color:var(--gold);margin-right:8px;"></i>Recent Activity</h3>
+                                <span style="font-size:0.78rem;color:var(--text-muted);">Live updates</span>
+                            </div>
+                            <div class="card-body" style="padding:14px 18px;">
+                                <div class="activity-feed" id="activityFeed"></div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Activity Feed -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fa-solid fa-bell" style="color:var(--gold);margin-right:8px;"></i>Recent
-                                Activity</h3>
-                            <span style="font-size:0.78rem;color:var(--text-muted);">Live updates</span>
-                        </div>
-                        <div class="card-body" style="padding:16px 20px;">
-                            <div class="activity-feed" id="activityFeed"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- QUICK ACTIONS -->
-                <div class="card" style="margin-top:20px;">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-bolt" style="color:var(--gold);margin-right:8px;"></i>Quick Actions
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                            <a href="/admin/products.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add
-                                Product</a>
-                            <a href="/admin/orders.html" class="btn btn-outline"><i
-                                    class="fa-solid fa-bag-shopping"></i> Manage Orders</a>
-                            <a href="/admin/customers.html" class="btn btn-ghost"><i class="fa-solid fa-users"></i> View
-                                Customers</a>
-                            <a href="/shop.html" target="_blank" class="btn btn-ghost"><i class="fa-solid fa-store"></i>
-                                View Shop</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PENDING ORDERS BANNER -->
-                <div id="pendingBanner"
-                    style="display:none;background:var(--orange-bg,#FFF3E0);border:1px solid var(--orange);border-radius:var(--radius-lg);padding:16px 20px;margin-top:20px;display:flex;align-items:center;gap:12px;">
-                    <i class="fa-solid fa-triangle-exclamation" style="color:var(--orange);font-size:1.2rem;"></i>
-                    <div>
-                        <strong style="color:var(--orange);" id="pendingText">You have pending orders!</strong>
-                        <p style="font-size:0.82rem;color:var(--text-muted);margin-top:2px;">Please review and process
-                            pending orders promptly.</p>
-                    </div>
-                    <a href="/admin/orders.html" class="btn btn-sm"
-                        style="margin-left:auto;background:var(--orange);color:white;">View Orders</a>
                 </div>
             </div>
         </main>
