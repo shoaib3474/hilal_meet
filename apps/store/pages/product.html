@@ -235,30 +235,32 @@
             const stars = filled.repeat(filledCount) + empty.repeat(5 - filledCount);
 
             document.getElementById('productDetailGrid').innerHTML = `
-        <div class="product-gallery">
-            <div class="gallery-main">
-                <img id="mainImage" src="${product.image}" alt="${product.name}"
-                    onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=800&q=80'">
+        <div class="product-detail-top">
+            <div class="product-gallery">
+                <div class="gallery-main">
+                    <img id="mainImage" src="${product.image}" alt="${product.name}"
+                        onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=800&q=80'">
+                </div>
+                <div class="gallery-thumbs">
+                    ${(product.gallery || [product.image]).map((img, i) => `
+                        <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(this, '${img}')">
+                            <img src="${img}" alt="" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
+                        </div>`).join('')}
+                </div>
             </div>
-            <div class="gallery-thumbs">
-                ${(product.gallery || [product.image]).map((img, i) => `
-                    <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="switchImage(this, '${img}')">
-                        <img src="${img}" alt="" onerror="this.src='https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=100'">
-                    </div>`).join('')}
-            </div>
-        </div>
-        <div class="product-info">
-            <div class="product-info-header">
-                ${product.badge ? `<span class="product-badge badge-${product.badge.toLowerCase().replace(/\s/g, '-')}">${product.badge}</span>` : ''}
-                <h1 class="product-title">${product.name}</h1>
+            <div class="product-info-summary">
+                <div class="product-title-row">
+                    <h1 class="product-title">${product.name}</h1>
+                    <button class="btn-wishlist-detail wishlist-header-btn" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
                 <div class="product-meta">
-                    <div class="product-meta-row">
-                        <span><i class="fa-solid fa-weight-hanging"></i> ${product.weight}</span>
-                        <span><i class="fa-solid fa-tag"></i> ${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
-                    </div>
-                    <div class="product-meta-row">
-                        <span><i class="fa-solid fa-certificate"></i> Halal Certified</span>
-                    </div>
+                    <span><i class="fa-solid fa-weight-hanging"></i> ${product.weight}</span>
+                    <span class="meta-dot">•</span>
+                    <span><i class="fa-solid fa-tag"></i> ${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
+                    <span class="meta-dot">•</span>
+                    <span><i class="fa-solid fa-certificate"></i> Halal Certified</span>
                 </div>
                 <div class="product-rating">
                     <span class="stars">${stars}</span>
@@ -268,22 +270,23 @@
                     <span class="price">£${price.toFixed(2)}</span>
                     ${product.salePrice ? `<span class="old">£${product.price.toFixed(2)}</span><span class="save">Save -${savePct}%</span>` : ''}
                 </div>
-            </div>
-
-            <div class="qty-selector">
-                <label>Quantity:</label>
-                <div class="qty-wrap">
-                    <button type="button" onclick="changeQty(-1)">-</button>
-                    <input type="number" id="qtyInput" value="1" min="1" max="99">
-                    <button type="button" onclick="changeQty(1)">+</button>
+                <div class="qty-selector">
+                    <label><span class="qty-full">Quantity:</span><span class="qty-short">Qty:</span></label>
+                    <div class="qty-wrap">
+                        <button type="button" onclick="changeQty(-1)">-</button>
+                        <input type="number" id="qtyInput" value="1" min="1" max="99">
+                        <button type="button" onclick="changeQty(1)">+</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
+        <div class="product-detail-bottom">
             <div class="add-to-cart-row">
                 <button class="btn btn-primary btn-add" onclick="addProductToCart()">
                     <i class="fa-solid fa-cart-shopping"></i> Add to Cart
                 </button>
-                <button class="btn-wishlist-detail" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
+                <button class="btn-wishlist-detail wishlist-inline-btn" onclick="toggleWishlist(this, ${product.id})" title="Wishlist">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
@@ -294,8 +297,6 @@
                 <span class="trust-item-pill"><i class="fa-solid fa-leaf"></i> Farm fresh daily</span>
             </div>
 
-            <p class="desc">${product.description}</p>
-
             <div class="product-tags">
                 <span class="product-tag">${product.category}</span>
                 <span class="product-tag">Halal</span>
@@ -303,12 +304,10 @@
                 ${product.badge ? `<span class="product-tag">${product.badge}</span>` : ''}
             </div>
 
-            <div class="product-extra-meta" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
-                <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:0.85rem;color:var(--text-muted);">
-                    <span><strong>SKU:</strong> PH-${String(product.id).padStart(4, '0')}</span>
-                    <span><strong>Category:</strong> <a href="/shop?cat=${product.category}" style="color:var(--primary);">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</a></span>
-                    <span><strong>Availability:</strong> <span style="color:var(--primary);font-weight:600;">${product.inStock ? 'In Stock' : 'Out of Stock'}</span></span>
-                </div>
+            <div class="product-extra-meta">
+                <span><strong>SKU:</strong> PH-${String(product.id).padStart(4, '0')}</span>
+                <span><strong>Category:</strong> <a href="/shop?cat=${product.category}">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</a></span>
+                <span><strong>Availability:</strong> <span class="stock-status in-stock">${product.inStock ? 'In Stock' : 'Out of Stock'}</span></span>
             </div>
         </div>`;
 
