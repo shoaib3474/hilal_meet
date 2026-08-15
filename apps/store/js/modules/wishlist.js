@@ -17,10 +17,11 @@ export function getWishlistUserId() {
     try {
         let sid = localStorage.getItem('ph_wishlist_session_id');
         if (!sid) {
-            sid = `anon-${Date.now().toString(36)}-${Math.floor(Math.random() * 9000 + 1000)}`;
+            sid = `${Date.now().toString(36)}-${Math.floor(Math.random() * 9000 + 1000)}`;
             localStorage.setItem('ph_wishlist_session_id', sid);
         }
-        return `anon-${sid}`;
+        const cleanSid = sid.replace(/^anon-/, '');
+        return `anon-${cleanSid}`;
     } catch (e) {
         return '';
     }
@@ -33,7 +34,7 @@ export function syncAllWishlistButtonsOnPage() {
     // Update all product cards on current screen
     document.querySelectorAll('.product-card').forEach(card => {
         const idAttr = card.getAttribute('data-id');
-        const id = Number(idAttr);
+        const id = parseInt(idAttr, 10);
         const btn = card.querySelector('.product-wishlist');
         if (btn && !isNaN(id) && id > 0) {
             const inList = wishlist.includes(id);
@@ -48,10 +49,10 @@ export function syncAllWishlistButtonsOnPage() {
 
     // Update product details page button
     document.querySelectorAll('.btn-wishlist-detail').forEach(btn => {
-        let id = Number(window.__currentProductId);
+        let id = parseInt(window.__currentProductId, 10);
         if (isNaN(id) || id <= 0) {
             const urlParams = new URLSearchParams(window.location.search);
-            id = Number(urlParams.get('id'));
+            id = parseInt(urlParams.get('id'), 10);
         }
         if (!isNaN(id) && id > 0) {
             const inList = wishlist.includes(id);
@@ -74,14 +75,14 @@ function notifyWishlistUpdated() {
 }
 
 export async function hydrateWishlistFromServer() {
-    if (typeof window === 'undefined' || typeof fetch !== 'function') return;
+    if (typeof window === 'undefined' || typeof fetch !== 'function') return [];
 
     const userId = getWishlistUserId();
     if (!userId) {
         wishlistCache = [];
         wishlistItemsCache = [];
         notifyWishlistUpdated();
-        return;
+        return [];
     }
 
     try {
@@ -93,35 +94,31 @@ export async function hydrateWishlistFromServer() {
 
         const data = await response.json();
         if (Array.isArray(data.productIds)) {
-            const raw = data.productIds.map(Number).filter(n => !isNaN(n) && n > 0);
+            const raw = data.productIds.map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
             wishlistCache = Array.from(new Set(raw));
             wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
             try {
                 localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-                localStorage.setItem('ph_wishlist', JSON.stringify(wishlistCache));
-                if (wishlistItemsCache.length > 0) {
-                    localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
-                }
             } catch (_) {}
             notifyWishlistUpdated();
+            return wishlistItemsCache;
         } else {
             wishlistCache = [];
             wishlistItemsCache = [];
+            notifyWishlistUpdated();
+            return [];
         }
     } catch (error) {
         console.warn('Wishlist server sync fallback:', error.message);
         try {
-            const local = localStorage.getItem(`ph_wishlist_${userId}`) || localStorage.getItem('ph_wishlist');
-            const parsed = local ? JSON.parse(local).map(Number).filter(n => !isNaN(n) && n > 0) : [];
+            const local = localStorage.getItem(`ph_wishlist_${userId}`);
+            const parsed = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
             wishlistCache = Array.from(new Set(parsed));
-
-            const localItems = localStorage.getItem(`ph_wishlist_items_${userId}`);
-            wishlistItemsCache = localItems ? JSON.parse(localItems) : [];
         } catch (_) {
             wishlistCache = [];
-            wishlistItemsCache = [];
         }
         notifyWishlistUpdated();
+        return wishlistItemsCache || [];
     }
 }
 
@@ -132,8 +129,8 @@ export function getWishlist() {
     }
 
     try {
-        const local = localStorage.getItem(`ph_wishlist_${userId}`) || localStorage.getItem('ph_wishlist');
-        const raw = local ? JSON.parse(local).map(Number).filter(n => !isNaN(n) && n > 0) : [];
+        const local = localStorage.getItem(`ph_wishlist_${userId}`);
+        const raw = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
         wishlistCache = Array.from(new Set(raw));
     } catch (_) {
         wishlistCache = [];
@@ -144,24 +141,14 @@ export function getWishlist() {
 }
 
 export function getWishlistItems() {
-    const userId = getWishlistUserId();
-    if (wishlistItemsCache !== null && Array.isArray(wishlistItemsCache)) {
-        return [...wishlistItemsCache];
-    }
-
-    try {
-        const local = localStorage.getItem(`ph_wishlist_items_${userId}`);
-        wishlistItemsCache = local ? JSON.parse(local) : [];
-    } catch (_) {
-        wishlistItemsCache = [];
-    }
-
-    return [...wishlistItemsCache];
+    return Array.isArray(wishlistItemsCache) ? [...wishlistItemsCache] : [];
 }
 
 export function isProductInWishlist(productId) {
+    const id = parseInt(productId, 10);
+    if (isNaN(id) || id <= 0) return false;
     const list = getWishlist();
-    return list.includes(Number(productId));
+    return list.includes(id);
 }
 
 export function updateWishlistCount() {
@@ -174,35 +161,28 @@ export function updateWishlistCount() {
 }
 
 export async function toggleWishlist(btn, productId) {
-    const id = Number(productId);
+    const id = parseInt(productId, 10);
     if (isNaN(id) || id <= 0) return false;
 
-    let wishlist = getWishlist();
-    const idx = wishlist.indexOf(id);
     const userId = getWishlistUserId();
-    let isAdded = false;
+    let currentIds = getWishlist();
+    const isAlreadyInList = currentIds.includes(id);
+    let isAdded = !isAlreadyInList;
 
-    // Optimistic update
-    if (idx > -1) {
-        wishlist = wishlist.filter(item => item !== id);
+    // Immediate optimistic local update
+    if (isAlreadyInList) {
+        wishlistCache = currentIds.filter(item => item !== id);
         if (wishlistItemsCache) {
-            wishlistItemsCache = wishlistItemsCache.filter(item => item.id !== id);
+            wishlistItemsCache = wishlistItemsCache.filter(item => parseInt(item.id, 10) !== id);
         }
-        isAdded = false;
         showToast('Removed from wishlist', 'info');
     } else {
-        wishlist = Array.from(new Set([...wishlist, id]));
-        isAdded = true;
+        wishlistCache = Array.from(new Set([...currentIds, id]));
         showToast('Added to wishlist!', 'success');
     }
 
-    wishlistCache = wishlist;
     try {
-        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlist));
-        localStorage.setItem('ph_wishlist', JSON.stringify(wishlist));
-        if (wishlistItemsCache) {
-            localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
-        }
+        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
     } catch (_) {}
 
     notifyWishlistUpdated();
@@ -221,14 +201,10 @@ export async function toggleWishlist(btn, productId) {
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data.productIds)) {
-                    wishlistCache = Array.from(new Set(data.productIds.map(Number)));
+                    wishlistCache = Array.from(new Set(data.productIds.map(n => parseInt(n, 10))));
                     wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
                     try {
                         localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-                        localStorage.setItem('ph_wishlist', JSON.stringify(wishlistCache));
-                        if (wishlistItemsCache.length > 0) {
-                            localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
-                        }
                     } catch (_) {}
                     notifyWishlistUpdated();
                 }
@@ -242,23 +218,17 @@ export async function toggleWishlist(btn, productId) {
 }
 
 export async function removeFromWishlist(productId) {
-    const id = Number(productId);
+    const id = parseInt(productId, 10);
     if (isNaN(id) || id <= 0) return;
 
-    let wishlist = getWishlist().filter(item => item !== id);
     const userId = getWishlistUserId();
-
-    wishlistCache = wishlist;
+    wishlistCache = getWishlist().filter(item => item !== id);
     if (wishlistItemsCache) {
-        wishlistItemsCache = wishlistItemsCache.filter(item => item.id !== id);
+        wishlistItemsCache = wishlistItemsCache.filter(item => parseInt(item.id, 10) !== id);
     }
 
     try {
-        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlist));
-        localStorage.setItem('ph_wishlist', JSON.stringify(wishlist));
-        if (wishlistItemsCache) {
-            localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
-        }
+        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
     } catch (_) {}
 
     showToast('Removed from wishlist', 'info');
@@ -287,8 +257,6 @@ export async function clearWishlist() {
 
     try {
         localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
-        localStorage.setItem('ph_wishlist', JSON.stringify([]));
-        localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify([]));
     } catch (_) {}
 
     showToast('Wishlist cleared', 'info');

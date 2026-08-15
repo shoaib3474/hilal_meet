@@ -13,10 +13,11 @@ export function setCurrentUser(user) {
     const newCartSessionId = `cart-user-${user?.id ?? user?.customerId ?? user?.email}`;
 
     if (prevWishlistGuestId && typeof window !== 'undefined') {
+        const cleanGuestWishlistId = `anon-${prevWishlistGuestId.replace(/^anon-/, '')}`;
         fetch('/api/wishlist/migrate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guestId: `anon-${prevWishlistGuestId}`, userId: newUserId })
+            body: JSON.stringify({ guestId: cleanGuestWishlistId, userId: newUserId })
         }).catch(() => {}).finally(() => {
             if (typeof window.dispatchEvent === 'function') {
                 window.dispatchEvent(new Event('wishlist:updated'));
@@ -25,10 +26,11 @@ export function setCurrentUser(user) {
     }
 
     if (prevCartGuestId && typeof window !== 'undefined') {
+        const cleanGuestCartId = `cart-anon-${prevCartGuestId.replace(/^cart-anon-/, '').replace(/^anon-/, '')}`;
         fetch('/api/cart/migrate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guestSessionId: `cart-anon-${prevCartGuestId}`, userSessionId: newCartSessionId })
+            body: JSON.stringify({ guestSessionId: cleanGuestCartId, userSessionId: newCartSessionId })
         }).catch(() => {}).finally(() => {
             if (typeof window.dispatchEvent === 'function') {
                 window.dispatchEvent(new Event('cart:updated'));

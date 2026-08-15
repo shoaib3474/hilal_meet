@@ -195,32 +195,24 @@
             const userId = typeof getWishlistUserId === 'function' ? getWishlistUserId() : '';
             let wishlistProducts = [];
 
-            try {
-                const res = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
-                    headers: { 'x-user-id': userId }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (Array.isArray(data.items)) {
-                        wishlistProducts = data.items;
+            if (userId && typeof fetch === 'function') {
+                try {
+                    const res = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
+                        headers: { 'x-user-id': userId }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (Array.isArray(data.items)) {
+                            wishlistProducts = data.items;
+                        }
                     }
+                } catch (err) {
+                    console.warn('Failed to load wishlist from server:', err);
                 }
-            } catch (err) {
-                console.warn('Failed to load wishlist from server:', err);
             }
 
             if (wishlistProducts.length === 0 && typeof getWishlistItems === 'function') {
                 wishlistProducts = getWishlistItems();
-            }
-
-            if (wishlistProducts.length === 0) {
-                const ids = typeof getWishlist === 'function' ? getWishlist() : [];
-                if (ids.length > 0) {
-                    let allProducts = [];
-                    if (typeof getProducts === 'function') allProducts = getProducts();
-                    else if (typeof PRODUCTS !== 'undefined') allProducts = PRODUCTS;
-                    wishlistProducts = (allProducts || []).filter(p => ids.includes(Number(p.id)));
-                }
             }
 
             if (wishlistProducts.length === 0) {
