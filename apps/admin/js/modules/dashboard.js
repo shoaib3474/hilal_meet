@@ -1,27 +1,45 @@
 import { capitalize, formatDate } from './utils.js';
 import { adminToast, openModal } from './ui.js';
-import { getProducts, getOrders, getCustomers } from './api.js';
+import { getProducts, getOrders, getCustomers, getOrderStats } from './api.js';
 
 export async function updateDashboardStats() {
     try {
-        const products = await getProducts();
-        const orders = await getOrders();
-        const customers = await getCustomers();
+        const [products, customers, orderStats] = await Promise.all([
+            getProducts(),
+            getCustomers(),
+            getOrderStats()
+        ]);
 
-        const revenue = orders
+        const revenue = (await getOrders())
             .filter(o => o.status !== 'cancelled')
-            .reduce((s, o) => s + o.total, 0);
-        const pending = orders.filter(o => o.status === 'pending').length;
+            .reduce((s, o) => s + Number(o.total || 0), 0);
 
         const setEl = (id, val) => {
             const el = document.getElementById(id);
             if (el) el.textContent = val;
         };
+
         setEl('statRevenue', `£${revenue.toFixed(2)}`);
-        setEl('statOrders', orders.length);
+        setEl('statOrders', orderStats.totalOrders ?? 0);
         setEl('statProducts', products.length);
         setEl('statCustomers', customers.length);
-        setEl('statPending', pending);
+        setEl('statPending', orderStats.pendingOrders ?? 0);
+
+        const pending = Number(orderStats.pendingOrders || 0);
+        const totalBadge = document.getElementById('sidebarOrderCount');
+        if (totalBadge) totalBadge.textContent = Number(orderStats.totalOrders || 0);
+
+        const banner = document.getElementById('pendingBanner');
+        const pendingText = document.getElementById('pendingText');
+        if (banner && pendingText) {
+            if (pending > 0) {
+                banner.style.display = 'flex';
+                pendingText.textContent = `You have ${pending} pending order${pending > 1 ? 's' : ''}!`;
+            } else {
+                banner.style.display = 'none';
+                pendingText.textContent = 'You have pending orders!';
+            }
+        }
     } catch (error) {
         console.error('Error updating dashboard stats:', error);
     }

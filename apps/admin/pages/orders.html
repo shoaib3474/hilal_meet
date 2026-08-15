@@ -24,7 +24,7 @@
                 <a href="/admin/dashboard.html" class="sidebar-link"><i class="fa-solid fa-chart-line"></i>
                     Dashboard</a>
                 <a href="/admin/orders.html" class="sidebar-link active"><i class="fa-solid fa-bag-shopping"></i> Orders
-                    <span class="badge red" id="pendingBadge">0</span></a>
+                    <span class="badge red" id="sidebarOrderCount">0</span></a>
                 <a href="/admin/products.html" class="sidebar-link"><i class="fa-solid fa-boxes-stacked"></i>
                     Products</a>
                 <a href="/admin/customers.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Customers</a>
@@ -143,23 +143,22 @@
         let currentStatusFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', async () => {
+            window.currentStatusFilter = 'all';
+            await refreshOrderStats();
             await renderOrdersTable('', 'all');
-            const orders = await getOrders();
-            const pending = orders.filter(o => o.status === 'pending').length;
-            document.getElementById('pendingCount').textContent = pending;
-            document.getElementById('pendingBadge').textContent = pending;
-            document.getElementById('orderCount').textContent = orders.length;
         });
 
         async function filterOrders(status, btn) {
             currentStatusFilter = status;
+            window.currentStatusFilter = status;
             document.querySelectorAll('[data-status]').forEach(b => {
                 b.className = b.dataset.status === status ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
             });
             await renderOrdersTable(document.getElementById('orderSearch').value, status);
-            const orders = await getOrders();
-            const filtered = status === 'all' ? orders : orders.filter(o => o.status === status);
-            document.getElementById('orderCount').textContent = filtered.length;
+            const stats = await getOrderStats();
+            const mappedStatus = status === 'all' ? 'total' : status;
+            const filtered = mappedStatus === 'total' ? Number(stats.totalOrders || 0) : Number(stats[`${mappedStatus}Orders`] || 0);
+            document.getElementById('orderCount').textContent = filtered;
         }
     </script>
 </body>

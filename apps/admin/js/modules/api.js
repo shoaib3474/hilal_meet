@@ -53,6 +53,10 @@ export async function getOrders() {
     return apiCall('GET', '/api/orders');
 }
 
+export async function getOrderStats() {
+    return apiCall('GET', '/api/orders/stats');
+}
+
 export async function createOrder(order) {
     return apiCall('POST', '/api/orders', order);
 }

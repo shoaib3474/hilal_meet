@@ -1083,6 +1083,38 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+app.get('/api/orders/stats', async (req, res) => {
+    setNoStoreHeaders(res);
+    try {
+        const { rows } = await pool.query(`
+            SELECT
+                COUNT(*)::int AS total_orders,
+                COUNT(*) FILTER (WHERE status = 'pending')::int AS pending_orders,
+                COUNT(*) FILTER (WHERE status = 'processing')::int AS processing_orders,
+                COUNT(*) FILTER (WHERE status = 'shipped')::int AS shipped_orders,
+                COUNT(*) FILTER (WHERE status = 'delivered')::int AS delivered_orders,
+                COUNT(*) FILTER (WHERE status = 'cancelled')::int AS cancelled_orders
+            FROM orders
+        `);
+
+        const stats = rows[0] || {};
+        res.json({
+            totalOrders: Number(stats.total_orders || 0),
+            pendingOrders: Number(stats.pending_orders || 0),
+            processingOrders: Number(stats.processing_orders || 0),
+            shippedOrders: Number(stats.shipped_orders || 0),
+            deliveredOrders: Number(stats.delivered_orders || 0),
+            cancelledOrders: Number(stats.cancelled_orders || 0)
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/admin/orders/stats', async (req, res) => {
+    return res.redirect(307, '/api/orders/stats');
+});
+
 app.get('/api/orders/me', async (req, res) => {
     setNoStoreHeaders(res);
     const rawUserId = req.query?.userId || req.get('x-user-id') || '';

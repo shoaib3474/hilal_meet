@@ -25,7 +25,7 @@
                 <a href="/admin/dashboard.html" class="sidebar-link active"><i class="fa-solid fa-chart-line"></i>
                     Dashboard</a>
                 <a href="/admin/orders.html" class="sidebar-link"><i class="fa-solid fa-bag-shopping"></i> Orders <span
-                        class="badge red" id="sidebarPendingCount">0</span></a>
+                        class="badge red" id="sidebarOrderCount">0</span></a>
                 <a href="/admin/products.html" class="sidebar-link"><i class="fa-solid fa-boxes-stacked"></i>
                     Products</a>
                 <a href="/admin/customers.html" class="sidebar-link"><i class="fa-solid fa-users"></i> Customers</a>
@@ -49,8 +49,7 @@
         <main class="admin-main">
             <!-- HEADER -->
             <div class="admin-header">
-                <button id="sidebarToggle" class="header-icon-btn"><i
-                        class="fa-solid fa-bars"></i></button>
+                <button id="sidebarToggle" class="header-icon-btn"><i class="fa-solid fa-bars"></i></button>
                 <div>
                     <div class="admin-header-title">Dashboard</div>
                     <div class="admin-header-subtitle" id="headerDate">Loading...</div>
@@ -73,11 +72,14 @@
                     style="display:none;background:var(--orange-bg,#FFF3E0);border:1px solid var(--orange);border-radius:var(--radius-md);padding:10px 16px;margin-bottom:16px;align-items:center;gap:12px;">
                     <i class="fa-solid fa-triangle-exclamation" style="color:var(--orange);font-size:1.1rem;"></i>
                     <div style="flex:1;">
-                        <strong style="color:var(--orange);font-size:0.85rem;" id="pendingText">You have pending orders!</strong>
-                        <span style="font-size:0.78rem;color:var(--text-muted);margin-left:6px;">Please review and process promptly.</span>
+                        <strong style="color:var(--orange);font-size:0.85rem;" id="pendingText">You have pending
+                            orders!</strong>
+                        <span style="font-size:0.78rem;color:var(--text-muted);margin-left:6px;">Please review and
+                            process promptly.</span>
                     </div>
                     <a href="/admin/orders.html" class="btn btn-sm"
-                        style="margin-left:auto;background:var(--orange);color:white;font-size:0.75rem;padding:4px 10px;">View Orders</a>
+                        style="margin-left:auto;background:var(--orange);color:white;font-size:0.75rem;padding:4px 10px;">View
+                        Orders</a>
                 </div>
 
                 <!-- PAGE HEADER -->
@@ -87,9 +89,12 @@
                         <p>Here's what's happening at Pakeeza Hilal Meat today</p>
                     </div>
                     <div class="page-header-actions" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-                        <a href="/admin/products.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Product</a>
-                        <a href="/admin/orders.html" class="btn btn-outline btn-sm"><i class="fa-solid fa-bag-shopping"></i> View Orders</a>
-                        <a href="/shop.html" target="_blank" class="btn btn-ghost btn-sm"><i class="fa-solid fa-store"></i> View Shop</a>
+                        <a href="/admin/products.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i>
+                            Add Product</a>
+                        <a href="/admin/orders.html" class="btn btn-outline btn-sm"><i
+                                class="fa-solid fa-bag-shopping"></i> View Orders</a>
+                        <a href="/shop.html" target="_blank" class="btn btn-ghost btn-sm"><i
+                                class="fa-solid fa-store"></i> View Shop</a>
                     </div>
                 </div>
 
@@ -136,7 +141,8 @@
                         <!-- Revenue Chart -->
                         <div class="card">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-chart-line" style="color:var(--primary);margin-right:8px;"></i>Weekly Revenue</h3>
+                                <h3><i class="fa-solid fa-chart-line"
+                                        style="color:var(--primary);margin-right:8px;"></i>Weekly Revenue</h3>
                                 <span style="font-size:0.78rem;color:var(--text-muted);">Last 7 days</span>
                             </div>
                             <div class="card-body">
@@ -147,8 +153,10 @@
                         <!-- Recent Orders -->
                         <div class="card">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-bag-shopping" style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
-                                <a href="/admin/orders.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
+                                <h3><i class="fa-solid fa-bag-shopping"
+                                        style="color:var(--primary);margin-right:8px;"></i>Recent Orders</h3>
+                                <a href="/admin/orders.html" style="font-size:0.78rem;color:var(--primary);">View
+                                    All</a>
                             </div>
                             <div class="table-wrap">
                                 <table class="data-table">
@@ -172,8 +180,10 @@
                         <!-- Top Products -->
                         <div class="card">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-fire" style="color:var(--gold);margin-right:8px;"></i>Top Products</h3>
-                                <a href="/admin/products.html" style="font-size:0.78rem;color:var(--primary);">View All</a>
+                                <h3><i class="fa-solid fa-fire" style="color:var(--gold);margin-right:8px;"></i>Top
+                                    Products</h3>
+                                <a href="/admin/products.html" style="font-size:0.78rem;color:var(--primary);">View
+                                    All</a>
                             </div>
                             <div class="card-body" style="padding:14px 18px;">
                                 <div class="top-products-list" id="topProductsList"></div>
@@ -183,7 +193,8 @@
                         <!-- Activity Feed -->
                         <div class="card">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-bell" style="color:var(--gold);margin-right:8px;"></i>Recent Activity</h3>
+                                <h3><i class="fa-solid fa-bell" style="color:var(--gold);margin-right:8px;"></i>Recent
+                                    Activity</h3>
                                 <span style="font-size:0.78rem;color:var(--text-muted);">Live updates</span>
                             </div>
                             <div class="card-body" style="padding:14px 18px;">
@@ -206,18 +217,6 @@
             await renderTopProducts();
             await renderActivity();
             drawRevenueChart();
-
-            const orders = await getOrders();
-            const pending = orders.filter(o => o.status === 'pending').length;
-            const badge = document.getElementById('sidebarPendingCount');
-            if (badge) badge.textContent = pending;
-            if (pending > 0) {
-                const banner = document.getElementById('pendingBanner');
-                if (banner) {
-                    banner.style.display = 'flex';
-                    document.getElementById('pendingText').textContent = `You have ${pending} pending order${pending > 1 ? 's' : ''}!`;
-                }
-            }
 
             let resizeTimer;
             window.addEventListener('resize', () => {

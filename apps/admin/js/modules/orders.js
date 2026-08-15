@@ -1,8 +1,28 @@
 import { capitalize, formatDate } from './utils.js';
 import { adminToast, openModal } from './ui.js';
-import { getOrders, updateOrder, deleteOrder as deleteOrderApi } from './api.js';
+import { getOrders, getOrderStats, updateOrder, deleteOrder as deleteOrderApi } from './api.js';
 
 let ordersCache = [];
+
+export async function refreshOrderStats() {
+    try {
+        const stats = await getOrderStats();
+        const pending = Number(stats.pendingOrders || 0);
+        const total = Number(stats.totalOrders || 0);
+
+        const pendingBadge = document.getElementById('pendingBadge');
+        const pendingCount = document.getElementById('pendingCount');
+        const orderCount = document.getElementById('orderCount');
+        const sidebarOrderCount = document.getElementById('sidebarOrderCount');
+
+        if (pendingBadge) pendingBadge.textContent = total;
+        if (pendingCount) pendingCount.textContent = pending;
+        if (orderCount) orderCount.textContent = total;
+        if (sidebarOrderCount) sidebarOrderCount.textContent = total;
+    } catch (error) {
+        console.error('Error refreshing admin order stats:', error);
+    }
+}
 
 export async function renderOrdersTable(filter = '', status = '') {
     const tbody = document.getElementById('ordersTableBody');
@@ -28,10 +48,14 @@ export async function renderOrdersTable(filter = '', status = '') {
 
         if (!orders.length) {
             tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No orders found</td></tr>`;
+            const orderCountEl = document.getElementById('orderCount');
+            if (orderCountEl) orderCountEl.textContent = '0';
             return;
         }
 
-        tbody.innerHTML = orders.map(o => `
+        tbody.innerHTML = orders.map(o => {
+            const statusOptions = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+            return `
             <tr>
                 <td><strong>${o.id}</strong></td>
                 <td>
@@ -48,9 +72,9 @@ export async function renderOrdersTable(filter = '', status = '') {
                 <td><strong>£${o.total.toFixed(2)}</strong></td>
                 <td>
                     <select class="form-control form-control-sm" style="width:130px;" onchange="updateOrderStatus('${o.id}', this.value)">
-                        ${['pending', 'processing', 'delivered', 'cancelled'].map(s =>
-            `<option value="${s}" ${o.status === s ? 'selected' : ''}>${capitalize(s)}</option>`
-        ).join('')}
+                        ${statusOptions.map(s =>
+                `<option value="${s}" ${o.status === s ? 'selected' : ''}>${capitalize(s)}</option>`
+            ).join('')}
                     </select>
                 </td>
                 <td>
@@ -59,7 +83,11 @@ export async function renderOrdersTable(filter = '', status = '') {
                         <button class="btn btn-sm btn-icon action-delete" title="Delete" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </td>
-            </tr>`).join('');
+            </tr>`;
+        }).join('');
+
+        const orderCountEl = document.getElementById('orderCount');
+        if (orderCountEl) orderCountEl.textContent = String(orders.length);
     } catch (error) {
         adminToast('Failed to load orders', 'error');
         console.error('Error loading orders:', error);
@@ -70,6 +98,10 @@ export async function renderOrdersTable(filter = '', status = '') {
 export async function updateOrderStatus(orderId, status) {
     try {
         await updateOrder(orderId, { status });
+        await refreshOrderStats();
+        const currentFilter = document.getElementById('orderSearch')?.value || '';
+        const currentStatus = window.currentStatusFilter || 'all';
+        await renderOrdersTable(currentFilter, currentStatus);
         const order = ordersCache.find(o => o.id === orderId);
         if (order) {
             adminToast(`Order ${orderId} marked as ${capitalize(status)}`, 'success');
@@ -95,6 +127,8 @@ export async function viewOrder(orderId) {
 
     const body = document.getElementById('orderDetailBody');
     if (!body) return;
+
+    const statusOptions = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
     body.innerHTML = `
         <div class="order-detail-grid">
@@ -137,7 +171,7 @@ export async function viewOrder(orderId) {
         <div style="margin-top:16px;">
             <label style="font-size:0.82rem;font-weight:600;">Update Status:</label>
             <select class="form-control" style="width:200px;margin-top:6px;" id="orderStatusSelect" onchange="updateOrderStatus('${o.id}', this.value)">
-                ${['pending', 'processing', 'delivered', 'cancelled'].map(s =>
+                ${statusOptions.map(s =>
         `<option value="${s}" ${o.status === s ? 'selected' : ''}>${capitalize(s)}</option>`
     ).join('')}
             </select>
