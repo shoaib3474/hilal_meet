@@ -291,275 +291,272 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // ==========================================
-// RELATIONAL WISHLIST ENDPOINTS
+// DATABASE-DRIVEN WISHLIST ENDPOINTS
 // ==========================================
+function getAuthenticatedUserId(req) {
+    const raw = req.query?.userId || req.body?.userId || req.get('x-user-id') || req.get('x-wishlist-user-id') || '';
+    const normalized = normalizeWishlistUserId(raw);
+    if (!normalized) return null;
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+async function getWishlistItemsForUser(userId) {
+    const { rows } = await pool.query(
+        `SELECT
+            w.id AS wishlist_id,
+            w.user_id,
+            w.product_id,
+            w.created_at AS wishlisted_at,
+            p.id,
+            p.name,
+            p.category,
+            p.price,
+            p.sale_price,
+            p.weight,
+            p.image,
+            p.gallery,
+            p.description,
+            p.badge,
+            p.in_stock,
+            p.featured,
+            p.rating,
+            p.reviews
+         FROM wishlist_items w
+         JOIN products p ON p.id = w.product_id
+         WHERE w.user_id = $1
+         ORDER BY w.created_at DESC`,
+        [userId]
+    );
+
+    return rows.map((row) => ({
+        id: row.id,
+        wishlistId: row.wishlist_id,
+        userId: row.user_id,
+        productId: row.product_id,
+        name: row.name,
+        category: row.category,
+        price: Number(row.price || 0),
+        salePrice: row.sale_price !== null ? Number(row.sale_price) : null,
+        weight: row.weight,
+        image: row.image,
+        gallery: Array.isArray(row.gallery) ? row.gallery : [],
+        description: row.description,
+        badge: row.badge,
+        inStock: row.in_stock,
+        featured: row.featured,
+        rating: Number(row.rating || 4.5),
+        reviews: Number(row.reviews || 0),
+        wishlistedAt: row.wishlisted_at
+    }));
+}
+
 app.get('/api/wishlist', async (req, res) => {
-    const userId = getWishlistUserId(req);
     setNoStoreHeaders(res);
+    const userId = getAuthenticatedUserId(req);
     if (!userId) {
-        return res.json({ userId: '', productIds: [], items: [] });
+        return res.status(401).json({ error: 'Authentication required' });
     }
 
     try {
-        const { rows } = await pool.query(
-            `SELECT 
-                w.id as wishlist_id,
-                w.user_id,
-                w.product_id,
-                w.created_at as wishlisted_at,
-                p.id,
-                p.name,
-                p.category,
-                p.price,
-                p.sale_price,
-                p.weight,
-                p.image,
-                p.gallery,
-                p.description,
-                p.badge,
-                p.in_stock,
-                p.featured,
-                p.rating,
-                p.reviews
-             FROM wishlist_items w
-             JOIN products p ON w.product_id = p.id
-             WHERE w.user_id = $1
-             ORDER BY w.created_at DESC`,
-            [userId]
-        );
+        const userExists = await pool.query('SELECT id FROM users WHERE id = $1', [userId]);
+        if (userExists.rowCount === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-        const items = rows
-            .map(normalizeWishlistRow)
-            .filter(Boolean)
-            .map(r => ({
-                id: r.id,
-                name: r.name,
-                category: r.category,
-                price: Number(r.price || 0),
-                salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
-                weight: r.weight,
-                image: r.image,
-                gallery: Array.isArray(r.gallery) ? r.gallery : [],
-                description: r.description,
-                badge: r.badge,
-                inStock: r.in_stock,
-                featured: r.featured,
-                rating: Number(r.rating || 4.5),
-                reviews: Number(r.reviews || 0),
-                wishlistedAt: r.wishlisted_at
-            }));
-        const productIds = items.map(i => i.id);
-
-        inMemoryWishlistItems = inMemoryWishlistItems.filter(item => item.user_id !== userId);
-        productIds.forEach(pid => inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: pid, created_at: new Date() }));
-
-        return res.json({ userId, productIds, items });
+        const items = await getWishlistItemsForUser(userId);
+        return res.json({
+            userId,
+            productIds: items.map((item) => item.id),
+            items
+        });
     } catch (error) {
-        console.warn('DB query for wishlist items failed, using memory fallback:', error.message);
+        console.error('Wishlist fetch failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
     }
-
-    const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
-    const allProducts = inMemoryProducts;
-    const items = userRecords.map(rec => {
-        const p = allProducts.find(prod => prod.id === rec.product_id);
-        return p ? { ...p, wishlistedAt: rec.created_at } : null;
-    }).filter(Boolean);
-    const productIds = items.map(i => i.id);
-
-    res.json({ userId, productIds, items });
 });
 
-app.post('/api/wishlist/toggle', async (req, res) => {
-    const userId = getWishlistUserId(req);
-    const productId = parseInt(req.body?.productId);
+app.get('/api/wishlist/check', async (req, res) => {
     setNoStoreHeaders(res);
+    const userId = getAuthenticatedUserId(req);
+    const productId = Number(req.query?.productId || 0);
 
     if (!userId) {
-        return res.status(400).json({ error: 'User id is required' });
+        return res.status(401).json({ error: 'Authentication required' });
     }
-    if (isNaN(productId) || productId <= 0) {
+    if (!Number.isFinite(productId) || productId <= 0) {
         return res.status(400).json({ error: 'Valid product id is required' });
     }
 
-    let action = 'added';
-    let inWishlist = true;
-
     try {
-        const check = await pool.query(
-            'SELECT id FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+        const { rowCount } = await pool.query(
+            'SELECT 1 FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
             [userId, productId]
         );
-
-        if (check.rowCount > 0) {
-            await pool.query(
-                'DELETE FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
-                [userId, productId]
-            );
-            action = 'removed';
-            inWishlist = false;
-        } else {
-            await pool.query(
-                `INSERT INTO wishlist_items (user_id, product_id, created_at)
-                 VALUES ($1, $2, CURRENT_TIMESTAMP)
-                 ON CONFLICT (user_id, product_id) DO NOTHING`,
-                [userId, productId]
-            );
-            action = 'added';
-            inWishlist = true;
-        }
+        return res.json({ userId, productId, inWishlist: rowCount > 0 });
     } catch (error) {
-        console.warn('DB wishlist toggle failed, falling back to memory:', error.message);
-        const existingIdx = inMemoryWishlistItems.findIndex(i => i.user_id === userId && i.product_id === productId);
-        if (existingIdx > -1) {
-            inMemoryWishlistItems.splice(existingIdx, 1);
-            action = 'removed';
-            inWishlist = false;
-        } else {
-            inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: productId, created_at: new Date() });
-            action = 'added';
-            inWishlist = true;
-        }
-    }
-
-    try {
-        const { rows } = await pool.query(
-            `SELECT 
-                p.id, p.name, p.category, p.price, p.sale_price, p.weight, p.image, p.gallery, p.description, p.badge, p.in_stock, p.featured, p.rating, p.reviews, w.created_at as wishlisted_at
-             FROM wishlist_items w
-             JOIN products p ON w.product_id = p.id
-             WHERE w.user_id = $1
-             ORDER BY w.created_at DESC`,
-            [userId]
-        );
-        const items = rows
-            .map(normalizeWishlistRow)
-            .filter(Boolean)
-            .map(r => ({
-                id: r.id,
-                name: r.name,
-                category: r.category,
-                price: Number(r.price || 0),
-                salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
-                weight: r.weight,
-                image: r.image,
-                gallery: Array.isArray(r.gallery) ? r.gallery : [],
-                description: r.description,
-                badge: r.badge,
-                inStock: r.in_stock,
-                featured: r.featured,
-                rating: Number(r.rating || 4.5),
-                reviews: Number(r.reviews || 0),
-                wishlistedAt: r.wishlisted_at
-            }));
-        return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
-    } catch (_) {
-        const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
-        const allProducts = inMemoryProducts;
-        const items = userRecords.map(rec => allProducts.find(p => p.id === rec.product_id)).filter(Boolean);
-        return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
+        console.error('Wishlist check failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
     }
 });
 
 app.post('/api/wishlist', async (req, res) => {
     setNoStoreHeaders(res);
-    const userId = getWishlistUserId(req);
-    const productId = parseInt(req.body?.productId);
+    const userId = getAuthenticatedUserId(req);
+    const productId = Number(req.body?.productId || 0);
 
     if (!userId) {
-        return res.status(400).json({ error: 'User id is required' });
+        return res.status(401).json({ error: 'Authentication required' });
     }
-    if (isNaN(productId) || productId <= 0) {
+    if (!Number.isFinite(productId) || productId <= 0) {
         return res.status(400).json({ error: 'Valid product id is required' });
     }
 
     try {
+        const userExists = await pool.query('SELECT id FROM users WHERE id = $1', [userId]);
+        if (userExists.rowCount === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const productExists = await pool.query('SELECT id FROM products WHERE id = $1', [productId]);
+        if (productExists.rowCount === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const { rowCount } = await pool.query(
+            'SELECT 1 FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+            [userId, productId]
+        );
+
+        if (rowCount > 0) {
+            const items = await getWishlistItemsForUser(userId);
+            return res.json({ success: true, action: 'exists', userId, productId, items, productIds: items.map((item) => item.id) });
+        }
+
         await pool.query(
             `INSERT INTO wishlist_items (user_id, product_id, created_at)
              VALUES ($1, $2, CURRENT_TIMESTAMP)
              ON CONFLICT (user_id, product_id) DO NOTHING`,
             [userId, productId]
         );
-    } catch (_) {
-        if (!inMemoryWishlistItems.some(i => i.user_id === userId && i.product_id === productId)) {
-            inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: productId, created_at: new Date() });
-        }
-    }
 
-    res.json({ success: true, action: 'added', userId, productId });
+        const items = await getWishlistItemsForUser(userId);
+        return res.status(201).json({ success: true, action: 'added', userId, productId, items, productIds: items.map((item) => item.id) });
+    } catch (error) {
+        console.error('Wishlist add failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
+    }
 });
 
-app.delete('/api/wishlist', async (req, res) => {
+app.post('/api/wishlist/toggle', async (req, res) => {
     setNoStoreHeaders(res);
-    const userId = getWishlistUserId(req);
-    const productId = parseInt(req.query?.productId || req.body?.productId);
+    const userId = getAuthenticatedUserId(req);
+    const productId = Number(req.body?.productId || 0);
 
     if (!userId) {
-        return res.status(400).json({ error: 'User id is required' });
+        return res.status(401).json({ error: 'Authentication required' });
     }
-    if (isNaN(productId) || productId <= 0) {
+    if (!Number.isFinite(productId) || productId <= 0) {
         return res.status(400).json({ error: 'Valid product id is required' });
     }
 
     try {
-        await pool.query(
-            'DELETE FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+        const userExists = await pool.query('SELECT id FROM users WHERE id = $1', [userId]);
+        if (userExists.rowCount === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const productExists = await pool.query('SELECT id FROM products WHERE id = $1', [productId]);
+        if (productExists.rowCount === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        const existing = await pool.query(
+            'SELECT id FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
             [userId, productId]
         );
-    } catch (_) {
-        inMemoryWishlistItems = inMemoryWishlistItems.filter(i => !(i.user_id === userId && i.product_id === productId));
-    }
 
-    res.json({ success: true, action: 'removed', userId, productId });
+        if (existing.rowCount > 0) {
+            await pool.query('DELETE FROM wishlist_items WHERE user_id = $1 AND product_id = $2', [userId, productId]);
+            const items = await getWishlistItemsForUser(userId);
+            return res.json({ userId, productId, action: 'removed', inWishlist: false, productIds: items.map((item) => item.id), items });
+        }
+
+        await pool.query(
+            `INSERT INTO wishlist_items (user_id, product_id, created_at)
+             VALUES ($1, $2, CURRENT_TIMESTAMP)
+             ON CONFLICT (user_id, product_id) DO NOTHING`,
+            [userId, productId]
+        );
+        const items = await getWishlistItemsForUser(userId);
+        return res.json({ userId, productId, action: 'added', inWishlist: true, productIds: items.map((item) => item.id), items });
+    } catch (error) {
+        console.error('Wishlist toggle failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
+    }
 });
 
-app.post('/api/wishlist/migrate', async (req, res) => {
+app.delete('/api/wishlist', async (req, res) => {
     setNoStoreHeaders(res);
-    const guestId = req.body?.guestId;
-    const userId = req.body?.userId;
+    const userId = getAuthenticatedUserId(req);
+    const productId = Number(req.query?.productId || req.body?.productId || 0);
 
-    if (!guestId || !userId || guestId === userId) {
-        return res.json({ success: true, message: 'No migration needed' });
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    if (!Number.isFinite(productId) || productId <= 0) {
+        return res.status(400).json({ error: 'Valid product id is required' });
     }
 
     try {
-        await pool.query(
-            `INSERT INTO wishlist_items (user_id, product_id, created_at)
-             SELECT $1, product_id, created_at FROM wishlist_items WHERE user_id = $2
-             ON CONFLICT (user_id, product_id) DO NOTHING`,
-            [userId, guestId]
+        const { rowCount } = await pool.query(
+            'DELETE FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+            [userId, productId]
         );
-        await pool.query('DELETE FROM wishlist_items WHERE user_id = $1', [guestId]);
-    } catch (_) {
-        const guestItems = inMemoryWishlistItems.filter(i => i.user_id === guestId);
-        guestItems.forEach(item => {
-            if (!inMemoryWishlistItems.some(i => i.user_id === userId && i.product_id === item.product_id)) {
-                inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: item.product_id, created_at: item.created_at });
-            }
-        });
-        inMemoryWishlistItems = inMemoryWishlistItems.filter(i => i.user_id !== guestId);
-    }
 
-    res.json({ success: true, migrated: true });
+        if (rowCount === 0) {
+            return res.status(404).json({ error: 'Wishlist item not found' });
+        }
+
+        const items = await getWishlistItemsForUser(userId);
+        return res.json({ success: true, action: 'removed', userId, productId, productIds: items.map((item) => item.id), items });
+    } catch (error) {
+        console.error('Wishlist delete failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
+    }
 });
 
-const handleClearWishlist = async (req, res) => {
+app.post('/api/wishlist/clear', async (req, res) => {
     setNoStoreHeaders(res);
-    const userId = getWishlistUserId(req);
+    const userId = getAuthenticatedUserId(req);
     if (!userId) {
-        return res.status(400).json({ error: 'User id is required' });
+        return res.status(401).json({ error: 'Authentication required' });
     }
 
     try {
         await pool.query('DELETE FROM wishlist_items WHERE user_id = $1', [userId]);
-    } catch (_) {
-        inMemoryWishlistItems = inMemoryWishlistItems.filter(i => i.user_id !== userId);
+        return res.json({ success: true, userId, productIds: [], items: [] });
+    } catch (error) {
+        console.error('Wishlist clear failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
+    }
+});
+
+app.delete('/api/wishlist/clear', async (req, res) => {
+    setNoStoreHeaders(res);
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
     }
 
-    res.json({ userId, productIds: [], items: [] });
-};
-
-app.delete('/api/wishlist/clear', handleClearWishlist);
-app.post('/api/wishlist/clear', handleClearWishlist);
+    try {
+        await pool.query('DELETE FROM wishlist_items WHERE user_id = $1', [userId]);
+        return res.json({ success: true, userId, productIds: [], items: [] });
+    } catch (error) {
+        console.error('Wishlist clear failed:', error.message);
+        return res.status(503).json({ error: 'Wishlist database unavailable' });
+    }
+});
 
 // ==========================================
 // RELATIONAL CART ENDPOINTS (SQL JOIN)

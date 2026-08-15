@@ -1,8 +1,8 @@
 import { showToast } from './toast.js';
 import { getCurrentUser } from './auth.js';
 
-let wishlistCache = null;
-let wishlistItemsCache = null;
+let wishlistCache = [];
+let wishlistItemsCache = [];
 let wishlistSyncInFlight = null;
 let wishlistLastHydratedAt = 0;
 
@@ -10,69 +10,23 @@ export function getWishlistUserId() {
     if (typeof window === 'undefined') return '';
     try {
         const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-        const userId = user?.id ?? user?.customerId ?? user?.email;
-        if (userId) {
-            return String(userId).replace(/^user-/i, '');
+        const raw = user?.id ?? user?.customerId ?? user?.email ?? '';
+        if (raw !== '') {
+            return String(raw).replace(/^user-/i, '').replace(/^anon-/i, '');
         }
     } catch (_) { }
-
-    try {
-        let sid = localStorage.getItem('ph_wishlist_session_id');
-        if (!sid) {
-            sid = `${Date.now().toString(36)}-${Math.floor(Math.random() * 9000 + 1000)}`;
-            localStorage.setItem('ph_wishlist_session_id', sid);
-        }
-        const cleanSid = sid.replace(/^anon-/, '');
-        return `anon-${cleanSid}`;
-    } catch (e) {
-        return '';
-    }
+    return '';
 }
-
-function initWishlistCacheFromStorage() {
-    if (typeof window === 'undefined') {
-        wishlistCache = [];
-        return;
-    }
-    const userId = getWishlistUserId();
-    if (!userId) {
-        wishlistCache = [];
-        return;
-    }
-
-    try {
-        const local = localStorage.getItem(`ph_wishlist_${userId}`);
-        if (local) {
-            const parsed = JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
-            wishlistCache = Array.from(new Set(parsed));
-            return;
-        }
-
-        // Check legacy key
-        const legacy = localStorage.getItem('ph_wishlist');
-        if (legacy) {
-            const parsed = JSON.parse(legacy).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
-            wishlistCache = Array.from(new Set(parsed));
-            return;
-        }
-    } catch (_) { }
-
-    wishlistCache = [];
-}
-
-// Initialize local cache immediately
-initWishlistCacheFromStorage();
 
 export function syncAllWishlistButtonsOnPage() {
     if (typeof document === 'undefined') return;
     const wishlist = getWishlist();
 
-    // Update all product cards on current screen
-    document.querySelectorAll('.product-card').forEach(card => {
+    document.querySelectorAll('.product-card').forEach((card) => {
         const idAttr = card.getAttribute('data-id');
         const id = parseInt(idAttr, 10);
         const btn = card.querySelector('.product-wishlist');
-        if (btn && !isNaN(id) && id > 0) {
+        if (btn && !Number.isNaN(id) && id > 0) {
             const inList = wishlist.includes(id);
             btn.classList.toggle('active', inList);
             btn.setAttribute('title', inList ? 'Remove from wishlist' : 'Add to wishlist');
@@ -83,14 +37,13 @@ export function syncAllWishlistButtonsOnPage() {
         }
     });
 
-    // Update product details page button
-    document.querySelectorAll('.btn-wishlist-detail').forEach(btn => {
+    document.querySelectorAll('.btn-wishlist-detail').forEach((btn) => {
         let id = parseInt(window.__currentProductId, 10);
-        if (isNaN(id) || id <= 0) {
+        if (Number.isNaN(id) || id <= 0) {
             const urlParams = new URLSearchParams(window.location.search);
             id = parseInt(urlParams.get('id'), 10);
         }
-        if (!isNaN(id) && id > 0) {
+        if (!Number.isNaN(id) && id > 0) {
             const inList = wishlist.includes(id);
             btn.classList.toggle('active', inList);
             btn.setAttribute('title', inList ? 'Remove from wishlist' : 'Add to wishlist');
@@ -120,75 +73,43 @@ export async function hydrateWishlistFromServer(force = false) {
     if (!userId) {
         wishlistCache = [];
         wishlistItemsCache = [];
+        updateWishlistCount();
+        syncAllWishlistButtonsOnPage();
         return [];
     }
 
-    // Guest users keep local-only wishlist state. Logged-in users must always use the server as the source of truth.
-    if (!force && userId.startsWith('anon-')) {
-        return getWishlistItems();
-    }
-
-    // Skip redundant network calls if recently hydrated within 5 minutes and not forced
     const now = Date.now();
-    if (!force && wishlistLastHydratedAt && (now - wishlistLastHydratedAt < 300000) && wishlistCache !== null) {
-        return wishlistItemsCache || [];
+    if (!force && wishlistLastHydratedAt && (now - wishlistLastHydratedAt < 300000) && Array.isArray(wishlistItemsCache)) {
+        return wishlistItemsCache;
     }
 
     wishlistSyncInFlight = (async () => {
         try {
-            const response = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
-                headers: { 'x-user-id': userId }
+            const response = await fetch('/api/wishlist', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-id': String(userId)
+                }
             });
 
-            if (!response.ok) throw new Error('Unable to load wishlist');
+            if (!response.ok) {
+                throw new Error('Unable to load wishlist');
+            }
 
             const data = await response.json();
-            if (Array.isArray(data.productIds)) {
-                const raw = data.productIds.map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
-                wishlistCache = Array.from(new Set(raw));
-                wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
-                try {
-                    localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-                } catch (_) { }
-                wishlistLastHydratedAt = Date.now();
-                updateWishlistCount();
-                syncAllWishlistButtonsOnPage();
-                return wishlistItemsCache;
-            }
-
+            wishlistCache = Array.isArray(data.productIds) ? data.productIds.map((n) => Number(n)).filter((n) => Number.isFinite(n) && n > 0) : [];
+            wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
+            wishlistLastHydratedAt = Date.now();
+            notifyWishlistUpdated();
+            return wishlistItemsCache;
+        } catch (error) {
+            console.warn('Wishlist hydration failed:', error.message);
             wishlistCache = [];
             wishlistItemsCache = [];
-            try {
-                localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
-            } catch (_) { }
             wishlistLastHydratedAt = Date.now();
-            updateWishlistCount();
-            syncAllWishlistButtonsOnPage();
+            notifyWishlistUpdated();
             return [];
-        } catch (error) {
-            console.warn('Wishlist server sync fallback:', error.message);
-            // Logged-in users must never fall back to stale local or mock wishlist data.
-            if (userId && !userId.startsWith('anon-')) {
-                wishlistCache = [];
-                wishlistItemsCache = [];
-                try {
-                    localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
-                } catch (_) { }
-            } else {
-                try {
-                    const local = localStorage.getItem(`ph_wishlist_${userId}`);
-                    const parsed = local ? JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0) : [];
-                    wishlistCache = Array.from(new Set(parsed));
-                    wishlistItemsCache = [];
-                } catch (_) {
-                    wishlistCache = [];
-                    wishlistItemsCache = [];
-                }
-            }
-            wishlistLastHydratedAt = Date.now();
-            updateWishlistCount();
-            syncAllWishlistButtonsOnPage();
-            return wishlistItemsCache || [];
         } finally {
             wishlistSyncInFlight = null;
         }
@@ -198,9 +119,6 @@ export async function hydrateWishlistFromServer(force = false) {
 }
 
 export function getWishlist() {
-    if (wishlistCache === null) {
-        initWishlistCacheFromStorage();
-    }
     return Array.isArray(wishlistCache) ? [...wishlistCache] : [];
 }
 
@@ -209,153 +127,94 @@ export function getWishlistItems() {
 }
 
 export function isProductInWishlist(productId) {
-    const id = parseInt(productId, 10);
-    if (isNaN(id) || id <= 0) return false;
-    const list = getWishlist();
-    return list.includes(id);
+    const id = Number(productId);
+    if (!Number.isFinite(id) || id <= 0) return false;
+    return getWishlist().includes(id);
 }
 
 export function updateWishlistCount() {
     if (typeof document === 'undefined') return;
     const count = getWishlist().length;
-    document.querySelectorAll('.wishlist-count').forEach(el => {
-        el.textContent = count;
+    document.querySelectorAll('.wishlist-count').forEach((el) => {
+        el.textContent = String(count);
         el.style.display = count > 0 ? 'inline-flex' : 'none';
     });
 }
 
 export async function toggleWishlist(btn, productId) {
-    const id = parseInt(productId, 10);
-    if (isNaN(id) || id <= 0) return false;
+    const id = Number(productId);
+    if (!Number.isFinite(id) || id <= 0) return false;
 
     const userId = getWishlistUserId();
-    const currentList = getWishlist();
-    const isAlreadyInList = currentList.includes(id);
-    const isAdded = !isAlreadyInList;
-
-    // Instant optimistic update
-    if (isAlreadyInList) {
-        wishlistCache = currentList.filter(item => item !== id);
-        if (wishlistItemsCache) {
-            wishlistItemsCache = wishlistItemsCache.filter(item => parseInt(item.id, 10) !== id);
-        }
-        showToast('Removed from wishlist', 'info');
-    } else {
-        wishlistCache = Array.from(new Set([...currentList, id]));
-        showToast('Added to wishlist!', 'success');
+    if (!userId) {
+        showToast('Please log in to use wishlist', 'info');
+        return false;
     }
 
-    try {
-        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-    } catch (_) { }
+    const res = await fetch('/api/wishlist/toggle', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': String(userId)
+        },
+        body: JSON.stringify({ userId, productId: id })
+    });
 
-    notifyWishlistUpdated();
-
-    // Background server sync without blocking or pre-flight GET
-    if (userId && typeof fetch === 'function') {
-        try {
-            const res = await fetch('/api/wishlist/toggle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-user-id': userId
-                },
-                body: JSON.stringify({ userId, productId: id })
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (Array.isArray(data.productIds)) {
-                    wishlistCache = Array.from(new Set(data.productIds.map(n => parseInt(n, 10))));
-                    wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
-                    try {
-                        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-                    } catch (_) { }
-                    notifyWishlistUpdated();
-                }
-            }
-        } catch (err) {
-            console.warn('Failed to sync wishlist toggle to server:', err.message);
-        }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        showToast(data.error || 'Unable to update wishlist', 'error');
+        return false;
     }
 
-    return isAdded;
+    await hydrateWishlistFromServer(true);
+    showToast(data.action === 'removed' ? 'Removed from wishlist' : 'Added to wishlist!', data.action === 'removed' ? 'info' : 'success');
+    return data.action !== 'removed';
 }
 
 export async function removeFromWishlist(productId) {
-    const id = parseInt(productId, 10);
-    if (isNaN(id) || id <= 0) return;
-
+    const id = Number(productId);
     const userId = getWishlistUserId();
-    wishlistCache = getWishlist().filter(item => item !== id);
-    if (wishlistItemsCache) {
-        wishlistItemsCache = wishlistItemsCache.filter(item => parseInt(item.id, 10) !== id);
-    }
+    if (!userId || !Number.isFinite(id) || id <= 0) return;
 
-    try {
-        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
-    } catch (_) { }
+    const res = await fetch('/api/wishlist', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': String(userId)
+        },
+        body: JSON.stringify({ userId, productId: id })
+    });
 
-    showToast('Removed from wishlist', 'info');
-    notifyWishlistUpdated();
-
-    if (userId && typeof fetch === 'function') {
-        try {
-            await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}&productId=${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-user-id': userId
-                },
-                body: JSON.stringify({ userId, productId: id })
-            });
-        } catch (err) {
-            console.warn('Failed to sync wishlist removal to server:', err.message);
-        }
+    if (res.ok) {
+        await hydrateWishlistFromServer(true);
+        showToast('Removed from wishlist', 'info');
     }
 }
 
 export async function clearWishlist() {
     const userId = getWishlistUserId();
-    wishlistCache = [];
-    wishlistItemsCache = [];
+    if (!userId) {
+        showToast('Please log in to clear wishlist', 'info');
+        return;
+    }
 
-    try {
-        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
-    } catch (_) { }
+    const res = await fetch('/api/wishlist/clear', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': String(userId)
+        },
+        body: JSON.stringify({ userId })
+    });
 
-    showToast('Wishlist cleared', 'info');
-    notifyWishlistUpdated();
-
-    if (userId && typeof fetch === 'function') {
-        try {
-            await fetch('/api/wishlist/clear', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-user-id': userId
-                },
-                body: JSON.stringify({ userId })
-            });
-        } catch (err) {
-            console.warn('Failed to clear wishlist on server:', err.message);
-        }
+    if (res.ok) {
+        await hydrateWishlistFromServer(true);
+        showToast('Wishlist cleared', 'info');
     }
 }
 
-export async function migrateGuestWishlistToUser(guestId, userId) {
-    if (!guestId || !userId || guestId === userId) return;
-    if (typeof fetch === 'function') {
-        try {
-            await fetch('/api/wishlist/migrate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ guestId, userId })
-            });
-            await hydrateWishlistFromServer(true);
-        } catch (err) {
-            console.warn('Guest wishlist migration failed:', err.message);
-        }
-    }
+export async function migrateGuestWishlistToUser() {
+    return;
 }
 
 

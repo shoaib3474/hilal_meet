@@ -6,37 +6,9 @@ export function getCurrentUser() {
 }
 
 export function setCurrentUser(user) {
-    const prevWishlistGuestId = localStorage.getItem('ph_wishlist_session_id');
-    const prevCartGuestId = localStorage.getItem('ph_cart_session_id');
     localStorage.setItem('ph_current_user', JSON.stringify(user));
-    const rawUserId = user?.id ?? user?.customerId ?? user?.email;
-    const newUserId = rawUserId == null ? '' : String(rawUserId).replace(/^user-/i, '');
-    const newCartSessionId = `cart-user-${rawUserId ?? user?.email ?? 'guest'}`;
-
-    if (prevWishlistGuestId && typeof window !== 'undefined') {
-        const cleanGuestWishlistId = `anon-${prevWishlistGuestId.replace(/^anon-/, '')}`;
-        fetch('/api/wishlist/migrate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guestId: cleanGuestWishlistId, userId: newUserId })
-        }).catch(() => { }).finally(() => {
-            if (typeof window.dispatchEvent === 'function') {
-                window.dispatchEvent(new Event('wishlist:updated'));
-            }
-        });
-    }
-
-    if (prevCartGuestId && typeof window !== 'undefined') {
-        const cleanGuestCartId = `cart-anon-${prevCartGuestId.replace(/^cart-anon-/, '').replace(/^anon-/, '')}`;
-        fetch('/api/cart/migrate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guestSessionId: cleanGuestCartId, userSessionId: newCartSessionId })
-        }).catch(() => { }).finally(() => {
-            if (typeof window.dispatchEvent === 'function') {
-                window.dispatchEvent(new Event('cart:updated'));
-            }
-        });
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+        window.dispatchEvent(new Event('wishlist:updated'));
     }
 }
 

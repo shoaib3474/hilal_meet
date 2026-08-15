@@ -373,12 +373,13 @@ async function initializeDatabase() {
     `);
 
     // 5. Relational Wishlist Items (user_id, product_id)
+    await pool.query('DROP TABLE IF EXISTS wishlist_items;');
     await pool.query(`
-        CREATE TABLE IF NOT EXISTS wishlist_items (
+        CREATE TABLE wishlist_items (
             id SERIAL PRIMARY KEY,
-            user_id VARCHAR(100) NOT NULL,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
             product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             CONSTRAINT unique_user_product UNIQUE (user_id, product_id)
         );
     `);

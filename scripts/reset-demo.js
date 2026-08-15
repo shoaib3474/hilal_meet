@@ -11,8 +11,7 @@ Reset demo data (paste in browser DevTools console while on http://localhost:300
   'ph_customers',
   'ph_cart',
   'ph_current_user',
-  'ph_users',
-  'ph_wishlist'
+  'ph_users'
 ].forEach(k => localStorage.removeItem(k));
 sessionStorage.removeItem('ph_admin_logged_in');
 sessionStorage.removeItem('ph_admin_email');
