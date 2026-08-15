@@ -2,6 +2,7 @@ import { showToast } from './toast.js';
 import { getCurrentUser } from './auth.js';
 
 let wishlistCache = null;
+let wishlistItemsCache = null;
 
 export function getWishlistUserId() {
     if (typeof window === 'undefined') return '';
@@ -78,6 +79,7 @@ export async function hydrateWishlistFromServer() {
     const userId = getWishlistUserId();
     if (!userId) {
         wishlistCache = [];
+        wishlistItemsCache = [];
         notifyWishlistUpdated();
         return;
     }
@@ -93,13 +95,18 @@ export async function hydrateWishlistFromServer() {
         if (Array.isArray(data.productIds)) {
             const raw = data.productIds.map(Number).filter(n => !isNaN(n) && n > 0);
             wishlistCache = Array.from(new Set(raw));
+            wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
             try {
                 localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
                 localStorage.setItem('ph_wishlist', JSON.stringify(wishlistCache));
+                if (wishlistItemsCache.length > 0) {
+                    localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
+                }
             } catch (_) {}
             notifyWishlistUpdated();
         } else {
             wishlistCache = [];
+            wishlistItemsCache = [];
         }
     } catch (error) {
         console.warn('Wishlist server sync fallback:', error.message);
@@ -107,8 +114,12 @@ export async function hydrateWishlistFromServer() {
             const local = localStorage.getItem(`ph_wishlist_${userId}`) || localStorage.getItem('ph_wishlist');
             const parsed = local ? JSON.parse(local).map(Number).filter(n => !isNaN(n) && n > 0) : [];
             wishlistCache = Array.from(new Set(parsed));
+
+            const localItems = localStorage.getItem(`ph_wishlist_items_${userId}`);
+            wishlistItemsCache = localItems ? JSON.parse(localItems) : [];
         } catch (_) {
             wishlistCache = [];
+            wishlistItemsCache = [];
         }
         notifyWishlistUpdated();
     }
@@ -130,6 +141,22 @@ export function getWishlist() {
 
     void hydrateWishlistFromServer();
     return [...wishlistCache];
+}
+
+export function getWishlistItems() {
+    const userId = getWishlistUserId();
+    if (wishlistItemsCache !== null && Array.isArray(wishlistItemsCache)) {
+        return [...wishlistItemsCache];
+    }
+
+    try {
+        const local = localStorage.getItem(`ph_wishlist_items_${userId}`);
+        wishlistItemsCache = local ? JSON.parse(local) : [];
+    } catch (_) {
+        wishlistItemsCache = [];
+    }
+
+    return [...wishlistItemsCache];
 }
 
 export function isProductInWishlist(productId) {
@@ -155,8 +182,12 @@ export async function toggleWishlist(btn, productId) {
     const userId = getWishlistUserId();
     let isAdded = false;
 
+    // Optimistic update
     if (idx > -1) {
         wishlist = wishlist.filter(item => item !== id);
+        if (wishlistItemsCache) {
+            wishlistItemsCache = wishlistItemsCache.filter(item => item.id !== id);
+        }
         isAdded = false;
         showToast('Removed from wishlist', 'info');
     } else {
@@ -169,14 +200,17 @@ export async function toggleWishlist(btn, productId) {
     try {
         localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlist));
         localStorage.setItem('ph_wishlist', JSON.stringify(wishlist));
+        if (wishlistItemsCache) {
+            localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
+        }
     } catch (_) {}
 
     notifyWishlistUpdated();
 
-    // Async backend database persistence
+    // Database persistence via server
     if (userId && typeof fetch === 'function') {
         try {
-            await fetch('/api/wishlist/toggle', {
+            const res = await fetch('/api/wishlist/toggle', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -184,6 +218,21 @@ export async function toggleWishlist(btn, productId) {
                 },
                 body: JSON.stringify({ userId, productId: id })
             });
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data.productIds)) {
+                    wishlistCache = Array.from(new Set(data.productIds.map(Number)));
+                    wishlistItemsCache = Array.isArray(data.items) ? data.items : [];
+                    try {
+                        localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
+                        localStorage.setItem('ph_wishlist', JSON.stringify(wishlistCache));
+                        if (wishlistItemsCache.length > 0) {
+                            localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
+                        }
+                    } catch (_) {}
+                    notifyWishlistUpdated();
+                }
+            }
         } catch (err) {
             console.warn('Failed to sync wishlist toggle to server:', err.message);
         }
@@ -200,9 +249,16 @@ export async function removeFromWishlist(productId) {
     const userId = getWishlistUserId();
 
     wishlistCache = wishlist;
+    if (wishlistItemsCache) {
+        wishlistItemsCache = wishlistItemsCache.filter(item => item.id !== id);
+    }
+
     try {
         localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlist));
         localStorage.setItem('ph_wishlist', JSON.stringify(wishlist));
+        if (wishlistItemsCache) {
+            localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify(wishlistItemsCache));
+        }
     } catch (_) {}
 
     showToast('Removed from wishlist', 'info');
@@ -210,13 +266,13 @@ export async function removeFromWishlist(productId) {
 
     if (userId && typeof fetch === 'function') {
         try {
-            await fetch('/api/wishlist', {
-                method: 'PUT',
+            await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}&productId=${id}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-user-id': userId
                 },
-                body: JSON.stringify({ userId, productIds: wishlist })
+                body: JSON.stringify({ userId, productId: id })
             });
         } catch (err) {
             console.warn('Failed to sync wishlist removal to server:', err.message);
@@ -227,9 +283,12 @@ export async function removeFromWishlist(productId) {
 export async function clearWishlist() {
     const userId = getWishlistUserId();
     wishlistCache = [];
+    wishlistItemsCache = [];
+
     try {
         localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
         localStorage.setItem('ph_wishlist', JSON.stringify([]));
+        localStorage.setItem(`ph_wishlist_items_${userId}`, JSON.stringify([]));
     } catch (_) {}
 
     showToast('Wishlist cleared', 'info');
@@ -247,6 +306,22 @@ export async function clearWishlist() {
             });
         } catch (err) {
             console.warn('Failed to clear wishlist on server:', err.message);
+        }
+    }
+}
+
+export async function migrateGuestWishlistToUser(guestId, userId) {
+    if (!guestId || !userId || guestId === userId) return;
+    if (typeof fetch === 'function') {
+        try {
+            await fetch('/api/wishlist/migrate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ guestId, userId })
+            });
+            await hydrateWishlistFromServer();
+        } catch (err) {
+            console.warn('Guest wishlist migration failed:', err.message);
         }
     }
 }

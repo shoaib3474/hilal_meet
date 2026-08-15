@@ -192,26 +192,36 @@
             const container = document.getElementById('wishlistContainer');
             if (!container) return;
 
-            let products = [];
+            const userId = typeof getWishlistUserId === 'function' ? getWishlistUserId() : '';
+            let wishlistProducts = [];
+
             try {
-                const res = await fetch('/api/products');
+                const res = await fetch(`/api/wishlist?userId=${encodeURIComponent(userId)}`, {
+                    headers: { 'x-user-id': userId }
+                });
                 if (res.ok) {
-                    products = await res.json();
+                    const data = await res.json();
+                    if (Array.isArray(data.items)) {
+                        wishlistProducts = data.items;
+                    }
                 }
             } catch (err) {
-                console.warn('Failed to load products from API:', err);
+                console.warn('Failed to load wishlist from server:', err);
             }
 
-            if (!Array.isArray(products) || products.length === 0) {
-                if (typeof getProducts === 'function') {
-                    products = getProducts();
-                } else if (typeof PRODUCTS !== 'undefined') {
-                    products = PRODUCTS;
+            if (wishlistProducts.length === 0 && typeof getWishlistItems === 'function') {
+                wishlistProducts = getWishlistItems();
+            }
+
+            if (wishlistProducts.length === 0) {
+                const ids = typeof getWishlist === 'function' ? getWishlist() : [];
+                if (ids.length > 0) {
+                    let allProducts = [];
+                    if (typeof getProducts === 'function') allProducts = getProducts();
+                    else if (typeof PRODUCTS !== 'undefined') allProducts = PRODUCTS;
+                    wishlistProducts = (allProducts || []).filter(p => ids.includes(Number(p.id)));
                 }
             }
-
-            const wishlistIds = typeof getWishlist === 'function' ? getWishlist().map(Number) : [];
-            const wishlistProducts = (products || []).filter(p => wishlistIds.includes(Number(p.id)));
 
             if (wishlistProducts.length === 0) {
                 container.innerHTML = `

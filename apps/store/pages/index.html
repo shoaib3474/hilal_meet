@@ -549,16 +549,31 @@
     <script type="module" src="/js/main.js"></script>
     <script>
         // Render homepage sections
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Categories
             renderCategories('categoriesGrid');
 
+            let products = [];
+            try {
+                const res = await fetch('/api/products');
+                if (res.ok) {
+                    products = await res.json();
+                }
+            } catch (err) {
+                console.warn('Failed to load products from API:', err);
+            }
+
+            if (!Array.isArray(products) || products.length === 0) {
+                if (typeof getProducts === 'function') products = getProducts();
+                else if (typeof PRODUCTS !== 'undefined') products = PRODUCTS;
+            }
+
             // Featured products (show first 8 featured)
-            const featured = getProducts().filter(p => p.featured).slice(0, 8);
+            const featured = (products || []).filter(p => p.featured).slice(0, 8);
             renderProductCards(featured, 'featuredProducts');
 
             // Marinated products
-            const marinated = getProducts().filter(p => p.category === 'marinated');
+            const marinated = (products || []).filter(p => p.category === 'marinated');
             renderProductCards(marinated, 'marinatedProducts');
 
             updateUserNav();

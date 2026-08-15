@@ -6,7 +6,21 @@ export function getCurrentUser() {
 }
 
 export function setCurrentUser(user) {
+    const prevGuestId = localStorage.getItem('ph_wishlist_session_id');
     localStorage.setItem('ph_current_user', JSON.stringify(user));
+    const newUserId = `user-${user?.id ?? user?.customerId ?? user?.email}`;
+
+    if (prevGuestId && typeof window !== 'undefined') {
+        fetch('/api/wishlist/migrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ guestId: `anon-${prevGuestId}`, userId: newUserId })
+        }).catch(() => {}).finally(() => {
+            if (typeof window.dispatchEvent === 'function') {
+                window.dispatchEvent(new Event('wishlist:updated'));
+            }
+        });
+    }
 }
 
 export function logout() {
@@ -17,6 +31,7 @@ export function logout() {
         if (typeof window !== 'undefined') {
             window.__cartCache = [];
             window.dispatchEvent?.(new Event('cart:updated'));
+            window.dispatchEvent?.(new Event('wishlist:updated'));
         }
     } catch (_) {}
 

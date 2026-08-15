@@ -100,28 +100,78 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
-const inMemoryWishlists = new Map();
+let inMemoryWishlistItems = [];
 
 app.get('/api/wishlist', async (req, res) => {
     const userId = getWishlistUserId(req);
     if (!userId) {
-        return res.json({ userId: '', productIds: [] });
+        return res.json({ userId: '', productIds: [], items: [] });
     }
 
     try {
         const { rows } = await pool.query(
-            'SELECT user_id, product_ids FROM wishlists WHERE user_id = $1',
+            `SELECT 
+                w.id as wishlist_id,
+                w.user_id,
+                w.product_id,
+                w.created_at as wishlisted_at,
+                p.id,
+                p.name,
+                p.category,
+                p.price,
+                p.sale_price,
+                p.weight,
+                p.image,
+                p.gallery,
+                p.description,
+                p.badge,
+                p.in_stock,
+                p.featured,
+                p.rating,
+                p.reviews
+             FROM wishlist_items w
+             JOIN products p ON w.product_id = p.id
+             WHERE w.user_id = $1
+             ORDER BY w.created_at DESC`,
             [userId]
         );
-        const rawIds = rows[0] && Array.isArray(rows[0].product_ids) ? rows[0].product_ids : [];
-        const productIds = Array.from(new Set(rawIds.map(Number))).filter(n => !isNaN(n) && n > 0);
-        inMemoryWishlists.set(userId, productIds);
-        res.json({ userId, productIds });
+
+        const items = rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            category: r.category,
+            price: Number(r.price || 0),
+            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+            weight: r.weight,
+            image: r.image,
+            gallery: Array.isArray(r.gallery) ? r.gallery : [],
+            description: r.description,
+            badge: r.badge,
+            inStock: r.in_stock,
+            featured: r.featured,
+            rating: Number(r.rating || 4.5),
+            reviews: Number(r.reviews || 0),
+            wishlistedAt: r.wishlisted_at
+        }));
+        const productIds = items.map(i => i.id);
+
+        inMemoryWishlistItems = inMemoryWishlistItems.filter(item => item.user_id !== userId);
+        productIds.forEach(pid => inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: pid, created_at: new Date() }));
+
+        return res.json({ userId, productIds, items });
     } catch (error) {
-        const raw = inMemoryWishlists.get(userId) || [];
-        const productIds = Array.from(new Set(raw.map(Number))).filter(n => !isNaN(n) && n > 0);
-        res.json({ userId, productIds });
+        console.warn('DB query for wishlist items failed, using memory fallback:', error.message);
     }
+
+    const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
+    const allProducts = getFallbackProducts();
+    const items = userRecords.map(rec => {
+        const p = allProducts.find(prod => prod.id === rec.product_id);
+        return p ? { ...p, wishlistedAt: rec.created_at } : null;
+    }).filter(Boolean);
+    const productIds = items.map(i => i.id);
+
+    res.json({ userId, productIds, items });
 });
 
 app.post('/api/wishlist/toggle', async (req, res) => {
@@ -135,69 +185,159 @@ app.post('/api/wishlist/toggle', async (req, res) => {
         return res.status(400).json({ error: 'Valid product id is required' });
     }
 
-    let productIds = inMemoryWishlists.get(userId) || [];
+    let action = 'added';
+    let inWishlist = true;
+
+    try {
+        const check = await pool.query(
+            'SELECT id FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+            [userId, productId]
+        );
+
+        if (check.rowCount > 0) {
+            await pool.query(
+                'DELETE FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+                [userId, productId]
+            );
+            action = 'removed';
+            inWishlist = false;
+        } else {
+            await pool.query(
+                `INSERT INTO wishlist_items (user_id, product_id, created_at)
+                 VALUES ($1, $2, CURRENT_TIMESTAMP)
+                 ON CONFLICT (user_id, product_id) DO NOTHING`,
+                [userId, productId]
+            );
+            action = 'added';
+            inWishlist = true;
+        }
+    } catch (error) {
+        console.warn('DB wishlist toggle failed, falling back to memory:', error.message);
+        const existingIdx = inMemoryWishlistItems.findIndex(i => i.user_id === userId && i.product_id === productId);
+        if (existingIdx > -1) {
+            inMemoryWishlistItems.splice(existingIdx, 1);
+            action = 'removed';
+            inWishlist = false;
+        } else {
+            inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: productId, created_at: new Date() });
+            action = 'added';
+            inWishlist = true;
+        }
+    }
 
     try {
         const { rows } = await pool.query(
-            'SELECT product_ids FROM wishlists WHERE user_id = $1',
+            `SELECT 
+                p.id, p.name, p.category, p.price, p.sale_price, p.weight, p.image, p.gallery, p.description, p.badge, p.in_stock, p.featured, p.rating, p.reviews, w.created_at as wishlisted_at
+             FROM wishlist_items w
+             JOIN products p ON w.product_id = p.id
+             WHERE w.user_id = $1
+             ORDER BY w.created_at DESC`,
             [userId]
         );
-        if (rows[0] && Array.isArray(rows[0].product_ids)) {
-            productIds = rows[0].product_ids;
-        }
-    } catch (_) {}
-
-    productIds = Array.from(new Set(productIds.map(Number))).filter(n => !isNaN(n) && n > 0);
-    const idx = productIds.indexOf(productId);
-    let action = '';
-
-    if (idx > -1) {
-        productIds = productIds.filter(id => id !== productId);
-        action = 'removed';
-    } else {
-        productIds.push(productId);
-        action = 'added';
+        const items = rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            category: r.category,
+            price: Number(r.price || 0),
+            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+            weight: r.weight,
+            image: r.image,
+            gallery: Array.isArray(r.gallery) ? r.gallery : [],
+            description: r.description,
+            badge: r.badge,
+            inStock: r.in_stock,
+            featured: r.featured,
+            rating: Number(r.rating || 4.5),
+            reviews: Number(r.reviews || 0),
+            wishlistedAt: r.wishlisted_at
+        }));
+        return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
+    } catch (_) {
+        const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
+        const allProducts = getFallbackProducts();
+        const items = userRecords.map(rec => allProducts.find(p => p.id === rec.product_id)).filter(Boolean);
+        return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
     }
-
-    inMemoryWishlists.set(userId, productIds);
-
-    try {
-        await pool.query(
-            `INSERT INTO wishlists (user_id, product_ids, updated_at)
-             VALUES ($1, $2, CURRENT_TIMESTAMP)
-             ON CONFLICT (user_id) DO UPDATE SET
-                 product_ids = EXCLUDED.product_ids,
-                 updated_at = CURRENT_TIMESTAMP`,
-            [userId, JSON.stringify(productIds)]
-        );
-    } catch (_) {}
-
-    res.json({ userId, productIds, action, inWishlist: action === 'added' });
 });
 
-app.put('/api/wishlist', async (req, res) => {
+app.post('/api/wishlist', async (req, res) => {
     const userId = getWishlistUserId(req);
-    const rawIds = Array.isArray(req.body?.productIds) ? req.body.productIds : [];
-    const productIds = Array.from(new Set(rawIds.map(Number))).filter(n => !isNaN(n) && n > 0);
+    const productId = parseInt(req.body?.productId);
 
     if (!userId) {
         return res.status(400).json({ error: 'User id is required' });
     }
-
-    inMemoryWishlists.set(userId, productIds);
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).json({ error: 'Valid product id is required' });
+    }
 
     try {
         await pool.query(
-            `INSERT INTO wishlists (user_id, product_ids, updated_at)
+            `INSERT INTO wishlist_items (user_id, product_id, created_at)
              VALUES ($1, $2, CURRENT_TIMESTAMP)
-             ON CONFLICT (user_id) DO UPDATE SET
-                 product_ids = EXCLUDED.product_ids,
-                 updated_at = CURRENT_TIMESTAMP`,
-            [userId, JSON.stringify(productIds)]
+             ON CONFLICT (user_id, product_id) DO NOTHING`,
+            [userId, productId]
         );
-    } catch (_) {}
+    } catch (_) {
+        if (!inMemoryWishlistItems.some(i => i.user_id === userId && i.product_id === productId)) {
+            inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: productId, created_at: new Date() });
+        }
+    }
 
-    res.json({ userId, productIds });
+    res.json({ success: true, action: 'added', userId, productId });
+});
+
+app.delete('/api/wishlist', async (req, res) => {
+    const userId = getWishlistUserId(req);
+    const productId = parseInt(req.query?.productId || req.body?.productId);
+
+    if (!userId) {
+        return res.status(400).json({ error: 'User id is required' });
+    }
+    if (isNaN(productId) || productId <= 0) {
+        return res.status(400).json({ error: 'Valid product id is required' });
+    }
+
+    try {
+        await pool.query(
+            'DELETE FROM wishlist_items WHERE user_id = $1 AND product_id = $2',
+            [userId, productId]
+        );
+    } catch (_) {
+        inMemoryWishlistItems = inMemoryWishlistItems.filter(i => !(i.user_id === userId && i.product_id === productId));
+    }
+
+    res.json({ success: true, action: 'removed', userId, productId });
+});
+
+app.post('/api/wishlist/migrate', async (req, res) => {
+    const guestId = req.body?.guestId;
+    const userId = req.body?.userId;
+
+    if (!guestId || !userId || guestId === userId) {
+        return res.json({ success: true, message: 'No migration needed' });
+    }
+
+    try {
+        await pool.query(
+            `INSERT INTO wishlist_items (user_id, product_id, created_at)
+             SELECT $1, product_id, created_at FROM wishlist_items WHERE user_id = $2
+             ON CONFLICT (user_id, product_id) DO NOTHING`,
+            [userId, guestId]
+        );
+        await pool.query('DELETE FROM wishlist_items WHERE user_id = $1', [guestId]);
+    } catch (_) {
+        const guestItems = inMemoryWishlistItems.filter(i => i.user_id === guestId);
+        guestItems.forEach(item => {
+            if (!inMemoryWishlistItems.some(i => i.user_id === userId && i.product_id === item.product_id)) {
+                inMemoryWishlistItems.push({ id: Date.now(), user_id: userId, product_id: item.product_id, created_at: item.created_at });
+            }
+        });
+        inMemoryWishlistItems = inMemoryWishlistItems.filter(i => i.user_id !== guestId);
+    }
+
+    res.json({ success: true, migrated: true });
 });
 
 const handleClearWishlist = async (req, res) => {
@@ -206,20 +346,13 @@ const handleClearWishlist = async (req, res) => {
         return res.status(400).json({ error: 'User id is required' });
     }
 
-    inMemoryWishlists.set(userId, []);
-
     try {
-        await pool.query(
-            `INSERT INTO wishlists (user_id, product_ids, updated_at)
-             VALUES ($1, '[]'::jsonb, CURRENT_TIMESTAMP)
-             ON CONFLICT (user_id) DO UPDATE SET
-                 product_ids = '[]'::jsonb,
-                 updated_at = CURRENT_TIMESTAMP`,
-            [userId]
-        );
-    } catch (_) {}
+        await pool.query('DELETE FROM wishlist_items WHERE user_id = $1', [userId]);
+    } catch (_) {
+        inMemoryWishlistItems = inMemoryWishlistItems.filter(i => i.user_id !== userId);
+    }
 
-    res.json({ userId, productIds: [] });
+    res.json({ userId, productIds: [], items: [] });
 };
 
 app.delete('/api/wishlist/clear', handleClearWishlist);
