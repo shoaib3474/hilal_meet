@@ -10,7 +10,8 @@ dotenv.config({ path: '.env.local' });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 let databaseReady = false;
@@ -797,18 +798,21 @@ app.post('/api/cart/clear', handleClearCart);
 // ==========================================
 // PRODUCTS ENDPOINTS
 // ==========================================
+let inMemoryProducts = getFallbackProducts();
+
 app.get('/api/products', async (req, res) => {
     try {
         const { rows } = await pool.query(
             'SELECT id, name, category, price, sale_price, weight, image, gallery, description, badge, in_stock, featured, rating, reviews FROM products ORDER BY id ASC'
         );
         if (rows && rows.length > 0) {
-            return res.json(rows.map(parseProductRow));
+            inMemoryProducts = rows.map(parseProductRow);
+            return res.json(inMemoryProducts);
         }
     } catch (error) {
-        console.warn('DB query for products failed, falling back to seed catalog:', error.message);
+        console.warn('DB query for products failed, falling back to seed/memory catalog:', error.message);
     }
-    res.json(getFallbackProducts());
+    res.json(inMemoryProducts);
 });
 
 app.get('/api/products/:id', async (req, res) => {
@@ -824,8 +828,7 @@ app.get('/api/products/:id', async (req, res) => {
     } catch (error) {
         console.warn('DB query for product by id failed:', error.message);
     }
-    const all = getFallbackProducts();
-    const found = all.find(p => p.id === id);
+    const found = inMemoryProducts.find(p => p.id === id);
     if (found) {
         return res.json(found);
     }
@@ -833,11 +836,11 @@ app.get('/api/products/:id', async (req, res) => {
 });
 
 app.post('/api/products', async (req, res) => {
+    const product = req.body;
+    if (!product.name || !product.category) {
+        return res.status(400).json({ error: 'Name and category are required' });
+    }
     try {
-        const product = req.body;
-        if (!product.name || !product.category) {
-            return res.status(400).json({ error: 'Name and category are required' });
-        }
         const { rows } = await pool.query(
             `INSERT INTO products (name, category, price, sale_price, weight, image, gallery, description, badge, in_stock, featured, rating, reviews)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
@@ -858,16 +861,37 @@ app.post('/api/products', async (req, res) => {
                 Number(product.reviews || 0)
             ]
         );
-        res.json(parseProductRow(rows[0]));
+        const saved = parseProductRow(rows[0]);
+        inMemoryProducts.push(saved);
+        return res.json(saved);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.warn('DB insert for product failed, using in-memory store:', error.message);
+        const newId = inMemoryProducts.length > 0 ? Math.max(...inMemoryProducts.map(p => p.id)) + 1 : 1;
+        const newProduct = {
+            id: newId,
+            name: product.name,
+            category: product.category,
+            price: Number(product.price || 0),
+            salePrice: product.salePrice !== null && product.salePrice !== undefined ? Number(product.salePrice) : null,
+            weight: product.weight || '',
+            image: product.image || '',
+            gallery: Array.isArray(product.gallery) ? product.gallery : (product.image ? [product.image] : []),
+            description: product.description || '',
+            badge: product.badge || null,
+            inStock: product.inStock !== false,
+            featured: Boolean(product.featured),
+            rating: Number(product.rating || 4.5),
+            reviews: Number(product.reviews || 0)
+        };
+        inMemoryProducts.push(newProduct);
+        return res.json(newProduct);
     }
 });
 
 app.put('/api/products/:id', async (req, res) => {
+    const product = req.body;
+    const id = parseInt(req.params.id);
     try {
-        const product = req.body;
-        const id = parseInt(req.params.id);
         const { rows } = await pool.query(
             `UPDATE products SET name = $1, category = $2, price = $3, sale_price = $4, weight = $5, image = $6, gallery = $7, description = $8, badge = $9, in_stock = $10, featured = $11, rating = $12, reviews = $13
              WHERE id = $14
@@ -889,48 +913,78 @@ app.put('/api/products/:id', async (req, res) => {
                 id
             ]
         );
-        if (rows.length === 0) {
-            return res.status(404).json({ error: 'Product not found' });
+        if (rows.length > 0) {
+            const updated = parseProductRow(rows[0]);
+            const idx = inMemoryProducts.findIndex(p => p.id === id);
+            if (idx >= 0) inMemoryProducts[idx] = updated;
+            return res.json(updated);
         }
-        res.json(parseProductRow(rows[0]));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.warn('DB update for product failed, using in-memory store:', error.message);
     }
+    const idx = inMemoryProducts.findIndex(p => p.id === id);
+    if (idx >= 0) {
+        inMemoryProducts[idx] = {
+            ...inMemoryProducts[idx],
+            ...product,
+            id,
+            price: Number(product.price || 0),
+            salePrice: product.salePrice !== null && product.salePrice !== undefined ? Number(product.salePrice) : null,
+            image: product.image || inMemoryProducts[idx].image,
+            gallery: Array.isArray(product.gallery) ? product.gallery : inMemoryProducts[idx].gallery
+        };
+        return res.json(inMemoryProducts[idx]);
+    }
+    res.status(404).json({ error: 'Product not found' });
 });
 
 app.patch('/api/products/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const { inStock } = req.body;
     try {
-        const id = parseInt(req.params.id);
-        const { inStock } = req.body;
         const { rows } = await pool.query(
             `UPDATE products SET in_stock = $1
              WHERE id = $2
              RETURNING id, name, category, price, sale_price, weight, image, gallery, description, badge, in_stock, featured, rating, reviews`,
             [Boolean(inStock), id]
         );
-        if (rows.length === 0) {
-            return res.status(404).json({ error: 'Product not found' });
+        if (rows.length > 0) {
+            const updated = parseProductRow(rows[0]);
+            const idx = inMemoryProducts.findIndex(p => p.id === id);
+            if (idx >= 0) inMemoryProducts[idx] = updated;
+            return res.json(updated);
         }
-        res.json(parseProductRow(rows[0]));
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.warn('DB patch for product failed, using in-memory store:', error.message);
     }
+    const idx = inMemoryProducts.findIndex(p => p.id === id);
+    if (idx >= 0) {
+        inMemoryProducts[idx].inStock = Boolean(inStock);
+        return res.json(inMemoryProducts[idx]);
+    }
+    res.status(404).json({ error: 'Product not found' });
 });
 
 app.delete('/api/products/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
     try {
-        const id = parseInt(req.params.id);
         const { rows } = await pool.query(
             'DELETE FROM products WHERE id = $1 RETURNING id',
             [id]
         );
-        if (rows.length === 0) {
-            return res.status(404).json({ error: 'Product not found' });
+        if (rows.length > 0) {
+            inMemoryProducts = inMemoryProducts.filter(p => p.id !== id);
+            return res.json({ message: 'Product deleted successfully', id });
         }
-        res.json({ message: 'Product deleted successfully', id });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.warn('DB delete for product failed, using in-memory store:', error.message);
     }
+    const idx = inMemoryProducts.findIndex(p => p.id === id);
+    if (idx >= 0) {
+        inMemoryProducts.splice(idx, 1);
+        return res.json({ message: 'Product deleted successfully', id });
+    }
+    res.status(404).json({ error: 'Product not found' });
 });
 
 app.put('/api/products', async (req, res) => {

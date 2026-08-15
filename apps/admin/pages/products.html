@@ -176,21 +176,92 @@
                         <textarea class="form-control" id="pDescription" rows="3"
                             placeholder="Product description..."></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Image URL</label>
-                        <input type="url" class="form-control" id="pImage" placeholder="https://..."
-                            oninput="previewImage(this.value)">
-                        <div class="form-hint">Paste a direct image URL (Unsplash, etc.)</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Gallery URLs <span
-                                style="font-size:0.72rem;color:var(--text-muted);">(optional)</span></label>
-                        <textarea class="form-control" id="pGallery" rows="4"
-                            placeholder="Add one image URL per line"></textarea>
-                        <div class="form-hint">You can use either the main image URL or add gallery photos. Leave the
-                            main image blank and the first gallery image will be used.</div>
-                        <img id="imgPreview" class="img-preview" style="display:none;margin-top:8px;"
-                            onerror="this.style.display='none'">
+                    <!-- PRODUCT IMAGE OPTIONS -->
+                    <div class="form-group product-image-section" id="productImageSection">
+                        <div class="image-section-header">
+                            <label class="section-label">
+                                <i class="fa-solid fa-image"></i> Product Image <span style="color:var(--red);">*</span>
+                            </label>
+                            <span class="image-requirement-badge" id="imageRequirementBadge">Provide at least 1 image source</span>
+                        </div>
+                        <div class="section-desc">You can provide an <strong>Online Image URL</strong> OR choose an image directly from your <strong>Device Gallery</strong>. Only one is required.</div>
+
+                        <div class="image-source-grid">
+                            <!-- OPTION 1: ONLINE IMAGE URL -->
+                            <div class="image-source-card" id="cardOnlineUrl">
+                                <div class="source-card-header">
+                                    <div class="source-title">
+                                        <i class="fa-solid fa-globe"></i> Option 1: Online Image URL
+                                    </div>
+                                    <span class="source-status-badge" id="urlStatusBadge">Optional</span>
+                                </div>
+                                <div class="source-card-body">
+                                    <div class="url-input-wrap">
+                                        <input type="url" class="form-control" id="pImage" placeholder="https://images.unsplash.com/..."
+                                            oninput="onOnlineUrlInput(this.value)">
+                                        <button type="button" class="btn-clear-input" id="btnClearUrl" onclick="clearOnlineUrl()" title="Clear URL" style="display:none;">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-hint">Enter direct image URL from any website</div>
+                                    <div class="image-preview-box" id="urlPreviewBox" style="display:none;">
+                                        <img id="urlImgPreview" class="source-img-preview" alt="Online preview" onerror="onUrlImageError()">
+                                        <div class="preview-info">
+                                            <span class="preview-tag valid"><i class="fa-solid fa-check"></i> URL Image Loaded</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="image-source-divider">
+                                <span>OR</span>
+                            </div>
+
+                            <!-- OPTION 2: DEVICE GALLERY IMAGE -->
+                            <div class="image-source-card" id="cardDeviceGallery">
+                                <div class="source-card-header">
+                                    <div class="source-title">
+                                        <i class="fa-solid fa-images"></i> Option 2: Device Gallery Image
+                                    </div>
+                                    <span class="source-status-badge" id="galleryStatusBadge">Optional</span>
+                                </div>
+                                <div class="source-card-body">
+                                    <input type="file" id="pGalleryFileInput" accept="image/*" style="display:none;" onchange="handleGalleryFileSelect(this.files)">
+                                    
+                                    <!-- Dropzone / Click to select -->
+                                    <div class="gallery-dropzone" id="galleryDropzone" onclick="triggerGalleryFilePicker()">
+                                        <div class="dropzone-content">
+                                            <div class="dropzone-icon">
+                                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            </div>
+                                            <div class="dropzone-text">
+                                                <strong>Click to open Device Gallery</strong>
+                                            </div>
+                                            <div class="dropzone-hint">or drag & drop an image here (JPG, PNG, WebP)</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Device Image Preview Card -->
+                                    <div class="device-preview-card" id="devicePreviewCard" style="display:none;">
+                                        <div class="device-preview-thumb-wrap">
+                                            <img id="deviceImgPreview" class="source-img-preview" alt="Device preview">
+                                        </div>
+                                        <div class="device-preview-details">
+                                            <div class="device-file-name" id="deviceFileName">gallery-photo.jpg</div>
+                                            <div class="device-file-meta" id="deviceFileMeta">Ready to upload</div>
+                                            <div class="device-preview-actions">
+                                                <button type="button" class="btn btn-sm btn-ghost" onclick="triggerGalleryFilePicker()">
+                                                    <i class="fa-solid fa-rotate"></i> Change Image
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-ghost btn-danger-text" onclick="removeDeviceGalleryImage()">
+                                                    <i class="fa-solid fa-trash"></i> Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="checkbox-group">
@@ -213,16 +284,14 @@
     <script type="module" src="/admin/js/admin.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof initProductImageDropzone === 'function') {
+                initProductImageDropzone();
+            }
             await renderProductsTable();
             const allProducts = await getProducts();
-            document.getElementById('productCount').textContent = allProducts.length;
+            const countEl = document.getElementById('productCount');
+            if (countEl) countEl.textContent = allProducts.length;
         });
-
-        function previewImage(url) {
-            const img = document.getElementById('imgPreview');
-            if (url) { img.src = url; img.style.display = 'block'; }
-            else img.style.display = 'none';
-        }
     </script>
 </body>
 
