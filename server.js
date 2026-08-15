@@ -1118,15 +1118,66 @@ app.get('/api/orders/me', async (req, res) => {
     }
 });
 
+app.get('/api/orders/:id', async (req, res) => {
+    setNoStoreHeaders(res);
+    const orderId = String(req.params.id || '').trim();
+    const rawUserId = req.query?.userId || req.get('x-user-id') || '';
+    const userId = Number(String(rawUserId).replace(/^user-/i, ''));
+
+    if (!orderId) {
+        return res.status(400).json({ error: 'Order ID is required' });
+    }
+
+    if (!Number.isFinite(userId) || userId <= 0) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    try {
+        const userResult = await pool.query(
+            'SELECT id, email FROM users WHERE id = $1',
+            [userId]
+        );
+
+        if (userResult.rowCount === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const userEmail = String(userResult.rows[0].email || '').trim().toLowerCase();
+        const { rows } = await pool.query(
+            `SELECT id, order_date, status, customer_name, customer_email, customer_phone, address, subtotal, delivery, total, payment_method, notes, items
+             FROM orders WHERE id = $1`,
+            [orderId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const matchingOrder = rows[0];
+        if (String(matchingOrder.customer_email || '').trim().toLowerCase() !== userEmail) {
+            return res.status(403).json({ error: 'You do not have access to this order' });
+        }
+
+        return res.json(parseOrderRow(matchingOrder));
+    } catch (error) {
+        console.error('Order lookup failed:', error.message);
+        return res.status(500).json({ error: 'Unable to load this order' });
+    }
+});
+
 app.post('/api/orders', async (req, res) => {
     setNoStoreHeaders(res);
     try {
         const rawUserId = req.body?.userId || req.get('x-user-id') || '';
         const userId = Number(String(rawUserId).replace(/^user-/i, ''));
         const order = req.body;
-        if (!order || !order.id) {
+        if (!order) {
             return res.status(400).json({ error: 'Order payload is required' });
         }
+
+        const orderId = typeof order.id === 'string' && order.id.trim()
+            ? order.id.trim()
+            : `PH-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
         let currentUserRow = null;
         if (Number.isFinite(userId) && userId > 0) {
@@ -1160,7 +1211,7 @@ app.post('/api/orders', async (req, res) => {
                  notes = EXCLUDED.notes,
                  items = EXCLUDED.items`,
             [
-                order.id,
+                orderId,
                 order.date,
                 order.status || 'pending',
                 customerName,
@@ -1193,7 +1244,7 @@ app.post('/api/orders', async (req, res) => {
             ]
         );
         res.json(parseOrderRow({
-            id: order.id,
+            id: orderId,
             order_date: new Date(order.date),
             status: order.status || 'pending',
             customer_name: customerName,

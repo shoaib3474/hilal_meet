@@ -169,29 +169,6 @@
         </div>
     </div>
 
-    <!-- SUCCESS MODAL -->
-    <div class="modal-overlay" id="successModal">
-        <div class="modal" style="max-width:480px;">
-            <div class="modal-body" style="text-align:center;padding:40px;">
-                <div
-                    style="width:72px;height:72px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;color:var(--primary);">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:10px;">Order Placed!</h2>
-                <p style="color:var(--text-muted);margin-bottom:6px;">Thank you for your order. We've received your
-                    request and will confirm shortly.</p>
-                <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:24px;">Order confirmation will be sent
-                    to your email.</p>
-                <div style="background:var(--primary-bg);border-radius:var(--radius);padding:14px;margin-bottom:24px;">
-                    <div style="font-size:0.85rem;color:var(--text-muted);">Your Order ID</div>
-                    <div style="font-size:1.3rem;font-weight:800;color:var(--primary);" id="confirmOrderId">PH-XXXX
-                    </div>
-                </div>
-                <a href="/index.html" class="btn btn-primary btn-block btn-lg">Continue Shopping</a>
-            </div>
-        </div>
-    </div>
-
     <section class="checkout-page">
         <div class="container">
             <div class="checkout-layout">
@@ -476,7 +453,7 @@
             input.value = input.value.replace(/\D/g, '').replace(/^(\d{2})(\d)/, '$1 / $2').slice(0, 7);
         }
 
-        function placeOrder() {
+        async function placeOrder() {
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -499,13 +476,11 @@
 
             const subtotal = getCartTotal();
             const delivery = deliveryMethod === 'collection' ? 0 : (subtotal >= 30 ? 0 : 3.99);
-            const orderId = 'PH-' + (1000 + Math.floor(Math.random() * 9000));
             const resolvedCustomerName = currentUser ? `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() : `${firstName} ${lastName}`;
             const resolvedCustomerEmail = currentUser ? currentUser.email : email;
             const resolvedCustomerPhone = currentUser ? currentUser.phone || phone : phone;
 
             const newOrder = {
-                id: orderId,
                 date: new Date().toISOString().split('T')[0],
                 status: 'pending',
                 customer: { name: resolvedCustomerName, email: resolvedCustomerEmail, phone: resolvedCustomerPhone },
@@ -519,24 +494,30 @@
                 userId: currentUser ? currentUser.id : null
             };
 
-            const orders = getOrders();
-            orders.push(newOrder);
-            saveOrders(orders);
             const requestHeaders = { 'Content-Type': 'application/json' };
             if (currentUser && currentUser.id) {
                 requestHeaders['x-user-id'] = String(currentUser.id);
             }
-            fetch('/api/orders', {
-                method: 'POST',
-                headers: requestHeaders,
-                body: JSON.stringify(newOrder)
-            }).catch(() => { });
 
-            saveCart([]);
-            updateCartCount();
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: requestHeaders,
+                    body: JSON.stringify(newOrder)
+                });
+                const createdOrder = await response.json();
 
-            document.getElementById('confirmOrderId').textContent = orderId;
-            document.getElementById('successModal').classList.add('open');
+                if (!response.ok) {
+                    throw new Error(createdOrder?.error || 'Unable to create your order. Please try again.');
+                }
+
+                saveCart([]);
+                updateCartCount();
+                window.location.href = `/order-confirmation.html?orderId=${encodeURIComponent(createdOrder.id)}`;
+            } catch (error) {
+                console.error('Order creation failed:', error);
+                showToast(error.message || 'Unable to place order. Please check your details and try again.', 'error');
+            }
         }
     </script>
 </body>

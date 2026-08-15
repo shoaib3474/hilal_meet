@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation | Pakeeza Hilal Meat</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="announcement-bar">
+        📢 FREE Local Delivery on orders over £30 | Fresh Halal Meat, Poultry, Grocery &amp; Frozen Foods!
+        <a href="/shop">Order Now ➔</a>
+    </div>
+
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <a href="tel:02085035721"><i class="fa-solid fa-phone"></i> 020 8503 5721</a>
+                <a href="mailto:info@pakeezahilalmeat.co.uk"><i class="fa-solid fa-envelope"></i>
+                    info@pakeezahilalmeat.co.uk</a>
+                <span><i class="fa-solid fa-location-dot"></i> High Street North, E12 6SB</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="https://wa.me/442085035721" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                <a href="/wishlist.html"><i class="fa-solid fa-heart" style="color:var(--red);"></i> Wishlist</a>
+                <a href="/account.html"><i class="fa-regular fa-user"></i> My Account</a>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/index.html" class="logo">
+                    <img src="/images/logo.svg" alt="Pakeeza Hilal Meat" class="header-logo-img">
+                </a>
+                <nav class="main-nav">
+                    <a href="/index.html" class="nav-link">Home</a>
+                    <a href="/shop" class="nav-link">Shop</a>
+                    <a href="/wishlist.html" class="nav-link">Wishlist</a>
+                    <a href="/about.html" class="nav-link">About</a>
+                    <a href="/contact.html" class="nav-link">Contact</a>
+                </nav>
+                <div class="header-actions">
+                    <a href="/account.html" class="header-btn" title="My Account"><i class="fa-regular fa-user"></i></a>
+                    <button class="header-btn" id="cartBtn" title="Cart" onclick="openCartSidebar()">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span class="cart-badge cart-count" style="display:none;">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1>Order Confirmation</h1>
+            <div class="breadcrumb"><a href="/index.html">Home</a><span class="breadcrumb-sep">/</span><span>Order
+                    Confirmed</span></div>
+        </div>
+    </div>
+
+    <section class="checkout-page">
+        <div class="container" style="max-width:780px;">
+            <div class="order-summary" style="padding:32px;">
+                <div style="text-align:center;margin-bottom:22px;">
+                    <div
+                        style="width:76px;height:76px;background:var(--primary-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;color:var(--primary);font-size:2.1rem;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h2 style="font-size:1.7rem;font-weight:800;margin:0 0 8px;">Order Placed!</h2>
+                    <p style="margin:0;color:var(--text-muted);">Thank you for your order. We’ve received your request
+                        and will confirm shortly.</p>
+                </div>
+
+                <div
+                    style="background:var(--primary-bg);border-radius:var(--radius);padding:18px 16px;margin:18px 0 20px;text-align:center;">
+                    <div
+                        style="font-size:0.82rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">
+                        Your Order ID</div>
+                    <div id="confirmationOrderId"
+                        style="font-size:1.8rem;font-weight:800;color:var(--primary);margin-top:8px;">Loading...</div>
+                </div>
+
+                <div id="confirmationDetails" style="display:none;">
+                    <div
+                        style="border:1px solid var(--border);border-radius:var(--radius);padding:18px;background:#fff;">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
+                            <div>
+                                <div
+                                    style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">
+                                    Customer</div>
+                                <div id="confirmationCustomer" style="font-weight:700;margin-top:6px;"></div>
+                            </div>
+                            <div>
+                                <div
+                                    style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;">
+                                    Status</div>
+                                <div id="confirmationStatus" style="margin-top:6px;"></div>
+                            </div>
+                        </div>
+
+                        <div id="confirmationItems" style="margin-top:18px;"></div>
+
+                        <div style="margin-top:18px;border-top:1px solid var(--border);padding-top:16px;">
+                            <div class="summary-row"><span class="label">Subtotal</span><span class="value"
+                                    id="confirmationSubtotal">£0.00</span></div>
+                            <div class="summary-row"><span class="label">Delivery</span><span class="value"
+                                    id="confirmationDelivery">£0.00</span></div>
+                            <div class="summary-row total"><span>Total</span><strong
+                                    id="confirmationTotal">£0.00</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:24px;">
+                    <a href="/shop" class="btn btn-primary btn-block btn-lg"><i class="fa-solid fa-shop"></i> Continue
+                        Shopping</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0;">
+                <p>© 2026 Pakeeza Hilal Meat. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/data.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script>
+        async function loadConfirmation() {
+            const params = new URLSearchParams(window.location.search);
+            const orderId = params.get('orderId');
+            const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+
+            if (!orderId) {
+                document.getElementById('confirmationOrderId').textContent = 'Unavailable';
+                document.getElementById('confirmationDetails').style.display = 'block';
+                document.getElementById('confirmationItems').innerHTML = '<p style="color:var(--text-muted);">No order ID was provided.</p>';
+                return;
+            }
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (currentUser && currentUser.id) {
+                    headers['x-user-id'] = String(currentUser.id);
+                }
+
+                const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}` + (currentUser && currentUser.id ? `?userId=${encodeURIComponent(currentUser.id)}` : ''), {
+                    headers
+                });
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.error || 'Unable to load order details.');
+                }
+
+                const order = await response.json();
+                const orderIdText = order && order.id ? order.id : orderId;
+                document.getElementById('confirmationOrderId').textContent = orderIdText;
+
+                document.getElementById('confirmationCustomer').textContent = order.customer?.name || 'Customer';
+                document.getElementById('confirmationStatus').innerHTML = '<span class="status-badge status-' + (order.status || 'pending') + '" style="font-size:0.72rem;">' + (order.status || 'pending') + '</span>';
+
+                const items = Array.isArray(order.items) ? order.items : [];
+                document.getElementById('confirmationItems').innerHTML = items.map((item) => `
+                    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                        <div>
+                            <div style="font-weight:700;">${item.name || 'Item'}</div>
+                            <div style="font-size:0.8rem;color:var(--text-muted);">Qty: ${item.qty || 1}</div>
+                        </div>
+                        <div style="font-weight:700;">£${Number(item.price || 0).toFixed(2)}</div>
+                    </div>
+                `).join('') || '<p style="color:var(--text-muted);">No items found for this order.</p>';
+
+                document.getElementById('confirmationSubtotal').textContent = `£${Number(order.subtotal || 0).toFixed(2)}`;
+                document.getElementById('confirmationDelivery').textContent = Number(order.delivery || 0) === 0 ? 'FREE' : `£${Number(order.delivery || 0).toFixed(2)}`;
+                document.getElementById('confirmationTotal').textContent = `£${Number(order.total || 0).toFixed(2)}`;
+                document.getElementById('confirmationDetails').style.display = 'block';
+            } catch (error) {
+                document.getElementById('confirmationOrderId').textContent = orderId;
+                document.getElementById('confirmationItems').innerHTML = '<p style="color:var(--text-muted);">' + (error.message || 'Unable to load your order details.') + '</p>';
+                document.getElementById('confirmationDetails').style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadConfirmation);
+    </script>
+</body>
+
+</html>
