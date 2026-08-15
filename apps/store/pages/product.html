@@ -220,10 +220,6 @@
             const id = parseInt(getUrlParam('id'), 10);
             window.__currentProductId = id;
 
-            if (typeof hydrateWishlistFromServer === 'function') {
-                await hydrateWishlistFromServer();
-            }
-
             let product = null;
             if (!isNaN(id) && id > 0) {
                 try {

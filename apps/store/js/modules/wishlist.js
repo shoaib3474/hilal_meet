@@ -4,6 +4,7 @@ import { getCurrentUser } from './auth.js';
 let wishlistCache = null;
 let wishlistItemsCache = null;
 let wishlistSyncInFlight = null;
+let wishlistLastHydratedAt = 0;
 
 export function getWishlistUserId() {
     if (typeof window === 'undefined') return '';
@@ -27,6 +28,40 @@ export function getWishlistUserId() {
         return '';
     }
 }
+
+function initWishlistCacheFromStorage() {
+    if (typeof window === 'undefined') {
+        wishlistCache = [];
+        return;
+    }
+    const userId = getWishlistUserId();
+    if (!userId) {
+        wishlistCache = [];
+        return;
+    }
+
+    try {
+        const local = localStorage.getItem(`ph_wishlist_${userId}`);
+        if (local) {
+            const parsed = JSON.parse(local).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
+            wishlistCache = Array.from(new Set(parsed));
+            return;
+        }
+
+        // Check legacy key
+        const legacy = localStorage.getItem('ph_wishlist');
+        if (legacy) {
+            const parsed = JSON.parse(legacy).map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n > 0);
+            wishlistCache = Array.from(new Set(parsed));
+            return;
+        }
+    } catch (_) { }
+
+    wishlistCache = [];
+}
+
+// Initialize local cache immediately
+initWishlistCacheFromStorage();
 
 export function syncAllWishlistButtonsOnPage() {
     if (typeof document === 'undefined') return;
@@ -75,7 +110,7 @@ function notifyWishlistUpdated() {
     }
 }
 
-export async function hydrateWishlistFromServer() {
+export async function hydrateWishlistFromServer(force = false) {
     if (typeof window === 'undefined' || typeof fetch !== 'function') return [];
     if (wishlistSyncInFlight) {
         return wishlistSyncInFlight;
@@ -87,6 +122,12 @@ export async function hydrateWishlistFromServer() {
         wishlistItemsCache = [];
         notifyWishlistUpdated();
         return [];
+    }
+
+    // Skip redundant network calls if recently hydrated within 60s and not forced
+    const now = Date.now();
+    if (!force && wishlistLastHydratedAt && (now - wishlistLastHydratedAt < 60000) && wishlistCache !== null) {
+        return wishlistItemsCache || [];
     }
 
     wishlistSyncInFlight = (async () => {
@@ -105,6 +146,7 @@ export async function hydrateWishlistFromServer() {
                 try {
                     localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify(wishlistCache));
                 } catch (_) { }
+                wishlistLastHydratedAt = Date.now();
                 notifyWishlistUpdated();
                 return wishlistItemsCache;
             }
@@ -114,6 +156,7 @@ export async function hydrateWishlistFromServer() {
             try {
                 localStorage.setItem(`ph_wishlist_${userId}`, JSON.stringify([]));
             } catch (_) { }
+            wishlistLastHydratedAt = Date.now();
             notifyWishlistUpdated();
             return [];
         } catch (error) {
@@ -127,6 +170,7 @@ export async function hydrateWishlistFromServer() {
                 wishlistCache = [];
                 wishlistItemsCache = [];
             }
+            wishlistLastHydratedAt = Date.now();
             notifyWishlistUpdated();
             return wishlistItemsCache || [];
         } finally {
@@ -138,18 +182,10 @@ export async function hydrateWishlistFromServer() {
 }
 
 export function getWishlist() {
-    if (wishlistCache !== null && Array.isArray(wishlistCache)) {
-        return [...wishlistCache];
+    if (wishlistCache === null) {
+        initWishlistCacheFromStorage();
     }
-
-    return [];
-}
-
-async function ensureWishlistHydrated() {
-    if (wishlistCache === null && typeof window !== 'undefined' && typeof fetch === 'function') {
-        await hydrateWishlistFromServer();
-    }
-    return getWishlist();
+    return Array.isArray(wishlistCache) ? [...wishlistCache] : [];
 }
 
 export function getWishlistItems() {
@@ -177,18 +213,19 @@ export async function toggleWishlist(btn, productId) {
     if (isNaN(id) || id <= 0) return false;
 
     const userId = getWishlistUserId();
-    const hydratedIds = await ensureWishlistHydrated();
-    const isAlreadyInList = hydratedIds.includes(id);
+    const currentList = getWishlist();
+    const isAlreadyInList = currentList.includes(id);
     const isAdded = !isAlreadyInList;
 
+    // Instant optimistic update
     if (isAlreadyInList) {
-        wishlistCache = hydratedIds.filter(item => item !== id);
+        wishlistCache = currentList.filter(item => item !== id);
         if (wishlistItemsCache) {
             wishlistItemsCache = wishlistItemsCache.filter(item => parseInt(item.id, 10) !== id);
         }
         showToast('Removed from wishlist', 'info');
     } else {
-        wishlistCache = Array.from(new Set([...hydratedIds, id]));
+        wishlistCache = Array.from(new Set([...currentList, id]));
         showToast('Added to wishlist!', 'success');
     }
 
@@ -198,6 +235,7 @@ export async function toggleWishlist(btn, productId) {
 
     notifyWishlistUpdated();
 
+    // Background server sync without blocking or pre-flight GET
     if (userId && typeof fetch === 'function') {
         try {
             const res = await fetch('/api/wishlist/toggle', {
@@ -297,10 +335,11 @@ export async function migrateGuestWishlistToUser(guestId, userId) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ guestId, userId })
             });
-            await hydrateWishlistFromServer();
+            await hydrateWishlistFromServer(true);
         } catch (err) {
             console.warn('Guest wishlist migration failed:', err.message);
         }
     }
 }
+
 

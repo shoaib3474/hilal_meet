@@ -23,6 +23,29 @@ app.use((err, req, res, next) => {
 });
 
 let databaseReady = false;
+let initDbPromise = null;
+
+async function ensureDbInitialized() {
+    if (databaseReady) return;
+    if (!initDbPromise) {
+        initDbPromise = initializeDatabase()
+            .then(() => {
+                databaseReady = true;
+            })
+            .catch(err => {
+                console.warn('Database initialization note:', err.message);
+                initDbPromise = null;
+            });
+    }
+    await initDbPromise;
+}
+
+app.use('/api', async (req, res, next) => {
+    try {
+        await ensureDbInitialized();
+    } catch (_) { }
+    next();
+});
 
 function parseOrderRow(row) {
     return {
@@ -125,6 +148,7 @@ app.get('/api/health', async (req, res) => {
 
 // In-Memory Fallback Caches
 let inMemoryUsers = [...(SEED_USERS || [])];
+let inMemoryProducts = getFallbackProducts();
 let inMemoryWishlistItems = [];
 let inMemoryCartItems = [];
 
@@ -819,7 +843,6 @@ app.post('/api/cart/clear', handleClearCart);
 // ==========================================
 // PRODUCTS ENDPOINTS
 // ==========================================
-let inMemoryProducts = getFallbackProducts();
 
 app.get('/api/products', async (req, res) => {
     setNoStoreHeaders(res);

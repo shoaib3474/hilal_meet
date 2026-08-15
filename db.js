@@ -13,13 +13,10 @@ const connectionString = process.env.DATABASE_URL
 function normalizeConnectionString(value) {
     if (!value) return '';
 
-    const cleaned = value.replace(/([?&])sslmode=(prefer|require|verify-ca)/gi, '$1sslmode=verify-full');
-    if (/(?:^|[?&])sslmode=/i.test(cleaned)) {
-        return cleaned;
-    }
-
-    const separator = cleaned.includes('?') ? '&' : '?';
-    return `${cleaned}${separator}sslmode=verify-full`;
+    // Strip conflicting sslmode query parameters to allow the Pool ssl option to handle TLS safely
+    let cleaned = value.replace(/([?&])sslmode=[^&]*/gi, '');
+    cleaned = cleaned.replace(/\?&/, '?').replace(/&&/, '&').replace(/[?&]$/, '');
+    return cleaned;
 }
 
 const normalizedConnectionString = normalizeConnectionString(connectionString);
