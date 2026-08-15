@@ -96,6 +96,7 @@ function normalizeWishlistRow(row) {
 }
 
 app.get('/api/health', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const result = await pool.query('SELECT NOW() as current_time');
         res.json({
@@ -123,6 +124,7 @@ let inMemoryCartItems = [];
 // AUTHENTICATION & USER ENDPOINTS
 // ==========================================
 app.post('/api/auth/register', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const { firstName, lastName, email, phone, password, address } = req.body || {};
         if (!firstName || !lastName || !email || !password) {
@@ -185,6 +187,7 @@ app.post('/api/auth/register', async (req, res) => {
 });
 
 app.post('/api/auth/login', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const { email, password } = req.body || {};
         if (!email || !password) {
@@ -227,6 +230,7 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 app.get('/api/auth/me', async (req, res) => {
+    setNoStoreHeaders(res);
     const email = req.query?.email || req.get('x-user-email');
     const userId = req.query?.id || req.get('x-user-id');
     if (!email && !userId) {
@@ -256,7 +260,7 @@ app.get('/api/auth/me', async (req, res) => {
                 spent: Number(rows[0].spent)
             });
         }
-    } catch (_) {}
+    } catch (_) { }
     const found = inMemoryUsers.find(u => (userId && (u.id == userId || `user-${u.id}` == userId)) || (email && u.email.toLowerCase() === email.toLowerCase()));
     if (found) {
         return res.json({ id: found.id, firstName: found.firstName, lastName: found.lastName, email: found.email, phone: found.phone, address: found.address });
@@ -435,6 +439,7 @@ app.post('/api/wishlist/toggle', async (req, res) => {
 });
 
 app.post('/api/wishlist', async (req, res) => {
+    setNoStoreHeaders(res);
     const userId = getWishlistUserId(req);
     const productId = parseInt(req.body?.productId);
 
@@ -462,6 +467,7 @@ app.post('/api/wishlist', async (req, res) => {
 });
 
 app.delete('/api/wishlist', async (req, res) => {
+    setNoStoreHeaders(res);
     const userId = getWishlistUserId(req);
     const productId = parseInt(req.query?.productId || req.body?.productId);
 
@@ -485,6 +491,7 @@ app.delete('/api/wishlist', async (req, res) => {
 });
 
 app.post('/api/wishlist/migrate', async (req, res) => {
+    setNoStoreHeaders(res);
     const guestId = req.body?.guestId;
     const userId = req.body?.userId;
 
@@ -514,6 +521,7 @@ app.post('/api/wishlist/migrate', async (req, res) => {
 });
 
 const handleClearWishlist = async (req, res) => {
+    setNoStoreHeaders(res);
     const userId = getWishlistUserId(req);
     if (!userId) {
         return res.status(400).json({ error: 'User id is required' });
@@ -535,6 +543,7 @@ app.post('/api/wishlist/clear', handleClearWishlist);
 // RELATIONAL CART ENDPOINTS (SQL JOIN)
 // ==========================================
 app.get('/api/cart', async (req, res) => {
+    setNoStoreHeaders(res);
     const sessionId = getCartSessionId(req);
     if (!sessionId) {
         return res.json({ sessionId: '', items: [] });
@@ -822,6 +831,7 @@ app.post('/api/cart/clear', handleClearCart);
 let inMemoryProducts = getFallbackProducts();
 
 app.get('/api/products', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const { rows } = await pool.query(
             'SELECT id, name, category, price, sale_price, weight, image, gallery, description, badge, in_stock, featured, rating, reviews FROM products ORDER BY id ASC'
@@ -837,6 +847,7 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.get('/api/products/:id', async (req, res) => {
+    setNoStoreHeaders(res);
     const id = parseInt(req.params.id);
     try {
         const { rows } = await pool.query(
@@ -857,6 +868,7 @@ app.get('/api/products/:id', async (req, res) => {
 });
 
 app.post('/api/products', async (req, res) => {
+    setNoStoreHeaders(res);
     const product = req.body;
     if (!product.name || !product.category) {
         return res.status(400).json({ error: 'Name and category are required' });
@@ -987,6 +999,7 @@ app.patch('/api/products/:id', async (req, res) => {
 });
 
 app.delete('/api/products/:id', async (req, res) => {
+    setNoStoreHeaders(res);
     const id = parseInt(req.params.id);
     try {
         const { rows } = await pool.query(
@@ -1009,6 +1022,7 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 app.put('/api/products', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const payload = Array.isArray(req.body) ? req.body : [];
         await pool.query('DELETE FROM products');
@@ -1040,6 +1054,7 @@ app.put('/api/products', async (req, res) => {
 });
 
 app.get('/api/orders', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const { rows } = await pool.query(
             'SELECT id, order_date, status, customer_name, customer_email, customer_phone, address, subtotal, delivery, total, payment_method, notes, items FROM orders ORDER BY created_at ASC'
@@ -1051,6 +1066,7 @@ app.get('/api/orders', async (req, res) => {
 });
 
 app.post('/api/orders', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const order = req.body;
         if (!order || !order.id) {
@@ -1161,6 +1177,7 @@ app.delete('/api/orders/:id', async (req, res) => {
 });
 
 app.put('/api/orders', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const payload = Array.isArray(req.body) ? req.body : [];
         await pool.query('DELETE FROM orders');
@@ -1192,6 +1209,7 @@ app.put('/api/orders', async (req, res) => {
 });
 
 app.get('/api/customers', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const { rows } = await pool.query(
             'SELECT id, name, email, phone, address, joined, orders_count, spent FROM customers ORDER BY id ASC'
@@ -1212,6 +1230,7 @@ app.get('/api/customers', async (req, res) => {
 });
 
 app.put('/api/customers', async (req, res) => {
+    setNoStoreHeaders(res);
     try {
         const payload = Array.isArray(req.body) ? req.body : [];
         await pool.query('DELETE FROM customers');
