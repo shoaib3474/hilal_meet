@@ -304,10 +304,3 @@ export async function migrateGuestWishlistToUser(guestId, userId) {
     }
 }
 
-if (typeof window !== 'undefined') {
-    window.addEventListener('load', () => {
-        updateWishlistCount();
-        syncAllWishlistButtonsOnPage();
-        void hydrateWishlistFromServer();
-    });
-}

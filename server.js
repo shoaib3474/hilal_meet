@@ -145,6 +145,7 @@ app.post('/api/auth/register', async (req, res) => {
             if (existing.rowCount > 0) {
                 return res.status(400).json({ error: 'An account with this email already exists' });
             }
+
             const { rows } = await pool.query(
                 `INSERT INTO users (first_name, last_name, email, password_hash, phone, address)
                  VALUES ($1, $2, $3, $4, $5, $6)
@@ -167,26 +168,12 @@ app.post('/api/auth/register', async (req, res) => {
                 phone: rows[0].phone,
                 address: rows[0].address
             };
-            inMemoryUsers.push({ ...user, password });
             return res.status(201).json({ success: true, user });
         } catch (dbErr) {
-            console.warn('DB register error, using memory fallback:', dbErr.message);
-            if (inMemoryUsers.some(u => u.email.toLowerCase() === cleanEmail)) {
-                return res.status(400).json({ error: 'An account with this email already exists' });
-            }
-            const user = {
-                id: inMemoryUsers.length + 1,
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
-                email: cleanEmail,
-                phone: phone?.trim() || '',
-                address: address?.trim() || '',
-                password
-            };
-            inMemoryUsers.push(user);
-            return res.status(201).json({
-                success: true,
-                user: { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, phone: user.phone, address: user.address }
+            console.error('Registration failed: database unavailable or write failed.', dbErr.message);
+            return res.status(503).json({
+                success: false,
+                error: 'Database unavailable. Start PostgreSQL or configure DATABASE_URL/POSTGRES_* before registering.'
             });
         }
     } catch (error) {
@@ -222,14 +209,10 @@ app.post('/api/auth/login', async (req, res) => {
             };
             return res.json({ success: true, user });
         } catch (dbErr) {
-            console.warn('DB login error, using memory fallback:', dbErr.message);
-            const found = inMemoryUsers.find(u => u.email.toLowerCase() === cleanEmail && u.password === password);
-            if (!found) {
-                return res.status(401).json({ error: 'Invalid email or password' });
-            }
-            return res.json({
-                success: true,
-                user: { id: found.id, firstName: found.firstName, lastName: found.lastName, email: found.email, phone: found.phone, address: found.address }
+            console.error('Login failed: database unavailable or query failed.', dbErr.message);
+            return res.status(503).json({
+                success: false,
+                error: 'Database unavailable. Please start PostgreSQL or configure DATABASE_URL/POSTGRES_*.'
             });
         }
     } catch (error) {
