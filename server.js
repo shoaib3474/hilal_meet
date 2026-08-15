@@ -1083,13 +1083,66 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+app.get('/api/orders/me', async (req, res) => {
+    setNoStoreHeaders(res);
+    const rawUserId = req.query?.userId || req.get('x-user-id') || '';
+    const userId = Number(String(rawUserId).replace(/^user-/i, ''));
+
+    if (!Number.isFinite(userId) || userId <= 0) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    try {
+        const userResult = await pool.query(
+            'SELECT id, first_name, last_name, email, phone, address FROM users WHERE id = $1',
+            [userId]
+        );
+
+        if (userResult.rowCount === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const userEmail = String(userResult.rows[0].email || '').trim().toLowerCase();
+        const { rows } = await pool.query(
+            `SELECT id, order_date, status, customer_name, customer_email, customer_phone, address, subtotal, delivery, total, payment_method, notes, items
+             FROM orders
+             WHERE LOWER(customer_email) = $1
+             ORDER BY created_at DESC`,
+            [userEmail]
+        );
+
+        return res.json(rows.map(parseOrderRow));
+    } catch (error) {
+        console.error('User orders fetch failed:', error.message);
+        return res.status(500).json({ error: 'Unable to load your order history' });
+    }
+});
+
 app.post('/api/orders', async (req, res) => {
     setNoStoreHeaders(res);
     try {
+        const rawUserId = req.body?.userId || req.get('x-user-id') || '';
+        const userId = Number(String(rawUserId).replace(/^user-/i, ''));
         const order = req.body;
         if (!order || !order.id) {
             return res.status(400).json({ error: 'Order payload is required' });
         }
+
+        let currentUserRow = null;
+        if (Number.isFinite(userId) && userId > 0) {
+            const userResult = await pool.query(
+                'SELECT id, first_name, last_name, email, phone, address FROM users WHERE id = $1',
+                [userId]
+            );
+            currentUserRow = userResult.rowCount > 0 ? userResult.rows[0] : null;
+        }
+
+        const customerName = currentUserRow
+            ? `${currentUserRow.first_name || ''} ${currentUserRow.last_name || ''}`.trim()
+            : order.customer?.name || '';
+        const customerEmail = currentUserRow ? String(currentUserRow.email || '').trim().toLowerCase() : order.customer?.email || '';
+        const customerPhone = currentUserRow ? currentUserRow.phone || '' : order.customer?.phone || '';
+
         await pool.query(
             `INSERT INTO orders (id, order_date, status, customer_name, customer_email, customer_phone, address, subtotal, delivery, total, payment_method, notes, items)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
@@ -1110,9 +1163,9 @@ app.post('/api/orders', async (req, res) => {
                 order.id,
                 order.date,
                 order.status || 'pending',
-                order.customer?.name || '',
-                order.customer?.email || '',
-                order.customer?.phone || '',
+                customerName,
+                customerEmail,
+                customerPhone,
                 order.address || '',
                 Number(order.subtotal || 0),
                 Number(order.delivery || 0),
@@ -1132,9 +1185,9 @@ app.post('/api/orders', async (req, res) => {
                  orders_count = customers.orders_count + 1,
                  spent = customers.spent + EXCLUDED.spent`,
             [
-                order.customer?.name || '',
-                order.customer?.email || '',
-                order.customer?.phone || '',
+                customerName,
+                customerEmail,
+                customerPhone,
                 order.address || '',
                 Number(order.total || 0)
             ]
@@ -1143,9 +1196,9 @@ app.post('/api/orders', async (req, res) => {
             id: order.id,
             order_date: new Date(order.date),
             status: order.status || 'pending',
-            customer_name: order.customer?.name || '',
-            customer_email: order.customer?.email || '',
-            customer_phone: order.customer?.phone || '',
+            customer_name: customerName,
+            customer_email: customerEmail,
+            customer_phone: customerPhone,
             address: order.address || '',
             subtotal: Number(order.subtotal || 0),
             delivery: Number(order.delivery || 0),
