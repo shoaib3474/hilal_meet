@@ -82,6 +82,19 @@ function getWishlistUserId(req) {
     return req.query?.userId || req.body?.userId || req.get('x-user-id') || req.get('x-wishlist-user-id') || '';
 }
 
+function setNoStoreHeaders(res) {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+}
+
+function normalizeWishlistRow(row) {
+    if (!row || !row.id) return null;
+    if (!row.name || String(row.name).trim() === '') return null;
+    if (!row.image || String(row.image).trim() === '') return null;
+    return row;
+}
+
 app.get('/api/health', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW() as current_time');
@@ -256,6 +269,7 @@ app.get('/api/auth/me', async (req, res) => {
 // ==========================================
 app.get('/api/wishlist', async (req, res) => {
     const userId = getWishlistUserId(req);
+    setNoStoreHeaders(res);
     if (!userId) {
         return res.json({ userId: '', productIds: [], items: [] });
     }
@@ -288,23 +302,26 @@ app.get('/api/wishlist', async (req, res) => {
             [userId]
         );
 
-        const items = rows.map(r => ({
-            id: r.id,
-            name: r.name,
-            category: r.category,
-            price: Number(r.price || 0),
-            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
-            weight: r.weight,
-            image: r.image,
-            gallery: Array.isArray(r.gallery) ? r.gallery : [],
-            description: r.description,
-            badge: r.badge,
-            inStock: r.in_stock,
-            featured: r.featured,
-            rating: Number(r.rating || 4.5),
-            reviews: Number(r.reviews || 0),
-            wishlistedAt: r.wishlisted_at
-        }));
+        const items = rows
+            .map(normalizeWishlistRow)
+            .filter(Boolean)
+            .map(r => ({
+                id: r.id,
+                name: r.name,
+                category: r.category,
+                price: Number(r.price || 0),
+                salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+                weight: r.weight,
+                image: r.image,
+                gallery: Array.isArray(r.gallery) ? r.gallery : [],
+                description: r.description,
+                badge: r.badge,
+                inStock: r.in_stock,
+                featured: r.featured,
+                rating: Number(r.rating || 4.5),
+                reviews: Number(r.reviews || 0),
+                wishlistedAt: r.wishlisted_at
+            }));
         const productIds = items.map(i => i.id);
 
         inMemoryWishlistItems = inMemoryWishlistItems.filter(item => item.user_id !== userId);
@@ -329,6 +346,7 @@ app.get('/api/wishlist', async (req, res) => {
 app.post('/api/wishlist/toggle', async (req, res) => {
     const userId = getWishlistUserId(req);
     const productId = parseInt(req.body?.productId);
+    setNoStoreHeaders(res);
 
     if (!userId) {
         return res.status(400).json({ error: 'User id is required' });
@@ -387,23 +405,26 @@ app.post('/api/wishlist/toggle', async (req, res) => {
              ORDER BY w.created_at DESC`,
             [userId]
         );
-        const items = rows.map(r => ({
-            id: r.id,
-            name: r.name,
-            category: r.category,
-            price: Number(r.price || 0),
-            salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
-            weight: r.weight,
-            image: r.image,
-            gallery: Array.isArray(r.gallery) ? r.gallery : [],
-            description: r.description,
-            badge: r.badge,
-            inStock: r.in_stock,
-            featured: r.featured,
-            rating: Number(r.rating || 4.5),
-            reviews: Number(r.reviews || 0),
-            wishlistedAt: r.wishlisted_at
-        }));
+        const items = rows
+            .map(normalizeWishlistRow)
+            .filter(Boolean)
+            .map(r => ({
+                id: r.id,
+                name: r.name,
+                category: r.category,
+                price: Number(r.price || 0),
+                salePrice: r.sale_price !== null ? Number(r.sale_price) : null,
+                weight: r.weight,
+                image: r.image,
+                gallery: Array.isArray(r.gallery) ? r.gallery : [],
+                description: r.description,
+                badge: r.badge,
+                inStock: r.in_stock,
+                featured: r.featured,
+                rating: Number(r.rating || 4.5),
+                reviews: Number(r.reviews || 0),
+                wishlistedAt: r.wishlisted_at
+            }));
         return res.json({ userId, productId, action, inWishlist, productIds: items.map(i => i.id), items });
     } catch (_) {
         const userRecords = inMemoryWishlistItems.filter(item => item.user_id === userId);
